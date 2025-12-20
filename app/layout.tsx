@@ -1,19 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
-import {GeistMono} from "geist/font/mono";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { GeistMono } from "geist/font/mono";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import { ThemeProvider } from "@/components/elements/theme-provider";
 
 /* =========================
-   Metadata
+  Metadata
 ========================= */
 
 export const metadata: Metadata = {
@@ -52,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 /* =========================
-   Viewport
+  Viewport
 ========================= */
 
 export const viewport: Viewport = {
@@ -63,7 +55,7 @@ export const viewport: Viewport = {
 };
 
 /* =========================
-   Root Layout
+  Root Layout
 ========================= */
 
 export default function RootLayout({
@@ -73,53 +65,9 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className="h-full" suppressHydrationWarning>
-        <body
-          className={`${GeistSans.variable} ${GeistMono.variable} h-full font-sans antialiased bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <header className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
-              <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-                <div className="text-xl font-bold tracking-tight text-slate-900">
-                  Jifwa
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <SignedOut>
-                    <SignInButton mode="modal">
-                      <button className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900">
-                        Sign In
-                      </button>
-                    </SignInButton>
-
-                    <SignUpButton mode="modal">
-                      <button className="h-9 rounded-md bg-slate-900 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-slate-800">
-                        Get Started
-                      </button>
-                    </SignUpButton>
-                  </SignedOut>
-
-                  <SignedIn>
-                    <UserButton
-                      afterSignOutUrl="/"
-                      appearance={{
-                        elements: {
-                          avatarBox: "h-9 w-9",
-                        },
-                      }}
-                    />
-                  </SignedIn>
-                </div>
-              </div>
-            </header>
-
-            <main className="min-h-screen pt-20">{children}</main>
-          </ThemeProvider>
+      <html lang="en">
+        <body className={`${GeistSans.variable} ${GeistMono.variable}`}>
+          <main>{children}</main>
         </body>
       </html>
     </ClerkProvider>

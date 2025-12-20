@@ -1,7 +1,6 @@
 "use client";
-"use client";
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
@@ -13,12 +12,10 @@ import {
   Check,
   ShieldCheck,
   CreditCard,
-  Mail,
+  TrendingUp,
+  Search,
   Trello,
   Layers,
-  Search,
-  TrendingUp,
-  DollarSign,
 } from "lucide-react";
 
 // --- DATA: LEFT SIDE (Integrations) ---
@@ -111,19 +108,20 @@ const HeroSection = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const highlightVariant = {
+  // FIXED: Explicit Variants type and 'as const' for ease
+  const highlightVariant: Variants = {
     hidden: { width: "0%" },
     visible: {
       width: "105%",
-      transition: { duration: 0.8, delay: 0.5, ease: "circOut" },
+      transition: { duration: 0.8, delay: 0.5, ease: "circOut" as const },
     },
   };
 
-  const scanLine = {
+  const scanLine: Variants = {
     animate: {
       top: ["5%", "95%", "5%"],
       opacity: [0.6, 1, 0.6],
-      transition: { duration: 3, repeat: Infinity, ease: "linear" },
+      transition: { duration: 3, repeat: Infinity, ease: "linear" as const },
     },
   };
 
@@ -203,12 +201,12 @@ const HeroSection = () => {
             transition={{ duration: 1.5, ease: "easeOut" }}
             className="relative w-[280px] h-[580px] bg-gray-900 rounded-[3rem] p-[4px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] z-20"
           >
-            {/* Titanium Edge Highlight */}
+            {/* Edge */}
             <div className="absolute inset-0 rounded-[3rem] border border-gray-600/40 pointer-events-none z-50 ring-1 ring-inset ring-white/10"></div>
 
             {/* Screen */}
             <div className="h-full w-full bg-white rounded-[2.7rem] overflow-hidden flex flex-col relative">
-              {/* Status Bar with REAL TIME */}
+              {/* Status Bar */}
               <div className="h-12 w-full bg-white flex justify-between items-center px-6 pt-4 z-20">
                 <span className="text-[11px] font-bold text-gray-900 font-mono tracking-tight">
                   {currentTime}
@@ -332,7 +330,7 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* --- RIGHT SIDE: REVENUE ORBIT (Dynamic) --- */}
+            {/* --- REVENUE CARD (Right Side) --- */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={RIGHT_NOTIFICATIONS[rightIndex].id}
@@ -358,7 +356,7 @@ const HeroSection = () => {
               </motion.div>
             </AnimatePresence>
 
-            {/* --- LEFT SIDE: INTEGRATION ORBIT (Dynamic) --- */}
+            {/* --- INTEGRATION SWARM (Left Side) --- */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={LEFT_NOTIFICATIONS[leftIndex].id}

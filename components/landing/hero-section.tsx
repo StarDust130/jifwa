@@ -17,6 +17,7 @@ import {
   Trello,
   Layers,
 } from "lucide-react";
+import Link from "next/link";
 
 // --- DATA: LEFT SIDE (Integrations) ---
 const LEFT_NOTIFICATIONS = [
@@ -167,13 +168,16 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-10">
-            <button className="h-14 px-8 rounded-full bg-gray-900 text-white font-bold text-sm sm:text-base hover:bg-black hover:scale-105 transition-all duration-300 shadow-2xl shadow-gray-900/20 flex items-center justify-center gap-2 group">
+            <Link
+              href="/dashboard"
+              className="h-14 px-8 rounded-full bg-gray-900 text-white font-bold text-sm sm:text-base hover:bg-black hover:scale-105 transition-all duration-300 shadow-2xl shadow-gray-900/20 flex items-center justify-center gap-2 group"
+            >
               Start Execution Tracking
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"
               />
-            </button>
+            </Link>
             <button className="h-14 px-8 rounded-full bg-white text-gray-700 border border-gray-200 font-bold text-sm sm:text-base hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm">
               <Play size={18} className="fill-gray-700" />
               Watch Demo

@@ -1,4 +1,5 @@
 
+import BackToTop from "@/components/elements/BackToTop";
 import  Footer  from "@/components/elements/footer";
 import FAQSection from "@/components/landing/FAQ";
 import FeaturesSection from "@/components/landing/FeaturesSection";
@@ -18,9 +19,11 @@ export default function LandingPage() {
         <SecuritySection />
         <PricingSection />
         <FAQSection />
+        <BackToTop />
         {/* You can add a Pricing Section here later */}
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }

@@ -6,27 +6,21 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ArrowRight, X } from "lucide-react";
-import { HiOutlineMenuAlt3 } from "react-icons/hi";
+import {  X } from "lucide-react";
+import { HiMenuAlt3 } from "react-icons/hi";
 import {
-  SignedIn,
-  SignedOut,
   SignInButton,
   SignUpButton,
   UserButton,
   useUser,
+  ClerkLoaded,
+  // ClerkLoading removed as requested
 } from "@clerk/nextjs";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
-  const { isSignedIn, isLoaded } = useUser();
-
-  // Handle Hydration
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const { isSignedIn } = useUser();
 
   // Handle Scroll
   React.useEffect(() => {
@@ -52,109 +46,103 @@ export function Navbar() {
     }
   };
 
-  if (!mounted) return null;
-
   return (
     <header
       className={cn(
         "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out font-sans",
         isScrolled
-          ? "bg-white/90 backdrop-blur-md border-b  border-gray-300 py-1.5  md:py-3 shadow-sm"
-          : "bg-transparent border-b border-transparent py-5"
+          ? "bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-sm"
+          : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="container mx-auto px-6 h-12 flex items-center justify-between relative">
-        {/* 1. LOGO */}
-        <div className="flex-shrink-0 z-50">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative h-20 w-32 md:h-24 md:w-40 transition-transform duration-300 group-hover:scale-105">
-              <Image
-                src="/logo.png"
-                alt="Jifwa"
-                fill
-                className="object-contain object-left"
-                priority
-              />
-            </div>
-          </Link>
-        </div>
+      <div className="container mx-auto px-3 md:px-6 h-16 md:h-20 flex items-center justify-between">
+        {/* 1. BIG LOGO */}
+        <Link
+          href="/"
+          className="relative h-20 w-40  transition-opacity hover:opacity-80"
+        >
+          <Image
+            src="/logo.png"
+            alt="Jifwa"
+            fill
+            className="object-contain object-left"
+            priority
+          />
+        </Link>
 
-        {/* 2. DESKTOP CENTER LINKS (Clean, No Background) */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
-          <nav className="flex items-center gap-6">
-            {navLinks.map((link) => (
-              <button
-                key={link.name}
-                onClick={() => scrollToSection(link.href)}
-                className="text-sm font-semibold text-gray-600 hover:text-black transition-colors"
-              >
-                {link.name}
-              </button>
-            ))}
-          </nav>
-        </div>
+        {/* 2. DESKTOP LINKS */}
+        <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 gap-8">
+          {navLinks.map((link) => (
+            <button
+              key={link.name}
+              onClick={() => scrollToSection(link.href)}
+              className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              {link.name}
+            </button>
+          ))}
+        </nav>
 
         {/* 3. ACTIONS & MOBILE MENU */}
-        <div className="flex items-center gap-4 z-50">
-          {/* DESKTOP AUTH BUTTONS */}
-          <div className="hidden md:flex items-center gap-3">
-            {isLoaded && !isSignedIn && (
-              <>
+        <div className="flex items-center gap-4">
+          <ClerkLoaded>
+            {/* LOGGED OUT STATE */}
+            {!isSignedIn && (
+              <div className="hidden md:flex items-center gap-3">
                 <SignInButton mode="modal">
                   <Button
                     variant="ghost"
-                    className="text-gray-600 hover:text-black font-semibold text-sm hover:bg-transparent"
+                    className="text-gray-600 hover:text-gray-900 font-bold text-sm"
                   >
                     Log In
                   </Button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button className="bg-black text-white hover:bg-gray-900 shadow-xl shadow-black/20 font-bold rounded-full h-10 px-6 text-sm transition-all hover:scale-105 hover:-translate-y-0.5">
+                  <Button className="bg-gray-900 text-white hover:bg-black font-bold rounded-full h-11 px-8 text-sm shadow-xl shadow-gray-900/20 transition-all hover:scale-105">
                     Get Started
                   </Button>
                 </SignUpButton>
-              </>
+              </div>
             )}
 
-            {isLoaded && isSignedIn && (
-              <>
-                <Button
-                  variant="outline"
-                  asChild
-                  className="mr-2 border-gray-300 rounded-full hover:bg-gray-50 font-bold px-6"
-                >
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
+            {/* LOGGED IN STATE */}
+            {isSignedIn && (
+              <div className="flex items-center gap-4">
+                {/* Desktop Dashboard Button */}
+                <Link href="/dashboard" className="hidden md:flex">
+                  <Button
+                    variant="outline"
+                    className="rounded-full h-11 px-6 border-gray-200 font-bold hover:bg-gray-50"
+                  >
+                    Dashboard
+                  </Button>
+                </Link>
+
+                {/* User Avatar - Clean & Visible on Mobile/Desktop */}
                 <UserButton
                   afterSignOutUrl="/"
                   appearance={{
                     elements: {
-                      avatarBox: "w-10 h-10 border-2 border-gray-200",
+                      avatarBox: "w-10 h-10 border border-gray-200 shadow-sm",
                     },
                   }}
                 />
-              </>
+              </div>
             )}
-          </div>
+          </ClerkLoaded>
 
-          {/* MOBILE HAMBURGER */}
-          <div className="md:hidden">
+          {/* MOBILE MENU TOGGLE */}
+          <div className="md:hidden flex items-center">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-             
-                  <HiOutlineMenuAlt3
-                    className="text-black bg-transparent h-6 w-6 font-bold"
-                    strokeWidth={3}
-                  />
-              
+                <HiMenuAlt3 className="h-6 w-6 mr-2" strokeWidth={0.5} />
               </SheetTrigger>
               <SheetContent
                 side="top"
-                // Added [&>button]:hidden to remove duplicate close icon
-                className="w-full h-[100dvh] bg-white border-none p-0 flex flex-col z-[100] [&>button]:hidden"
+                className="w-full h-full bg-white p-0 border-none [&>button]:hidden flex flex-col"
               >
                 {/* Mobile Header */}
-                <div className="flex items-center justify-between px-6 py-2 border-b border-gray-100">
+                <div className="flex items-center justify-between px-6  border-b border-gray-100">
                   <div className="relative h-20 w-40">
                     <Image
                       src="/logo.png"
@@ -163,78 +151,65 @@ export function Navbar() {
                       className="object-contain object-left"
                     />
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setIsOpen(false)}
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    className="rounded-full bg-gray-100 hover:bg-gray-200"
                   >
-                    <X size={24} className="text-black font-bold" />
-                  </button>
+                    <X size={24} strokeWidth={2.5} />
+                  </Button>
                 </div>
 
                 {/* Mobile Links */}
-                <div className="flex flex-col px-6 pt-8 gap-6 flex-1 overflow-y-auto bg-white">
-                  <nav className="flex flex-col gap-2">
-                    {navLinks.map((link) => (
-                      <button
-                        key={link.name}
-                        onClick={() => scrollToSection(link.href)}
-                        className="text-2xl font-bold text-gray-900 hover:text-gray-500 text-left py-4 border-b border-gray-50 last:border-none transition-colors"
-                      >
-                        {link.name}
-                      </button>
-                    ))}
-                  </nav>
+                <div className="flex flex-col p-6 gap-6">
+                  {navLinks.map((link) => (
+                    <button
+                      key={link.name}
+                      onClick={() => scrollToSection(link.href)}
+                      className="text-3xl font-bold text-gray-900 text-left tracking-tight"
+                    >
+                      {link.name}
+                    </button>
+                  ))}
+                </div>
 
-                  {/* Mobile Actions */}
-                  <div className="mt-auto pb-12 flex flex-col gap-4">
-                    {isLoaded && !isSignedIn && (
+                {/* Mobile Footer Actions */}
+                <div className="mt-auto p-6 pb-10 flex flex-col gap-4">
+                  <ClerkLoaded>
+                    {!isSignedIn ? (
                       <>
                         <SignInButton mode="modal">
                           <Button
                             variant="outline"
+                            size="lg"
+                            className="w-full rounded-2xl text-xl font-bold border-2 h-16 hover:bg-gray-50"
                             onClick={() => setIsOpen(false)}
-                            className="w-full justify-center rounded-2xl h-14 text-lg font-bold border-2 border-gray-200 text-gray-900 hover:bg-gray-50 hover:border-gray-300"
                           >
                             Log In
                           </Button>
                         </SignInButton>
                         <SignUpButton mode="modal">
                           <Button
+                            size="lg"
+                            className="w-full rounded-2xl text-xl font-bold bg-gray-900 text-white h-16 shadow-xl hover:bg-black"
                             onClick={() => setIsOpen(false)}
-                            className="w-full justify-center rounded-2xl h-14 text-lg font-bold bg-black hover:bg-gray-900 text-white shadow-2xl"
                           >
-                            Get Started Free{" "}
-                            <ArrowRight className="ml-2 h-5 w-5" />
+                            Get Started Free
                           </Button>
                         </SignUpButton>
                       </>
-                    )}
-
-                    {isLoaded && isSignedIn && (
-                      <>
+                    ) : (
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                         <Button
-                          asChild
-                          onClick={() => setIsOpen(false)}
-                          className="w-full justify-center rounded-2xl h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200"
+                          size="lg"
+                          className="w-full text-xl font-bold bg-gray-900 text-white rounded-2xl h-16 shadow-xl"
                         >
-                          <Link href="/dashboard">Go to Dashboard</Link>
+                          Go to Dashboard
                         </Button>
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 mt-2">
-                          <div className="flex items-center gap-3">
-                            <UserButton />
-                            <div className="text-left">
-                              <p className="font-bold text-gray-900 text-sm">
-                                My Account
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Manage settings
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </>
+                      </Link>
                     )}
-                  </div>
+                  </ClerkLoaded>
                 </div>
               </SheetContent>
             </Sheet>

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {  X } from "lucide-react";
+import { X } from "lucide-react";
 import { HiMenuAlt3 } from "react-icons/hi";
 import {
   SignInButton,
@@ -14,7 +14,6 @@ import {
   UserButton,
   useUser,
   ClerkLoaded,
-  // ClerkLoading removed as requested
 } from "@clerk/nextjs";
 
 export function Navbar() {
@@ -22,7 +21,6 @@ export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const { isSignedIn } = useUser();
 
-  // Handle Scroll
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -59,7 +57,7 @@ export function Navbar() {
         {/* 1. BIG LOGO */}
         <Link
           href="/"
-          className="relative h-20 w-40  transition-opacity hover:opacity-80"
+          className="relative h-20 w-40 transition-all hover:opacity-80 active:scale-95"
         >
           <Image
             src="/logo.png"
@@ -76,7 +74,7 @@ export function Navbar() {
             <button
               key={link.name}
               onClick={() => scrollToSection(link.href)}
-              className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors"
+              className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-all active:scale-95"
             >
               {link.name}
             </button>
@@ -86,47 +84,45 @@ export function Navbar() {
         {/* 3. ACTIONS & MOBILE MENU */}
         <div className="flex items-center gap-4">
           <ClerkLoaded>
-            {/* LOGGED OUT STATE */}
             {!isSignedIn && (
               <div className="hidden md:flex items-center gap-3">
                 <SignInButton mode="modal">
                   <Button
                     variant="ghost"
-                    className="text-gray-600 hover:text-gray-900 font-bold text-sm"
+                    className="text-gray-600 hover:text-gray-900 font-bold text-sm active:scale-95"
                   >
                     Log In
                   </Button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button className="bg-gray-900 text-white hover:bg-black font-bold rounded-full h-11 px-8 text-sm shadow-xl shadow-gray-900/20 transition-all hover:scale-105">
+                  <Button className="bg-gray-900 text-white hover:bg-black font-bold rounded-full h-11 px-8 text-sm shadow-xl shadow-gray-900/20 transition-all hover:scale-105 active:scale-95">
                     Get Started
                   </Button>
                 </SignUpButton>
               </div>
             )}
 
-            {/* LOGGED IN STATE */}
             {isSignedIn && (
               <div className="flex items-center gap-4">
-                {/* Desktop Dashboard Button */}
                 <Link href="/dashboard" className="hidden md:flex">
                   <Button
                     variant="outline"
-                    className="rounded-full h-11 px-6 border-gray-200 font-bold hover:bg-gray-50"
+                    className="rounded-full h-11 px-6 border-gray-200 font-bold hover:bg-gray-50 active:scale-95"
                   >
                     Dashboard
                   </Button>
                 </Link>
 
-                {/* User Avatar - Clean & Visible on Mobile/Desktop */}
-                <UserButton
-                  afterSignOutUrl="/"
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-10 h-10 border border-gray-200 shadow-sm",
-                    },
-                  }}
-                />
+                <div className="active:scale-90 transition-transform">
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10 border border-gray-200 shadow-sm",
+                      },
+                    }}
+                  />
+                </div>
               </div>
             )}
           </ClerkLoaded>
@@ -135,14 +131,16 @@ export function Navbar() {
           <div className="md:hidden flex items-center">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <HiMenuAlt3 className="h-6 w-6 mr-2" strokeWidth={0.5} />
+                <button className="active:scale-90 transition-transform p-1">
+                  <HiMenuAlt3 className="h-6 w-6 mr-2" strokeWidth={0.5} />
+                </button>
               </SheetTrigger>
               <SheetContent
                 side="top"
                 className="w-full h-full bg-white p-0 border-none [&>button]:hidden flex flex-col"
               >
                 {/* Mobile Header */}
-                <div className="flex items-center justify-between px-6  border-b border-gray-100">
+                <div className="flex items-center justify-between px-6 border-b border-gray-100">
                   <div className="relative h-20 w-40">
                     <Image
                       src="/logo.png"
@@ -155,7 +153,7 @@ export function Navbar() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsOpen(false)}
-                    className="rounded-full bg-gray-100 hover:bg-gray-200"
+                    className="rounded-full bg-gray-100 active:scale-90 transition-transform"
                   >
                     <X size={24} strokeWidth={2.5} />
                   </Button>
@@ -167,7 +165,7 @@ export function Navbar() {
                     <button
                       key={link.name}
                       onClick={() => scrollToSection(link.href)}
-                      className="text-3xl font-bold text-gray-900 text-left tracking-tight"
+                      className="text-3xl font-bold text-gray-900 text-left tracking-tight active:opacity-60 active:translate-x-1 transition-all"
                     >
                       {link.name}
                     </button>
@@ -183,7 +181,7 @@ export function Navbar() {
                           <Button
                             variant="outline"
                             size="lg"
-                            className="w-full rounded-2xl text-xl font-bold border-2 h-16 hover:bg-gray-50"
+                            className="w-full rounded-2xl text-xl font-bold border-2 h-16 active:scale-[0.98] transition-all"
                             onClick={() => setIsOpen(false)}
                           >
                             Log In
@@ -192,7 +190,7 @@ export function Navbar() {
                         <SignUpButton mode="modal">
                           <Button
                             size="lg"
-                            className="w-full rounded-2xl text-xl font-bold bg-gray-900 text-white h-16 shadow-xl hover:bg-black"
+                            className="w-full rounded-2xl text-xl font-bold bg-gray-900 text-white h-16 shadow-xl active:scale-[0.98] transition-all"
                             onClick={() => setIsOpen(false)}
                           >
                             Get Started Free
@@ -203,7 +201,7 @@ export function Navbar() {
                       <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                         <Button
                           size="lg"
-                          className="w-full text-xl font-bold bg-gray-900 text-white rounded-2xl h-16 shadow-xl"
+                          className="w-full text-xl font-bold bg-gray-900 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all"
                         >
                           Go to Dashboard
                         </Button>

@@ -17,13 +17,13 @@ import { cn } from "@/lib/utils";
 // --- NAVIGATION CONFIG ---
 const PRIMARY_LINKS = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-  { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
-  { name: "Milestones", href: "/dashboard/milestones", icon: FileText },
+  { name: "Projects", href: "/projects", icon: FolderKanban },
+  { name: "Milestones", href: "/milestones", icon: FileText },
 ];
 
 const SECONDARY_LINKS = [
-  { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Billing", href: "/billing", icon: CreditCard },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export const Sidebar = ({ className }: { className?: string }) => {

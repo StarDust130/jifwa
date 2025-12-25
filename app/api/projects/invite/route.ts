@@ -4,61 +4,56 @@ import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
 import { Resend } from "resend";
 
-// Initialize Resend safely
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Auth Check
     const { userId } = auth();
-    if (!userId) {
+    if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
-    // 2. Parse Body
-    const { projectId, email } = await req.json();
+    const { projectId, email, senderName } = await req.json();
 
-    if (!projectId || !email) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-    }
+    console.log(`🔹 INVITE REQUEST: Project ${projectId} -> Email ${email}`);
 
-    // 3. DB Connection
     await connectDB();
+
+    // 1. Find Project
     const project = await Project.findById(projectId);
-
-    if (!project) {
+    if (!project)
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
 
-    // 4. Update Database
-    project.vendorEmail = email;
-    await project.save();
+    // 2. HARD UPDATE (Use updateOne to bypass any document versioning issues)
+    await Project.updateOne(
+      { _id: projectId },
+      { $set: { vendorEmail: email } }
+    );
 
-    // 5. Send Email
-    // Note: On Resend Free Tier, you can only send to your own registered email.
+    console.log("✅ DB UPDATE SUCCESS: Email saved.");
+
+    // 3. Send Email
     try {
       if (process.env.RESEND_API_KEY) {
         const appUrl =
           process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
         await resend.emails.send({
           from: "Jifwa <onboarding@resend.dev>",
           to: email,
-          subject: `Project Invite: ${project.contractName}`,
-          html: `<p>You have been invited to collaborate on <strong>${project.contractName}</strong>.</p>
-                 <p><a href="${appUrl}/projects/${projectId}">Click here to view the workspace</a></p>`,
+          subject: `${senderName || "A Client"} invited you to '${
+            project.contractName
+          }'`,
+          html: `<p>You have been invited to execute <strong>${project.contractName}</strong>.</p>
+                 <a href="${appUrl}/projects/${projectId}"><strong>Click here to Join Workspace</strong></a>`,
         });
+        console.log("✅ EMAIL SENT");
       }
-    } catch (emailError) {
-      console.error("Email failed (Vendor still saved):", emailError);
+    } catch (e) {
+      console.error("⚠️ EMAIL FAILED:", e);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, email });
   } catch (error) {
-    console.error("Invite Error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("🔥 SERVER ERROR:", error);
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
   }
 }

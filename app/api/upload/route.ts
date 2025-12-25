@@ -1,117 +1,114 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
-import PDFParser from "pdf2json"; // 👈 New, stable library
+import PDFParser from "pdf2json";
 
-// Force Node.js runtime (Critical for file processing)
+// Force Node.js runtime
 export const runtime = "nodejs";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-// ------------------------------------------------------------------
-// 🚀 THE API ROUTE
-// ------------------------------------------------------------------
 export async function POST(req: NextRequest) {
   try {
-    console.log("📥 [API] Starting upload...");
+    console.log("📥 [API] Upload started...");
 
-    // 1️⃣ Validate File
+    // 1️⃣ File Validation
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
-
     if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
-    // 2️⃣ Convert to Buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-    // 3️⃣ Parse PDF (Using the helper function below)
+    // 2️⃣ Parse Text
     let text = "";
     try {
       text = await parsePDFBuffer(buffer);
-      // Limit to 50,000 chars (approx 15-20 pages) for speed
-      text = text.slice(0, 50000);
-    } catch (e: any) {
-      console.error("❌ PDF Parse Error:", e);
-      return NextResponse.json(
-        { error: "Failed to read PDF" },
-        { status: 500 }
-      );
+      // Clean up text to save tokens and reduce noise
+      text = text.replace(/\s+/g, " ").slice(0, 45000);
+    } catch (e) {
+      return NextResponse.json({ error: "PDF Parse Error" }, { status: 500 });
     }
 
-    console.log("📄 [API] PDF Read Success. Length:", text.length);
-
-    // 4️⃣ Send to AI (Groq)
+    // 3️⃣ AI Extraction & Validation
     const completion = await groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: `You are a Contract Extraction Engine. Extract data into strictly valid JSON.
+          content: `You are a Senior Project Manager & Contract Analyst.
           
+          TASK:
+          1. Verify if the text is a valid contract/SOW/Agreement.
+          2. If valid, break it down into execution milestones.
+
           JSON SCHEMA:
           {
-            "summary": "2 sentence summary of what is being delivered",
-            "parties": ["Client Name", "Vendor Name"],
-            "total_value": "Total cost if found, else 'Not specified'",
-            "milestones": [
-              {
-                "title": "Short title of deliverable",
-                "due_date": "YYYY-MM-DD or 'Not specified'",
-                "criteria": "Exact acceptance criteria"
-              }
-            ]
+            "is_contract": boolean,
+            "error_message": "If false, explain why (short). If true, null.",
+            "data": { 
+               "contractName": "Generate a short, professional title (e.g. 'Project Gemini - Backend Overhaul')",
+               "summary": "2 sentence executive summary of the scope.",
+               "parties": ["Client Name", "Vendor Name"],
+               "total_value": "Total value (e.g. '$50,000') or 'TBD'",
+               "effective_date": "YYYY-MM-DD or 'TBD'",
+               "milestones": [
+                  { 
+                    "title": "Action-oriented title (e.g. 'Phase 1: Infrastructure Setup')", 
+                    "criteria": "Specific acceptance criteria or deliverables.", 
+                    "due_date": "YYYY-MM-DD or 'TBD'", 
+                    "status": "pending" 
+                  }
+               ]
+            }
           }
-          
-          RULES:
-          1. OUTPUT ONLY JSON. No markdown.
-          2. Infer missing dates from context.`,
+
+          CRITICAL RULES:
+          - You MUST extract at least 3 milestones. If not explicitly listed, INFER them based on the scope (e.g., 'Planning', 'Development', 'Deployment').
+          - Format currency professionally ($10,000.00).
+          - Output STRICT JSON.`,
         },
         {
           role: "user",
-          content: `Contract Text:\n\n${text}`,
+          content: `Document Text:\n\n${text}`,
         },
       ],
       model: "llama-3.3-70b-versatile",
       temperature: 0.1,
-      stream: false,
       response_format: { type: "json_object" },
     });
 
-    const rawContent = completion.choices[0]?.message?.content;
-    if (!rawContent) throw new Error("AI returned empty response");
+    const raw = completion.choices[0]?.message?.content;
+    if (!raw) throw new Error("Empty AI response");
 
-    const projectData = JSON.parse(rawContent);
+    const result = JSON.parse(raw);
 
-    console.log("✅ [API] Success:", projectData.summary?.substring(0, 30));
+    // 🛑 Reject Invalid Files
+    if (result.is_contract === false) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error_message || "Not a valid contract.",
+        },
+        { status: 200 }
+      );
+    }
 
-    return NextResponse.json({ success: true, data: projectData });
+    // ✅ Return Data
+    return NextResponse.json({ success: true, data: result.data });
   } catch (error: any) {
-    console.error("🔥 Critical Error:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("🔥 API Error:", error);
+    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
   }
 }
 
-// ------------------------------------------------------------------
-// 🛠️ HELPER: Wrap pdf2json in a clean Promise
-// ------------------------------------------------------------------
+// Helper
 function parsePDFBuffer(buffer: Buffer): Promise<string> {
   return new Promise((resolve, reject) => {
-    // ❌ OLD: new PDFParser(null, 1);
-    // ✅ NEW: Change '1' to 'true' to fix TypeScript error
-    const pdfParser = new PDFParser(null, true); 
-
-    pdfParser.on("pdfParser_dataError", (errData: any) => {
-      reject(new Error(errData.parserError));
-    });
-
-    pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
-      // pdf2json returns text in URL-encoded format sometimes, strictly clean it here
-      const rawText = pdfParser.getRawTextContent(); 
-      resolve(rawText);
-    });
-
-    // Start parsing
+    const pdfParser = new PDFParser(null, true);
+    pdfParser.on("pdfParser_dataError", (e: any) => reject(e));
+    pdfParser.on("pdfParser_dataReady", () =>
+      resolve(pdfParser.getRawTextContent())
+    );
     pdfParser.parseBuffer(buffer);
   });
 }

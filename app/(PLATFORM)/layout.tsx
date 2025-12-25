@@ -3,6 +3,7 @@ import React from "react";
 import { useUser } from "@clerk/nextjs";
 import Sidebar from "@/components/pages/plaform/Sidebar";
 import { Header } from "@/components/pages/plaform/Header";
+import BackToTop from "@/components/elements/BackToTop";
 
 
 export default function PlatformLayout({
@@ -27,8 +28,9 @@ export default function PlatformLayout({
         <Header />
 
         {/* PAGE RENDER */}
-        <div className="flex-1 p-6 sm:p-8 overflow-y-auto w-full max-w-[1400px] mx-auto">
+        <div className="flex-1 overflow-y-auto w-full max-w-[1400px] mx-auto">
           {children}
+          <BackToTop />
         </div>
       </main>
     </div>

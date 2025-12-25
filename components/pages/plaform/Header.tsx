@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
@@ -83,12 +87,50 @@ export const Header = () => {
       {/* RIGHT */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" className="hidden sm:flex">
-          <HelpCircle size={18} />
+          <HoverCard>
+            <HoverCardTrigger>
+              <HelpCircle size={18} />
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 p-4">
+              <div className="space-y-4">
+          <h4 className="text-sm font-semibold">Help & Support</h4>
+          <div className="space-y-2">
+            <div>
+              <h5 className="text-xs font-medium text-gray-700">Quick Start Guide</h5>
+              <p className="text-xs text-gray-600">Get started with Jifwa in minutes.</p>
+              <Link href="/help/quick-start" className="text-xs text-blue-600 hover:underline">Learn more</Link>
+            </div>
+            <div>
+              <h5 className="text-xs font-medium text-gray-700">FAQ</h5>
+              <p className="text-xs text-gray-600">Find answers to common questions.</p>
+              <Link href="/help/faq" className="text-xs text-blue-600 hover:underline">View FAQ</Link>
+            </div>
+            <div>
+              <h5 className="text-xs font-medium text-gray-700">Contact Support</h5>
+              <p className="text-xs text-gray-600">Need help? We're here for you.</p>
+              <Link href="/help/contact" className="text-xs text-blue-600 hover:underline">Get in touch</Link>
+            </div>
+          </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         </Button>
 
         <Button variant="ghost" size="icon" className="hidden sm:flex relative">
-          <Bell size={18} />
-          <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+          <HoverCard>
+            <HoverCardTrigger>
+              <Bell size={18} />
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 p-4">
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">Notifications</h4>
+                <div className="text-sm text-gray-600">
+                  No new notifications.
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+         
         </Button>
 
         <div className="hidden lg:flex flex-col items-end">

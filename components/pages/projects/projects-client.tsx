@@ -47,7 +47,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
   };
 
   return (
-    <div className="w-full  font-sans  min-h-screen">
+    <div className="w-full font-sans min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto mb-6">
         <h1 className="text-xl font-bold tracking-tight text-zinc-900">
           Projects

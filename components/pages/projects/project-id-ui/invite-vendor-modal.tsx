@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +11,15 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Mail, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-export function InviteVendorModal({ projectId }: { projectId: string }) {
+export function InviteVendorModal({
+  projectId,
+  onSuccess,
+}: {
+  projectId: string;
+  onSuccess?: (email: string) => void;
+}) {
+  const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<
@@ -27,14 +34,25 @@ export function InviteVendorModal({ projectId }: { projectId: string }) {
       const res = await fetch("/api/projects/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, email }),
+        body: JSON.stringify({
+          projectId,
+          email,
+          senderName: user?.fullName || "A Client",
+        }),
       });
 
       if (!res.ok) throw new Error("Failed");
+
       setStatus("success");
 
-      // Close automatically after 2s
-      setTimeout(() => setOpen(false), 2000);
+      // 👇 UPDATE PARENT INSTANTLY (No Refresh)
+      if (onSuccess) onSuccess(email);
+
+      setTimeout(() => {
+        setOpen(false);
+        setStatus("idle");
+        setEmail("");
+      }, 1500);
     } catch (e) {
       setStatus("error");
     }
@@ -43,21 +61,23 @@ export function InviteVendorModal({ projectId }: { projectId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-zinc-900 border border-zinc-900 rounded-md hover:bg-zinc-800 transition-all shadow-sm">
+        <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-zinc-900 border border-zinc-900 rounded-md hover:bg-zinc-800 transition-all shadow-sm w-full justify-center">
           <Mail size={12} /> Invite Vendor
-        </Button>
+        </button>
       </DialogTrigger>
 
       <DialogContent className="max-w-sm rounded-xl p-6">
         {status === "success" ? (
-          <div className="flex flex-col items-center justify-center py-6 text-center space-y-3">
-            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-2">
+          <div className="flex flex-col items-center justify-center py-4 text-center space-y-3 animate-in fade-in zoom-in duration-300">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-1">
               <CheckCircle2 size={24} />
             </div>
-            <h3 className="text-sm font-bold text-zinc-900">Invite Sent!</h3>
-            <p className="text-xs text-zinc-500">
-              We've emailed {email} with a secure link.
-            </p>
+            <div>
+              <h3 className="text-sm font-bold text-zinc-900">Invite Sent!</h3>
+              <p className="text-xs text-zinc-500 mt-1">
+                We've emailed {email}.
+              </p>
+            </div>
           </div>
         ) : (
           <>
@@ -66,19 +86,19 @@ export function InviteVendorModal({ projectId }: { projectId: string }) {
                 Invite Collaborator
               </DialogTitle>
               <DialogDescription className="text-xs text-zinc-500">
-                They will receive an email to access this project workspace.
+                Send an invite to your vendor or freelancer.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 mt-2">
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
                   Vendor Email
                 </label>
                 <input
                   type="email"
-                  placeholder="vendor@company.com"
-                  className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-all"
+                  placeholder="name@company.com"
+                  className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-400 transition-all placeholder:text-zinc-300"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -96,12 +116,6 @@ export function InviteVendorModal({ projectId }: { projectId: string }) {
                 )}
                 {status !== "sending" && <ArrowRight size={14} />}
               </button>
-
-              {status === "error" && (
-                <p className="text-xs text-red-600 text-center font-medium">
-                  Failed to send invite. Try again.
-                </p>
-              )}
             </div>
           </>
         )}

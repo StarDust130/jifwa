@@ -2,107 +2,101 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { Menu, Bell, HelpCircle, ChevronRight, Slash } from "lucide-react";
+import { Menu, Bell, HelpCircle, Slash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./Sidebar";
 
 export const Header = () => {
   const { user } = useUser();
+  const pathname = usePathname();
+
+  // Split path and ignore empty
+  const segments = pathname.split("/").filter(Boolean);
+
+  // Build breadcrumb paths progressively
+  const breadcrumbs = segments.map((segment, index) => {
+    const href = "/" + segments.slice(0, index + 1).join("/");
+    const label = segment
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    return { href, label };
+  });
 
   return (
-    <header className="h-16 sticky top-0 z-40 px-6 flex items-center justify-between bg-white/80 backdrop-blur-xl border-b border-gray-200/60 transition-all">
-      {/* --- LEFT: Mobile Menu & Breadcrumbs --- */}
+    <header className="h-16 sticky top-0 z-40 px-6 flex items-center justify-between bg-white/80 backdrop-blur-xl border-b border-gray-200/60">
+      {/* LEFT */}
       <div className="flex items-center gap-4">
-        {/* Mobile Trigger */}
+        {/* Mobile Menu */}
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="-ml-2 text-gray-500 hover:bg-gray-100/50 hover:text-gray-900"
-              >
+              <Button variant="ghost" size="icon">
                 <Menu size={20} />
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="p-0 w-72 border-r border-gray-200 bg-[#FAFAFA] [&>button]:hidden"
-            >
+            <SheetContent side="left" className="p-0 w-72">
               <Sidebar />
             </SheetContent>
           </Sheet>
         </div>
 
-        {/* Mobile Logo */}
-        <div className="relative h-7 w-24 opacity-100 md:hidden">
-          <Image
-            src="/logo.png"
-            alt="Jifwa"
-            fill
-            className="object-contain object-left"
-            priority
-          />
-        </div>
-
-        {/* Desktop Breadcrumbs (Fills the empty space) */}
+        {/* Desktop Breadcrumbs */}
         <div className="hidden md:flex items-center text-sm font-medium text-gray-500">
-          <span className="hover:text-gray-900 cursor-pointer transition-colors">
+          {/* Root */}
+          <Link
+            href="/dashboard"
+            className="px-2 py-1 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-all"
+          >
             Jifwa
-          </span>
-          <Slash size={12} className="mx-2 text-gray-300" />
-          <span className="text-gray-900 bg-gray-100/50 px-2 py-0.5 rounded-md border border-gray-200/50">
-            Dashboard
-          </span>
+          </Link>
+
+          {breadcrumbs.map((crumb, index) => {
+            const isLast = index === breadcrumbs.length - 1;
+
+            return (
+              <React.Fragment key={crumb.href}>
+                <Slash size={12} className="mx-2 text-gray-300" />
+
+                {isLast ? (
+                  <span className="px-2 py-1 rounded-md bg-gray-100 text-gray-900 border border-gray-200">
+                    {crumb.label}
+                  </span>
+                ) : (
+                  <Link
+                    href={crumb.href}
+                    className="px-2 py-1 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-all"
+                  >
+                    {crumb.label}
+                  </Link>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 
-      {/* --- RIGHT: Actions & User --- */}
-      <div className="flex items-center gap-2 sm:gap-4 ml-auto">
-        {/* Help & Notifications (Subtle) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-gray-400 hover:text-gray-900 hover:bg-gray-50 hidden sm:flex"
-        >
+      {/* RIGHT */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" className="hidden sm:flex">
           <HelpCircle size={18} />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-gray-400 hover:text-gray-900 hover:bg-gray-50 relative hidden sm:flex"
-        >
+
+        <Button variant="ghost" size="icon" className="hidden sm:flex relative">
           <Bell size={18} />
-          <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full ring-2 ring-white"></span>
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full" />
         </Button>
 
-        {/* Divider */}
-        <div className="h-6 w-px bg-gray-200 hidden sm:block mx-1"></div>
-
-        {/* User Profile + Name Tag */}
-        <div className="flex items-center gap-3 pl-1">
-          {/* Optional: Show Name on Desktop for "Pro" feel */}
-          <div className="hidden lg:flex flex-col items-end">
-            <span className="text-xs font-bold text-gray-900 leading-none">
-              {user?.firstName || "User"}
-            </span>
-            <span className="text-[10px] text-gray-500 leading-none mt-1">
-              Pro Plan
-            </span>
-          </div>
-
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: {
-                avatarBox:
-                  "w-9 h-9 rounded-full ring-2 ring-gray-100 hover:ring-gray-200 transition-all shadow-sm cursor-pointer",
-              },
-            }}
-          />
+        <div className="hidden lg:flex flex-col items-end">
+          <span className="text-xs font-bold">{user?.firstName || "User"}</span>
+          <span className="text-[10px] text-gray-500">Free Plan</span>
         </div>
+
+        <UserButton afterSignOutUrl="/" />
       </div>
     </header>
   );

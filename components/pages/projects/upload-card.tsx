@@ -1,10 +1,18 @@
-import { useState, useRef } from "react";
-import { FileText, Plus, CheckCircle2, Loader2, Zap } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import {
+  FileText,
+  Plus,
+  CheckCircle2,
+  Loader2,
+  Zap,
+  AlertCircle,
+  RefreshCw,
+  X,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-// Define the shape of the Project object for type safety
 export interface ProjectData {
   _id: string;
   contractName: string;
@@ -14,19 +22,62 @@ export interface ProjectData {
 }
 
 interface UploadCardProps {
-  // Fix: Strictly type the callback
   onUploadSuccess: (project: ProjectData) => void;
 }
+
+// 🔄 Dynamic Loading Messages (The "Living" Loader)
+const LOADING_STEPS = [
+  "Establishing secure connection...",
+  "Scanning document structure...",
+  "Verifying legal terminology...",
+  "Extracting parties & dates...",
+  "Analyzing key clauses...",
+  "Finalizing contract summary...",
+];
+
+// Message to show if it takes too long (> 8 seconds)
+const LONG_WAIT_MESSAGE = "Taking longer than usual (large file detected)...";
 
 export function UploadCard({ onUploadSuccess }: UploadCardProps) {
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Status states
   const [status, setStatus] = useState<
-    "idle" | "uploading" | "success" | "error"
+    "idle" | "uploading" | "analyzing" | "success" | "error"
   >("idle");
+  const [errorTitle, setErrorTitle] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [fileName, setFileName] = useState("");
   const [progress, setProgress] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Dynamic Text State
+  const [loadingText, setLoadingText] = useState(LOADING_STEPS[0]);
+
+  // 🔄 CYCLE LOADING TEXT LOGIC
+  useEffect(() => {
+    let stepIndex = 0;
+    let interval: NodeJS.Timeout;
+
+    if (status === "analyzing") {
+      // Reset text
+      setLoadingText(LOADING_STEPS[0]);
+
+      interval = setInterval(() => {
+        stepIndex++;
+        if (stepIndex < LOADING_STEPS.length) {
+          setLoadingText(LOADING_STEPS[stepIndex]);
+        } else {
+          // If we run out of messages, show the "Long Wait" message
+          setLoadingText(LONG_WAIT_MESSAGE);
+        }
+      }, 1500); // Change text every 1.5s
+    }
+
+    return () => clearInterval(interval);
+  }, [status]);
 
   const handleFile = async (file: File) => {
     if (!file) return;
@@ -35,31 +86,52 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
       return;
     }
 
-    // 1. Init UI
+    // 1. Reset UI
     setStatus("uploading");
     setFileName(file.name);
-    setProgress(0);
+    setProgress(10);
+    setErrorTitle("");
+    setErrorMessage("");
+    setLoadingText("Uploading securely...");
 
-    // Visual progress (Fast & Smooth)
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => (prev >= 90 ? 90 : prev + 15));
+    // 2. Stage 1: Upload (Fast to 60%)
+    const uploadInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 60) return 60;
+        return prev + 10;
+      });
     }, 150);
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      // 2. Upload to API
+      // 3. Send to API
       const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
+
+      clearInterval(uploadInterval);
+
+      // Stage 2: AI Analysis (Switch to "Living" Loader)
+      setStatus("analyzing");
+      setProgress(65);
+
+      const analysisInterval = setInterval(() => {
+        // Slow steady crawl so it never looks fully stuck
+        setProgress((prev) => (prev >= 98 ? 98 : prev + 0.5));
+      }, 200);
+
       const uploadJson = await uploadRes.json();
+      clearInterval(analysisInterval);
 
-      if (!uploadJson.success)
-        throw new Error(uploadJson.error || "Upload failed");
+      // 🛑 HANDLE API ERRORS
+      if (!uploadRes.ok || !uploadJson.success) {
+        throw new Error(uploadJson.error || "Validation failed");
+      }
 
-      // 3. Create Project Record
+      // 4. Create Project
       const createRes = await fetch("/api/projects/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,39 +141,51 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
       const createJson = await createRes.json();
 
       if (createJson.success) {
-        clearInterval(progressInterval);
         setProgress(100);
         setStatus("success");
+        setLoadingText("Redirecting...");
 
-        // 4. Notify Parent Component (Instant UI Update)
+        router.prefetch(`/projects/${createJson.projectId}`);
+
         onUploadSuccess({
-          _id: createJson.projectId || Math.random().toString(),
+          _id: createJson.projectId,
           contractName: file.name,
           createdAt: new Date(),
           size: (file.size / 1024 / 1024).toFixed(2) + " MB",
           status: "processing",
         });
 
-        // 5. Fast Redirect (0.8s wait - Snappy)
         setTimeout(() => {
           router.push(`/projects/${createJson.projectId}`);
-        }, 800);
+        }, 500);
       }
-    } catch (err) {
-      clearInterval(progressInterval);
+    } catch (err: any) {
       console.error(err);
+      let title = "Document Rejected";
+      let msg = err.message || "Upload failed";
+
+      if (
+        msg.toLowerCase().includes("resume") ||
+        msg.toLowerCase().includes("not a contract")
+      ) {
+        title = "Not a Contract";
+      }
+
+      setErrorTitle(title);
+      setErrorMessage(msg);
       setStatus("error");
-      alert("Upload failed. Check your connection.");
     }
   };
 
   return (
     <div
       className={cn(
-        "relative h-full w-full rounded-3xl transition-all duration-300 overflow-hidden flex flex-col items-center justify-center text-center bg-white shadow-sm",
+        "relative h-full w-full rounded-3xl transition-all duration-300 overflow-hidden flex flex-col items-center justify-center text-center bg-white shadow-sm border",
         dragActive
-          ? "border-2 border-zinc-900 bg-zinc-50"
-          : "border border-zinc-200 hover:border-zinc-300 hover:shadow-md"
+          ? "border-zinc-900 bg-zinc-50"
+          : "border-zinc-200 hover:border-zinc-300",
+        // Soft Orange Border for Error
+        status === "error" && "border-amber-200 bg-amber-50/20"
       )}
       onDragOver={(e) => {
         e.preventDefault();
@@ -122,14 +206,17 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
         onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
       />
 
-      {/* BLINKING DOTS BACKGROUND (Fixed) */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none animate-pulse"
-        style={{
-          backgroundImage: "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
+      {/* Background Pattern */}
+      {status !== "error" && (
+        <div
+          className="absolute inset-0 z-0 opacity-[0.4] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+      )}
 
       <AnimatePresence mode="wait">
         {status === "idle" ? (
@@ -146,14 +233,12 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
             >
               <FileText size={48} className="text-red-600" strokeWidth={1.5} />
             </motion.div>
-
             <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-2">
               Upload Contract
             </h3>
             <p className="text-zinc-500 text-sm mb-8 max-w-xs mx-auto font-medium">
               Drag and drop your PDF here to start analysis.
             </p>
-
             <button
               onClick={() => inputRef.current?.click()}
               className="group relative px-6 py-3 rounded-xl bg-zinc-900 text-white font-semibold text-sm hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center gap-2"
@@ -162,13 +247,40 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
               <span>Select Document</span>
             </button>
           </motion.div>
+        ) : status === "error" ? (
+          // === ⚠️ SOFTER ERROR STATE ===
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative z-10 w-full max-w-md p-8 flex flex-col items-center"
+          >
+            <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-amber-100">
+              <AlertCircle size={36} className="text-amber-500" />
+            </div>
+
+            <h3 className="text-xl font-bold text-zinc-900 mb-2 tracking-tight">
+              {errorTitle}
+            </h3>
+
+            <p className="text-zinc-500 font-medium text-sm mb-8 text-center px-6 leading-relaxed">
+              {errorMessage}
+            </p>
+
+            <button
+              onClick={() => setStatus("idle")}
+              className="px-6 py-2.5 rounded-xl bg-white border border-zinc-200 text-zinc-700 font-semibold text-sm hover:bg-zinc-50 transition-all shadow-sm flex items-center gap-2"
+            >
+              <RefreshCw size={14} />
+              Try Another File
+            </button>
+          </motion.div>
         ) : (
-          // === LOADING / SUCCESS STATE ===
+          // === 🚀 DYNAMIC "LIVING" LOADER ===
           <motion.div
             key="active"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
             className="relative z-10 w-full max-w-sm p-6 bg-white rounded-2xl border border-zinc-100 shadow-2xl"
           >
             <div className="flex items-center gap-4 mb-5">
@@ -186,37 +298,63 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
                   <Loader2 size={24} className="animate-spin" />
                 )}
               </div>
+
               <div className="flex-1 min-w-0 text-left">
                 <h4 className="text-sm font-bold text-zinc-900 truncate">
                   {fileName}
                 </h4>
-                <p className="text-xs text-zinc-500 font-medium mt-0.5 flex items-center gap-1">
-                  {status === "success" ? (
-                    <span className="text-green-600 flex items-center gap-1">
-                      Redirecting <Zap size={10} fill="currentColor" />
-                    </span>
-                  ) : (
-                    "Encryption active..."
-                  )}
-                </p>
+
+                {/* 🔄 ANIMATED TEXT CONTAINER */}
+                <div className="h-5 overflow-hidden relative w-full mt-1">
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={loadingText} // Changing key triggers animation
+                      initial={{ y: 15, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -15, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={cn(
+                        "text-xs font-bold uppercase tracking-wide absolute w-full truncate",
+                        status === "success"
+                          ? "text-green-600"
+                          : status === "analyzing"
+                          ? "text-indigo-600"
+                          : "text-zinc-400"
+                      )}
+                    >
+                      {status === "success" ? (
+                        <span className="flex items-center gap-1">
+                          Complete <Zap size={10} fill="currentColor" />
+                        </span>
+                      ) : (
+                        loadingText
+                      )}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
-            {/* Premium Progress Bar */}
+            {/* Progress Bar */}
             <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden relative">
               <motion.div
                 className={cn(
-                  "h-full rounded-full transition-colors duration-300",
-                  status === "success" ? "bg-green-500" : "bg-zinc-900"
+                  "h-full rounded-full transition-all duration-500 ease-out",
+                  status === "success"
+                    ? "bg-green-500"
+                    : status === "analyzing"
+                    ? "bg-indigo-500"
+                    : "bg-zinc-900"
                 )}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
-                transition={{ ease: "linear" }}
               />
             </div>
 
             <div className="mt-2 flex justify-between text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
-              <span>{status === "success" ? "Done" : "Uploading"}</span>
+              <span>
+                {status === "analyzing" ? "AI Processing" : "Encryption"}
+              </span>
               <span>{Math.round(progress)}%</span>
             </div>
           </motion.div>

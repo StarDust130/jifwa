@@ -8,48 +8,47 @@ const PricingSection = () => {
 
   const plans = [
     {
-      name: "Starter",
-      price: billing === "monthly" ? "0" : "0",
-      description: "Perfect for testing the extraction engine.",
+      name: "Free", //
+      price: "0", //
+      description: "Best for product testing and evaluation", //
       features: [
-        "3 PDF uploads per month",
-        "Basic AI Extraction",
-        "Manual Sync",
-        "Community Support",
+        "1 Active Project", //
+        "Basic AI parsing", //
+        "Core execution workflow", //
       ],
-      missing: ["API Access", "Team Seats", "SOC2 Report"],
+      // Inferred missing features based on higher tiers
+      missing: ["Custom branding", "Priority email support", "Team access"], 
       cta: "Start Free",
       style: "basic",
     },
     {
-      name: "Growth",
-      price: billing === "monthly" ? "49" : "39",
-      description: "For startups automating legal ops.",
+      name: "Starter", //
+      // Monthly: ₹499. Yearly (20% off): ~₹399
+      price: billing === "monthly" ? "499" : "399", 
+      description: "Best for freelancers & individual professionals", //
       features: [
-        "50 PDF uploads per month",
-        "Advanced AI (Tables & Penalties)",
-        "Real-time Linear/Jira Sync",
-        "Priority Email Support",
-        "3 Team Seats",
+        "Up to 5 Active Projects", //
+        "Custom branding (your logo)", //
+        "Priority email support", //
       ],
-      missing: ["SSO", "Custom MSA"],
+      // Missing features from Agency/Enterprise tiers
+      missing: ["Unlimited projects", "Team access", "Private AI mode"], 
       cta: "Get Started",
-      style: "titanium", // Special Dark Mode Style
+      style: "titanium", // Dark Mode Style for the middle tier
       tag: "Most Popular",
     },
     {
-      name: "Scale",
-      price: billing === "monthly" ? "199" : "159",
-      description: "Compliance & security for teams.",
+      name: "Agency", //
+      // Monthly: ₹1,499. Yearly (20% off): ~₹1,199
+      price: billing === "monthly" ? "1,499" : "1,199", 
+      description: "Built for agencies managing multiple clients", //
       features: [
-        "Unlimited Uploads",
-        "API Access (Webhooks)",
-        "SSO / SAML",
-        "Dedicated Account Manager",
-        "SOC2 Type II Report",
-        "Custom Contracts",
+        "Unlimited projects", //
+        "Team access (up to 3 members)", //
+        "Optimized for service delivery teams", //
       ],
-      missing: [],
+      // Missing features from Enterprise tier
+      missing: ["Private AI mode", "Single Sign-On (SSO)"], 
       cta: "Contact Sales",
       style: "basic",
     },
@@ -57,7 +56,7 @@ const PricingSection = () => {
 
   return (
     <section id="pricing" className="relative w-full py-24 bg-white text-gray-900 overflow-hidden font-sans">
-      {/* Background Decor (Matching Hero) */}
+      {/* Background Decor */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50 -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-blue-50/40 to-yellow-50/40 blur-[100px] -z-10 rounded-full" />
 
@@ -74,10 +73,11 @@ const PricingSection = () => {
             Simple Pricing
           </motion.div>
 
+          {/* Updated Headline */}
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6">
-            Pay for valid <br />
+            Simple, Transparent Pricing. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900">
-              extractions only.
+              Upgrade as You Grow.
             </span>
           </h2>
 
@@ -163,7 +163,7 @@ const PricingSection = () => {
 
                 <div className="flex items-baseline gap-1 mb-8">
                   <span className="text-4xl font-extrabold tracking-tight">
-                    ${plan.price}
+                    ₹{plan.price}
                   </span>
                   <span
                     className={`text-sm font-medium ${
@@ -244,11 +244,11 @@ const PricingSection = () => {
           ))}
         </div>
 
-        {/* Footer Note */}
+        {/* Footer Note - Updated to Razorpay message */}
         <div className="mt-16 text-center">
           <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
             <ShieldCheck size={14} className="text-green-600" />
-            All plans include 14-day money back guarantee. No questions asked.
+            All payments are securely processed via Razorpay.
           </p>
         </div>
       </div>

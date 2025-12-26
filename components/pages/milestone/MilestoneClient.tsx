@@ -25,16 +25,41 @@ import {
 import { formatFullDate } from "@/lib/helper";
 
 
+import { motion } from "framer-motion";
+
 const RichPdfIcon = () => (
-  <div className="relative w-9 h-11 shrink-0 group">
-    <div className="absolute inset-0 bg-white border-2 border-zinc-100 rounded-lg shadow-sm group-hover:border-red-100 transition-colors" />
-    <div className="absolute top-0 left-0 w-full h-[16px] bg-red-600 rounded-t-md flex items-center justify-center">
-      <span className="text-[7px] font-black text-white tracking-widest leading-none">
+  <motion.div
+    whileHover={{ y: -4, scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="relative w-10 h-12 shrink-0 group cursor-pointer"
+  >
+    {/* Main Paper Body */}
+    <div className="absolute inset-0 bg-white border-2 border-zinc-100 rounded-lg shadow-sm group-hover:shadow-md group-hover:border-red-200 transition-all duration-300" />
+
+    {/* Red PDF Header Tag */}
+    <div className="absolute top-0 left-0 w-full h-[18px] bg-red-600 rounded-t-md flex items-center justify-center shadow-[inset_0_-2px_4px_rgba(0,0,0,0.1)]">
+      <span className="text-[8px] font-black text-white tracking-[0.15em] leading-none drop-shadow-sm">
         PDF
       </span>
     </div>
-    <div className="absolute top-0 right-0 w-3 h-3 bg-zinc-50 rounded-bl-md border-b border-l border-zinc-200" />
-  </div>
+
+    {/* Decorative Lines (Simulating Content) */}
+    <div className="absolute top-[26px] left-2.5 right-2.5 space-y-1.5">
+      <div className="h-[1.5px] w-full bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
+      <div className="h-[1.5px] w-3/4 bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
+      <div className="h-[1.5px] w-5/6 bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
+    </div>
+
+    {/* Interactive Page Fold */}
+    <motion.div
+      initial={{ width: 10, height: 10 }}
+      whileHover={{ width: 14, height: 14 }}
+      className="absolute top-0 right-0 bg-zinc-50 rounded-bl-lg border-b border-l border-zinc-200 shadow-[2px_2px_5px_rgba(0,0,0,0.05)] transition-all duration-300"
+    />
+
+    {/* Subtle Inner Glow on Hover */}
+    <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 bg-gradient-to-br from-red-500/5 to-transparent transition-opacity duration-500" />
+  </motion.div>
 );
 
 const StatusBadge = ({ status }: { status: string }) => (

@@ -160,8 +160,8 @@ export default function BillingPageClient({
       <div className="max-w-6xl mx-auto px-4 md:px-6 pt-8 md:pt-12">
         {/* --- 1. COMPACT HEADER --- */}
         <div className="text-center mb-10 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-50 border border-zinc-200 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-            <ShieldCheck size={12} className="text-emerald-500" /> Secure
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-50 border border-zinc-200 text-[10px] font-bold uppercase tracking-widest ">
+            <ShieldCheck size={12} className="text-emerald-600" /> Secure
             Encrypted Checkout
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic">

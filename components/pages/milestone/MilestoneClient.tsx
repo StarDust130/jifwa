@@ -9,7 +9,8 @@ import {
   ChevronRight,
   Filter,
   Plus,
-  FolderOpen, // Changed icon for empty state
+  Briefcase, // Changed icon for Vendor Empty State
+  FolderOpen,
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,7 @@ import {
 import { formatFullDate } from "@/lib/helper";
 import { motion } from "framer-motion";
 
-// --- CUSTOM ICONS & BADGES ---
+// ... [Keep RichPdfIcon and StatusBadge components exactly as they were] ...
 
 const RichPdfIcon = () => (
   <motion.div
@@ -71,14 +72,12 @@ const StatusBadge = ({ status }: { status: string }) => (
   </div>
 );
 
-// --- MAIN COMPONENT ---
-
 export default function MilestoneClient({
   initialProjects = [],
   currentUser,
 }: {
   initialProjects: any[];
-  currentUser: any; // ✅ Fixed Type Error
+  currentUser: any;
 }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
@@ -106,7 +105,7 @@ export default function MilestoneClient({
     currentPage * itemsPerPage
   );
 
-  // 🎨 COOL EMPTY STATE UI
+  // --- EMPTY STATE VIEW ---
   if (initialProjects.length === 0) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-6">
@@ -116,40 +115,50 @@ export default function MilestoneClient({
           className="max-w-md w-full text-center"
         >
           <div className="relative group mx-auto mb-8 w-32 h-32">
-            {/* Animated Background Blob */}
             <div className="absolute inset-0 bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-full blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
             <div className="relative w-full h-full bg-white rounded-[2rem] border-2 border-dashed border-zinc-200 flex items-center justify-center shadow-sm group-hover:border-zinc-300 group-hover:scale-105 transition-all duration-300">
-              <FolderOpen
-                className="text-zinc-300 group-hover:text-zinc-900 transition-colors duration-300"
-                size={48}
-                strokeWidth={1.5}
-              />
+              {/* Icon changes based on Role */}
+              {isVendor ? (
+                <Briefcase
+                  className="text-zinc-300 group-hover:text-zinc-900 transition-colors"
+                  size={48}
+                  strokeWidth={1.5}
+                />
+              ) : (
+                <FolderOpen
+                  className="text-zinc-300 group-hover:text-zinc-900 transition-colors"
+                  size={48}
+                  strokeWidth={1.5}
+                />
+              )}
             </div>
           </div>
 
           <div className="space-y-3 mb-8">
             <h2 className="text-2xl font-black tracking-tight text-zinc-900">
-              {isVendor ? "No Work Assigned Yet" : "No Contracts Found"}
+              {isVendor ? "No Jobs Assigned" : "No Contracts Found"}
             </h2>
             <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-xs mx-auto">
               {isVendor
-                ? "You haven't been invited to any contracts. Check back later or view all projects."
+                ? "You have no active contracts. When a client invites you, the job will appear here for you to execute."
                 : "Your workspace is clean. Create a new contract to start tracking milestones."}
             </p>
           </div>
 
-          {/* 👇 THE REQUESTED BUTTON */}
-          <button
-            onClick={() => router.push("/projects")}
-            className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
-          >
-            <span>Go to Projects</span>
-            <ArrowRight
-              size={16}
-              className="text-zinc-400 group-hover:text-white group-hover:translate-x-1 transition-all"
-            />
-          </button>
+          {/* Only Client sees "Create" button */}
+          {!isVendor && (
+            <button
+              onClick={() => router.push("/projects")}
+              className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              <span>Create First Contract</span>
+              <ArrowRight
+                size={16}
+                className="text-zinc-400 group-hover:text-white group-hover:translate-x-1 transition-all"
+              />
+            </button>
+          )}
         </motion.div>
       </div>
     );
@@ -165,11 +174,17 @@ export default function MilestoneClient({
               <div className="flex items-center gap-4">
                 <div>
                   <h1 className="text-xl font-black tracking-tighter uppercase leading-none">
-                    {filtered.length === 1 ? "Milestone" : "Milestones"}
+                    {/* Dynamic Title based on Role */}
+                    {isVendor
+                      ? "Assigned Jobs"
+                      : filtered.length === 1
+                      ? "My Contract"
+                      : "My Contracts"}
                   </h1>
                   <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 animate-pulse rounded-full bg-emerald-500" />
-                    {filtered.length} Total Contract
+                    {filtered.length}{" "}
+                    {isVendor ? "Active Assignment" : "Total Contract"}
                     {filtered.length !== 1 ? "s" : ""}
                   </p>
                 </div>
@@ -193,7 +208,9 @@ export default function MilestoneClient({
                 />
                 <input
                   type="text"
-                  placeholder="Search Contracts..."
+                  placeholder={
+                    isVendor ? "Search jobs..." : "Search contracts..."
+                  }
                   className="w-full bg-zinc-50 border border-zinc-200 pl-10 pr-4 py-3 rounded-2xl text-xs font-medium focus:bg-white focus:ring-4 focus:ring-zinc-900/5 transition-all outline-none"
                   value={searchTerm}
                   onChange={(e) => {
@@ -203,6 +220,7 @@ export default function MilestoneClient({
                 />
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
+                {/* Filters ... */}
                 <button
                   onClick={() =>
                     setStatusFilter(statusFilter === "active" ? null : "active")
@@ -238,7 +256,9 @@ export default function MilestoneClient({
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-zinc-50/50 text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-b border-zinc-100">
-                  <th className="px-8 py-6">Contract Name</th>
+                  <th className="px-8 py-6">
+                    {isVendor ? "Job Name" : "Contract Name"}
+                  </th>
                   <th className="px-8 py-6">Timeline</th>
                   <th className="px-8 py-6">Status</th>
                   <th className="px-8 py-6 text-right">Value</th>
@@ -331,7 +351,7 @@ export default function MilestoneClient({
             })}
           </div>
 
-          {/* PAGINATION */}
+          {/* PAGINATION (Kept same as before) */}
           {totalPages > 1 && (
             <div className="py-6 border-t border-zinc-100 px-6">
               <Pagination>

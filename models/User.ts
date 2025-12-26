@@ -1,23 +1,33 @@
-// models/User.ts
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const UserSchema = new Schema(
+export interface IUser extends Document {
+  clerkId: string;
+  email: string;
+  name?: string;
+  photo?: string;
+  // 👇 THIS WAS LIKELY MISSING OR UNDEFINED
+  currentRole: "client" | "vendor";
+  plan?: string;
+}
+
+const UserSchema = new Schema<IUser>(
   {
-    clerkId: { type: String, required: true, unique: true },
+    clerkId: { type: String, required: true, unique: true, index: true },
     email: { type: String, required: true },
-    plan: {
-      type: String,
-      enum: ["free", "starter", "agency"],
-      default: "free",
-    }, // Required for PDF Plans [cite: 91]
-    activeProjects: { type: Number, default: 0 }, // Tracks project limits [cite: 98]
+    name: { type: String },
+    photo: { type: String },
+    // 👇 ADD THIS FIELD DEFINITION
     currentRole: {
       type: String,
       enum: ["client", "vendor"],
       default: "client",
-    }, // Role toggle [cite: 163, 166]
+    },
+    plan: { type: String, default: "free" },
   },
   { timestamps: true }
 );
 
-export default models.User || model("User", UserSchema);
+export const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+
+export default User;

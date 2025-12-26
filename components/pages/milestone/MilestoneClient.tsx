@@ -114,7 +114,7 @@ export default function MilestoneClient({
   // --- EMPTY STATE VIEW ---
   if (initialProjects.length === 0) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-6">
+      <div className="min-h-screen  flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="w-20 h-20 bg-zinc-100 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 shadow-inner">
             <FolderPlus className="text-zinc-400" size={32} />
@@ -141,10 +141,10 @@ export default function MilestoneClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-zinc-900 w-full overflow-x-hidden">
+    <div className="min-h-screen  w-full overflow-x-hidden">
       {/* 🏗️ SaaS Header */}
       <header className=" bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 w-full">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-4">
+        <div className="max-w-[1400px] mx-auto px-4  py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -154,7 +154,6 @@ export default function MilestoneClient({
                   </h1>
                   <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 animate-pulse rounded-full bg-emerald-500" />
-                    
                     {filtered.length} Total Contract
                     {filtered.length !== 1 ? "s" : ""}
                   </p>
@@ -176,7 +175,7 @@ export default function MilestoneClient({
                 />
                 <input
                   type="text"
-                  placeholder="Search ledger..."
+                  placeholder="Search Contracts..."
                   className="w-full bg-zinc-50 border border-zinc-200 pl-10 pr-4 py-3 rounded-2xl text-xs font-medium focus:bg-white focus:ring-4 focus:ring-zinc-900/5 transition-all outline-none"
                   value={searchTerm}
                   onChange={(e) => {

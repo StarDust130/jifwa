@@ -53,28 +53,27 @@ export function DeleteProjectDialog({
             <AlertTriangle size={20} className="text-red-600" />
           </div>
           <AlertDialogTitle className="text-zinc-900">
-            Delete this project?
+            Delete Project?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-zinc-500 text-xs">
-            This action cannot be undone. This will permanently delete the
-            contract, milestones, and all vendor data.
+          <AlertDialogDescription className="text-zinc-500 text-sm">
+            This will remove the project, including contracts, milestones, and vendor data. You can restore it later if needed.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel className="text-xs font-semibold rounded-lg border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 h-9">
+          <AlertDialogCancel className="text-sm font-medium rounded-lg border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 h-10">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg h-9 shadow-sm flex items-center gap-2 border border-red-700"
+            className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg h-10 shadow-sm flex items-center gap-2 border border-red-700"
           >
             {isDeleting ? (
-              <Loader2 size={12} className="animate-spin" />
+              <Loader2 size={14} className="animate-spin" />
             ) : (
-              <Trash2 size={12} />
+              <Trash2 size={14} />
             )}
-            {isDeleting ? "Deleting..." : "Delete Permanently"}
+            {isDeleting ? "Deleting..." : "Delete Project"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -25,7 +25,7 @@ export function ProjectHeader({
         {/* --- Left: Breadcrumb & Title --- */}
         <div className="flex items-center gap-3">
           <Link
-            href="/projects"
+            href="/milestones"
             className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
           >
             <ArrowLeft size={16} />

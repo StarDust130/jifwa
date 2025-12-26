@@ -19,7 +19,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
   useEffect(() => {
     async function fetchRecentProjects() {
       try {
-        const res = await fetch("/api/projects"); // Connects to your existing API
+        const res = await fetch("/api/milestones"); // Connects to your existing API
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
           setProjects(json.data);

@@ -19,11 +19,16 @@ import {
   LogOut,
   Loader2,
   UserCircle,
+  ChevronDown,
+  Circle,
+  CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { toggleUserRole } from "@/app/actions/user";
+import { getVendorSidebarData } from "@/app/actions/sidebar";
 
 export default function Sidebar({
   initialRole = "client",
@@ -37,34 +42,48 @@ export default function Sidebar({
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
 
+  // Vendor State
+  const [vendorTasks, setVendorTasks] = useState<any[]>([]);
+  const [isMilestonesOpen, setIsMilestonesOpen] = useState(true);
+
   useEffect(() => {
     setCurrentRole(initialRole);
+    if (initialRole === "vendor") {
+      fetchVendorTasks();
+    }
   }, [initialRole]);
 
-  // --- LOGIC: SWITCH ROLE ---
+  const fetchVendorTasks = async () => {
+    const tasks = await getVendorSidebarData();
+    setVendorTasks(tasks);
+  };
+
   const handleRoleSwitch = async () => {
     if (isSwitching) return;
     setIsSwitching(true);
 
     try {
       const result = await toggleUserRole();
-
       if (result.success && result.role) {
         setCurrentRole(result.role);
         setIsSwitcherOpen(false);
-        if (result.role === "vendor" && pathname.includes("/billing")) {
-          router.push("/dashboard");
+
+        if (result.role === "vendor") {
+          if (pathname.includes("/billing")) router.push("/dashboard");
+          fetchVendorTasks();
         }
+
         router.refresh();
       }
     } catch (e) {
-      console.error("Action error:", e);
+      console.error(e);
     } finally {
       setIsSwitching(false);
     }
   };
 
-  const navLinks = [
+  // --- MENU CONFIG ---
+  let navLinks = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
     { name: "Projects", href: "/projects", icon: FolderKanban },
     { name: "Milestones", href: "/milestones", icon: FileText },
@@ -80,6 +99,8 @@ export default function Sidebar({
       href: "/billing",
       icon: CreditCard,
     });
+  } else {
+    navLinks = navLinks.filter((link) => link.name !== "Projects");
   }
 
   // --- NAV ITEM COMPONENT ---
@@ -87,121 +108,285 @@ export default function Sidebar({
     const isActive =
       pathname === link.href ||
       (link.href !== "/dashboard" && pathname.startsWith(link.href));
+    const hasDropdown =
+      currentRole === "vendor" &&
+      link.name === "Milestones" &&
+      vendorTasks.length > 0;
+
     return (
-      <Link
-        href={link.href}
-        className={cn(
-          "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative",
-          isActive
-            ? "bg-zinc-100 text-zinc-900 shadow-sm border border-zinc-200/60" // "Dark White" Active State
-            : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
-        )}
-      >
-        {/* ICON ANIMATION: Pops when you hover ANYWHERE on the link */}
-        <div
+      <div className="mb-1">
+        <Link
+          href={link.href}
           className={cn(
-            "transition-all duration-300 ease-out",
-            "group-hover:scale-110 group-hover:-rotate-3 group-hover:text-zinc-900", // Animation triggers on group hover
-            isActive ? "text-zinc-900" : "text-zinc-400"
+            "group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+            isActive
+              ? "bg-zinc-900 text-white shadow-lg shadow-zinc-900/20 ring-1 ring-black/5"
+              : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
           )}
         >
-          <link.icon size={18} strokeWidth={2} />
-        </div>
+          {/* Active Gradient Shine */}
+          {isActive && (
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20 pointer-events-none" />
+          )}
 
-        <span>{link.name}</span>
-      </Link>
+          <div className="flex items-center gap-3 relative z-10">
+            <div
+              className={cn(
+                "transition-all duration-300 ease-spring",
+                "group-hover:scale-110 group-hover:-rotate-6",
+                isActive
+                  ? "text-white"
+                  : "text-zinc-400 group-hover:text-zinc-900"
+              )}
+            >
+              <link.icon size={18} strokeWidth={2} />
+            </div>
+            <span>{link.name}</span>
+          </div>
+
+          {hasDropdown && (
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsMilestonesOpen(!isMilestonesOpen);
+              }}
+              className="p-1 -mr-1 rounded-md hover:bg-white/10 text-current transition-colors cursor-pointer z-20"
+            >
+              <ChevronDown
+                size={14}
+                className={cn(
+                  "transition-transform duration-300",
+                  isMilestonesOpen && "rotate-180"
+                )}
+              />
+            </div>
+          )}
+        </Link>
+
+        {/* --- TREE VIEW TASKS --- */}
+        <AnimatePresence>
+          {hasDropdown && isMilestonesOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="ml-[21px] pl-4 border-l border-zinc-100 pt-2 pb-2 space-y-1">
+                <p className="px-2 py-1 text-[9px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1">
+                  <Sparkles size={8} className="text-amber-400" /> Priority
+                </p>
+                {vendorTasks.map((task, i) => (
+                  <Link
+                    key={i}
+                    href={`/projects/${task.projectId}`}
+                    className="group/item flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-zinc-50 transition-colors"
+                  >
+                    <div
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full ring-2 ring-white shadow-sm",
+                        task.status === "in_review"
+                          ? "bg-amber-400"
+                          : "bg-emerald-400"
+                      )}
+                    />
+                    <span className="text-xs font-medium text-zinc-500 group-hover/item:text-zinc-900 truncate max-w-[140px]">
+                      {task.title}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     );
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64 shadow-[2px_0_20px_-10px_rgba(0,0,0,0.03)]">
-      {/* 1. LOGO HEADER (Fixed: Big Image, No Text) */}
-      <Link href="/dashboard">
-        <div className="h-20 flex items-center px-6">
-          <div className="relative w-32 h-16">
-        <Image
-          src="/logo.png"
-          alt="Jifwa"
-          fill
-          className="object-contain object-left"
-          priority
-        />
-          </div>
+    <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64 shadow-[2px_0_40px_-20px_rgba(0,0,0,0.05)]">
+      {/* 1. LOGO */}
+      <div className="h-20 flex items-center px-6 mb-2">
+        <div className="relative w-32 h-10">
+          <Image
+            src="/logo.png"
+            alt="Jifwa"
+            fill
+            className="object-contain object-left"
+            priority
+          />
         </div>
-      </Link>
+      </div>
 
-      {/* 2. ROLE SWITCHER */}
-      <div className="px-4 mb-6 relative z-20">
-        <button
+      {/* 2. SUPER COOL ROLE SWITCHER */}
+      <div className="px-4 mb-6 relative z-30">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setIsSwitcherOpen(!isSwitcherOpen)}
-          className="w-full flex items-center justify-between p-2 rounded-xl border border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm transition-all group active:scale-[0.98]"
+          className="w-full flex items-center justify-between p-2 rounded-xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50 hover:to-white hover:shadow-md transition-all group"
         >
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                "w-9 h-9 rounded-lg flex items-center justify-center text-white shadow-sm transition-colors",
-                currentRole === "client" ? "bg-zinc-900" : "bg-emerald-600"
+                "w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-md transition-all duration-500",
+                currentRole === "client"
+                  ? "bg-zinc-900 group-hover:rotate-3"
+                  : "bg-emerald-600 group-hover:-rotate-3"
               )}
             >
               {currentRole === "client" ? (
-                <Briefcase size={16} />
+                <Briefcase size={18} />
               ) : (
-                <Box size={16} />
+                <Box size={18} />
               )}
             </div>
             <div className="text-left">
-              <p className="text-xs font-bold text-zinc-900 capitalize leading-tight">
-                {currentRole} View
+              <p className="text-xs font-bold text-zinc-900 capitalize leading-tight group-hover:text-blue-600 transition-colors">
+                {currentRole}
               </p>
               <p className="text-[10px] text-zinc-500 font-medium">
-                {currentRole === "client" ? "Manage" : "Execute"}
+                {currentRole === "client" ? "Organization" : "Workspace"}
               </p>
             </div>
           </div>
           <ChevronsUpDown
             size={14}
-            className="text-zinc-400 group-hover:text-zinc-600 transition-transform"
+            className="text-zinc-400 group-hover:text-zinc-600"
           />
-        </button>
+        </motion.button>
 
         <AnimatePresence>
           {isSwitcherOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 5, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 5, scale: 0.98 }}
-              transition={{ duration: 0.1 }}
-              className="absolute top-full left-4 right-4 mt-2 bg-white border border-zinc-200 rounded-xl shadow-xl z-50 p-1 ring-1 ring-black/5"
-            >
-              <button
-                disabled={isSwitching}
-                onClick={handleRoleSwitch}
-                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-zinc-50 transition-colors text-left group"
+            <>
+              {/* Backdrop Closure */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsSwitcherOpen(false)}
+              />
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 10,
+                  scale: 0.95,
+                  filter: "blur(4px)",
+                }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(4px)" }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="absolute top-full left-2 right-2 mt-2 bg-white/90 backdrop-blur-xl border border-zinc-200/80 rounded-2xl shadow-2xl shadow-zinc-900/20 z-50 p-2 ring-1 ring-black/5"
               >
-                <div
-                  className={cn(
-                    "w-7 h-7 rounded-md flex items-center justify-center border transition-colors",
-                    currentRole === "client"
-                      ? "bg-emerald-50 border-emerald-100 text-emerald-600"
-                      : "bg-zinc-50 border-zinc-200 text-zinc-600"
-                  )}
-                >
-                  {currentRole === "client" ? (
-                    <UserCircle size={14} />
-                  ) : (
-                    <Briefcase size={14} />
-                  )}
+                <div className="px-2 py-2 mb-1">
+                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                    Switch Context
+                  </p>
                 </div>
-                <div className="flex-1">
-                  <span className="text-xs font-bold text-zinc-700 block group-hover:text-zinc-900">
-                    Switch to {currentRole === "client" ? "Vendor" : "Client"}
-                  </span>
+
+                <div className="space-y-1">
+                  {/* CLIENT OPTION */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() =>
+                      currentRole !== "client" && handleRoleSwitch()
+                    }
+                    disabled={isSwitching}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-2.5 rounded-xl transition-all border relative overflow-hidden",
+                      currentRole === "client"
+                        ? "bg-zinc-900 border-zinc-900 text-white shadow-md"
+                        : "bg-white border-transparent hover:bg-zinc-50 text-zinc-600"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center",
+                        currentRole === "client"
+                          ? "bg-white/20 text-white"
+                          : "bg-zinc-100 text-zinc-500"
+                      )}
+                    >
+                      <Briefcase size={16} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <span className="text-xs font-bold block">
+                        Client View
+                      </span>
+                      <span
+                        className={cn(
+                          "text-[10px]",
+                          currentRole === "client"
+                            ? "text-zinc-400"
+                            : "text-zinc-400"
+                        )}
+                      >
+                        Manage Projects
+                      </span>
+                    </div>
+                    {currentRole === "client" && (
+                      <CheckCircle2 size={16} className="text-emerald-400" />
+                    )}
+                  </motion.button>
+
+                  {/* VENDOR OPTION */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() =>
+                      currentRole !== "vendor" && handleRoleSwitch()
+                    }
+                    disabled={isSwitching}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-2.5 rounded-xl transition-all border relative overflow-hidden",
+                      currentRole === "vendor"
+                        ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
+                        : "bg-white border-transparent hover:bg-zinc-50 text-zinc-600"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center",
+                        currentRole === "vendor"
+                          ? "bg-white/20 text-white"
+                          : "bg-emerald-50 text-emerald-600"
+                      )}
+                    >
+                      <Box size={16} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <span className="text-xs font-bold block">
+                        Vendor View
+                      </span>
+                      <span
+                        className={cn(
+                          "text-[10px]",
+                          currentRole === "vendor"
+                            ? "text-emerald-100"
+                            : "text-zinc-400"
+                        )}
+                      >
+                        Execute Work
+                      </span>
+                    </div>
+                    {currentRole === "vendor" && (
+                      <CheckCircle2 size={16} className="text-white" />
+                    )}
+
+                    {/* Loading Spinner */}
+                    {isSwitching && currentRole !== "vendor" && (
+                      <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center">
+                        <Loader2
+                          size={16}
+                          className="animate-spin text-zinc-900"
+                        />
+                      </div>
+                    )}
+                  </motion.button>
                 </div>
-                {isSwitching && (
-                  <Loader2 size={12} className="animate-spin text-zinc-400" />
-                )}
-              </button>
-            </motion.div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>
@@ -254,7 +439,7 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* 5. FOOTER (Clean Hover) */}
+      {/* 5. FOOTER */}
       <div className="p-4 mt-auto border-t border-zinc-100 bg-zinc-50/30">
         <div className="grid grid-cols-2 gap-3 mb-3">
           <Link
@@ -268,7 +453,7 @@ export default function Sidebar({
             <span className="text-[10px] font-bold">Docs</span>
           </Link>
           <Link
-            href="/help"
+            href="/support"
             className="group flex flex-col items-center justify-center p-3 rounded-xl bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
           >
             <LifeBuoy

@@ -9,10 +9,10 @@ import {
   ChevronRight,
   Filter,
   Plus,
-  FolderPlus,
+  FolderOpen, // Changed icon for empty state
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 import {
   Pagination,
   PaginationContent,
@@ -22,9 +22,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { formatFullDate } from "@/lib/helper";
-
-
 import { motion } from "framer-motion";
+
+// --- CUSTOM ICONS & BADGES ---
 
 const RichPdfIcon = () => (
   <motion.div
@@ -32,32 +32,21 @@ const RichPdfIcon = () => (
     whileTap={{ scale: 0.95 }}
     className="relative w-10 h-12 shrink-0 group cursor-pointer"
   >
-    {/* Main Paper Body */}
     <div className="absolute inset-0 bg-white border-2 border-zinc-100 rounded-lg shadow-sm group-hover:shadow-md group-hover:border-red-200 transition-all duration-300" />
-
-    {/* Red PDF Header Tag */}
     <div className="absolute top-0 left-0 w-full h-[18px] bg-red-600 rounded-t-md flex items-center justify-center shadow-[inset_0_-2px_4px_rgba(0,0,0,0.1)]">
       <span className="text-[8px] font-black text-white tracking-[0.15em] leading-none drop-shadow-sm">
         PDF
       </span>
     </div>
-
-    {/* Decorative Lines (Simulating Content) */}
     <div className="absolute top-[26px] left-2.5 right-2.5 space-y-1.5">
       <div className="h-[1.5px] w-full bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
       <div className="h-[1.5px] w-3/4 bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
-      <div className="h-[1.5px] w-5/6 bg-zinc-100 rounded-full group-hover:bg-zinc-200 transition-colors" />
     </div>
-
-    {/* Interactive Page Fold */}
     <motion.div
       initial={{ width: 10, height: 10 }}
       whileHover={{ width: 14, height: 14 }}
       className="absolute top-0 right-0 bg-zinc-50 rounded-bl-lg border-b border-l border-zinc-200 shadow-[2px_2px_5px_rgba(0,0,0,0.05)] transition-all duration-300"
     />
-
-    {/* Subtle Inner Glow on Hover */}
-    <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 bg-gradient-to-br from-red-500/5 to-transparent transition-opacity duration-500" />
   </motion.div>
 );
 
@@ -82,16 +71,22 @@ const StatusBadge = ({ status }: { status: string }) => (
   </div>
 );
 
+// --- MAIN COMPONENT ---
+
 export default function MilestoneClient({
   initialProjects = [],
+  currentUser,
 }: {
   initialProjects: any[];
+  currentUser: any; // ✅ Fixed Type Error
 }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+
+  const isVendor = currentUser?.currentRole === "vendor";
 
   const filtered = useMemo(
     () =>
@@ -111,40 +106,60 @@ export default function MilestoneClient({
     currentPage * itemsPerPage
   );
 
-  // --- EMPTY STATE VIEW ---
+  // 🎨 COOL EMPTY STATE UI
   if (initialProjects.length === 0) {
     return (
-      <div className="min-h-screen  flex items-center justify-center p-6">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="w-20 h-20 bg-zinc-100 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 shadow-inner">
-            <FolderPlus className="text-zinc-400" size={32} />
+      <div className="min-h-[80vh] flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full text-center"
+        >
+          <div className="relative group mx-auto mb-8 w-32 h-32">
+            {/* Animated Background Blob */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-zinc-100 to-zinc-50 rounded-full blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+
+            <div className="relative w-full h-full bg-white rounded-[2rem] border-2 border-dashed border-zinc-200 flex items-center justify-center shadow-sm group-hover:border-zinc-300 group-hover:scale-105 transition-all duration-300">
+              <FolderOpen
+                className="text-zinc-300 group-hover:text-zinc-900 transition-colors duration-300"
+                size={48}
+                strokeWidth={1.5}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black tracking-tight text-zinc-900 uppercase">
-              No Contracts Yet
+
+          <div className="space-y-3 mb-8">
+            <h2 className="text-2xl font-black tracking-tight text-zinc-900">
+              {isVendor ? "No Work Assigned Yet" : "No Contracts Found"}
             </h2>
-            <p className="text-zinc-500 text-sm font-medium px-4">
-              Your contract ledger is empty. Create your first project to start
-              tracking milestones and payments.
+            <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-xs mx-auto">
+              {isVendor
+                ? "You haven't been invited to any contracts. Check back later or view all projects."
+                : "Your workspace is clean. Create a new contract to start tracking milestones."}
             </p>
           </div>
+
+          {/* 👇 THE REQUESTED BUTTON */}
           <button
             onClick={() => router.push("/projects")}
-            className="inline-flex items-center gap-2 bg-zinc-950 text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:scale-[1.02] transition-all active:scale-95"
+            className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
           >
-            <Plus size={18} />
-            Create First Contract
+            <span>Go to Projects</span>
+            <ArrowRight
+              size={16}
+              className="text-zinc-400 group-hover:text-white group-hover:translate-x-1 transition-all"
+            />
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen  w-full overflow-x-hidden">
-      {/* 🏗️ SaaS Header */}
-      <header className=" bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 w-full">
-        <div className="max-w-[1400px] mx-auto px-4  py-4">
+    <div className="min-h-screen w-full overflow-x-hidden">
+      {/* HEADER */}
+      <header className="bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 w-full sticky top-0 z-30">
+        <div className="max-w-[1400px] mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -159,12 +174,15 @@ export default function MilestoneClient({
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => router.push("/projects")}
-                className="md:hidden p-2.5 bg-zinc-950 text-white rounded-xl shadow-lg"
-              >
-                <Plus size={20} />
-              </button>
+
+              {!isVendor && (
+                <button
+                  onClick={() => router.push("/projects")}
+                  className="md:hidden p-2.5 bg-zinc-950 text-white rounded-xl shadow-lg"
+                >
+                  <Plus size={20} />
+                </button>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -196,25 +214,26 @@ export default function MilestoneClient({
                       : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                   )}
                 >
-                  <Filter size={14} />
-                  Active
+                  <Filter size={14} /> Active
                 </button>
-                <button
-                  onClick={() => router.push("/projects")}
-                  className="hidden md:flex items-center gap-2 bg-zinc-950 text-white px-5 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-tighter shadow-xl shadow-zinc-200 hover:bg-zinc-800 transition-all"
-                >
-                  <Plus size={16} />
-                  New Contract
-                </button>
+
+                {!isVendor && (
+                  <button
+                    onClick={() => router.push("/projects")}
+                    className="hidden md:flex items-center gap-2 bg-zinc-950 text-white px-5 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-tighter shadow-xl shadow-zinc-200 hover:bg-zinc-800 transition-all"
+                  >
+                    <Plus size={16} /> New Contract
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </header>
 
+      {/* TABLE CONTENT */}
       <main className="max-w-[1400px] mx-auto px-4 py-6">
         <div className="bg-white border border-zinc-200 rounded-[2.5rem] shadow-sm overflow-hidden">
-          {/* PC Table */}
           <div className="hidden md:block">
             <table className="w-full text-left">
               <thead>
@@ -231,7 +250,7 @@ export default function MilestoneClient({
                   return (
                     <tr
                       key={p._id}
-                      onClick={() => router.push(`/milestones/${p._id}`)}
+                      onClick={() => router.push(`/projects/${p._id}`)}
                       className="hover:bg-zinc-50/50 cursor-pointer transition-all group"
                     >
                       <td className="px-8 py-6">
@@ -271,14 +290,14 @@ export default function MilestoneClient({
             </table>
           </div>
 
-          {/* Mobile List View */}
+          {/* MOBILE LIST */}
           <div className="md:hidden divide-y divide-zinc-100">
             {currentItems.map((p) => {
               const { date, time } = formatFullDate(p.createdAt);
               return (
                 <div
                   key={p._id}
-                  onClick={() => router.push(`/milestones/${p._id}`)}
+                  onClick={() => router.push(`/projects/${p._id}`)}
                   className="p-5 active:bg-zinc-50 flex items-start gap-4"
                 >
                   <div className="shrink-0">
@@ -312,7 +331,7 @@ export default function MilestoneClient({
             })}
           </div>
 
-          {/* Shadcn Pagination */}
+          {/* PAGINATION */}
           {totalPages > 1 && (
             <div className="py-6 border-t border-zinc-100 px-6">
               <Pagination>

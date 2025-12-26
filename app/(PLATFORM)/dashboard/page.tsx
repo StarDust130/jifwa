@@ -1,178 +1,111 @@
-"use client";
+import React from "react";
+import Link from "next/link";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Plus, Briefcase, FileCheck, Clock, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { getDashboardProjects } from "@/app/actions/projects";
 
-// Define the shape of our data (TypeScript interface)
-interface Milestone {
-  title: string;
-  due_date: string;
-  criteria: string;
-}
+export default async function Dashboard() {
+  const data = await getDashboardProjects();
 
-interface ContractData {
-  summary: string;
-  parties: string[];
-  total_value: string;
-  milestones: Milestone[];
-}
+  if (data.error) {
+    return <div className="p-8 text-red-500">Error loading dashboard.</div>;
+  }
 
-export default function Dashboard() {
-  const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<ContractData | null>(null);
-  const [error, setError] = useState("");
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) return;
-
-    setLoading(true);
-    setError("");
-    setData(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const json = await res.json();
-
-      if (!json.success) {
-        throw new Error(json.error || "Something went wrong");
-      }
-
-      setData(json.data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { role, projects } = data;
+  const isClient = role === "client";
 
   return (
-    <div className="max-w-4xl mx-auto p-10">
-      <h1 className="text-3xl font-bold mb-2">🚀 New Project Execution</h1>
-      <p className="text-gray-500 mb-8">
-        Upload a contract to generate milestones instantly.
-      </p>
+    <div className="p-8 max-w-7xl mx-auto space-y-8">
+      {/* HEADER */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-zinc-900">
+            {isClient ? "Client Dashboard" : "Vendor Workspace"}
+          </h1>
+          <p className="text-zinc-500 mt-1">
+            {isClient
+              ? "Manage your contracts and track execution."
+              : "Track assigned tasks and submit proofs."}
+          </p>
+        </div>
 
-      {/* --- UPLOAD SECTION --- */}
-      <div className="bg-white p-8 rounded-xl border border-dashed border-gray-300 text-center hover:border-blue-500 transition-colors">
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={handleFileChange}
-          className="block w-full text-sm text-slate-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-blue-50 file:text-blue-700
-            hover:file:bg-blue-100
-          "
-        />
-
-        {file && (
-          <button
-            onClick={handleUpload}
-            disabled={loading}
-            className={`mt-4 px-6 py-2 rounded-lg text-white font-medium transition-all ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-black hover:bg-gray-800"
-            }`}
+        {isClient && (
+          <Link
+            href="/projects/new"
+            className="flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-800 transition-all"
           >
-            {loading ? "Analyzing Contract (5s)..." : "Generate Milestones"}
-          </button>
+            <Plus size={16} /> New Contract
+          </Link>
         )}
       </div>
 
-      {/* --- ERROR MESSAGE --- */}
-      {error && (
-        <div className="mt-6 p-4 bg-red-50 text-red-600 rounded-lg border border-red-200">
-          ❌ {error}
+      {/* EMPTY STATE */}
+      {projects.length === 0 && (
+        <div className="text-center py-20 bg-zinc-50 rounded-3xl border border-dashed border-zinc-300">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-zinc-100">
+            <Briefcase className="text-zinc-400" />
+          </div>
+          <h3 className="text-lg font-bold text-zinc-900">
+            No active projects
+          </h3>
+          <p className="text-zinc-500 text-sm max-w-sm mx-auto mt-2">
+            {isClient
+              ? "Upload a contract PDF to start tracking execution."
+              : "You haven't been invited to any contracts yet."}
+          </p>
         </div>
       )}
 
-      {/* --- RESULTS DASHBOARD --- */}
-      {data && (
-        <div className="mt-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {/* HEADER CARDS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="p-6 bg-blue-50 rounded-xl border border-blue-100">
-              <h3 className="text-xs font-bold text-blue-500 uppercase tracking-wider">
-                Total Value
-              </h3>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {data.total_value}
-              </p>
-            </div>
-            <div className="p-6 bg-purple-50 rounded-xl border border-purple-100">
-              <h3 className="text-xs font-bold text-purple-500 uppercase tracking-wider">
-                Parties Involved
-              </h3>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {data.parties.map((party, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 bg-white rounded border border-purple-200 text-xs font-medium text-purple-700"
-                  >
-                    {party}
-                  </span>
-                ))}
+      {/* PROJECT GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project: any) => (
+          <Link
+            key={project._id}
+            href={`/projects/${project._id}`}
+            className="group block bg-white border border-zinc-200 p-6 rounded-3xl hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/40 transition-all duration-300"
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div className="p-3 bg-zinc-50 rounded-2xl group-hover:bg-zinc-900 transition-colors">
+                <FileCheck
+                  size={20}
+                  className="text-zinc-400 group-hover:text-white transition-colors"
+                />
               </div>
+              <span
+                className={cn(
+                  "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide",
+                  project.status === "active"
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "bg-zinc-100 text-zinc-500"
+                )}
+              >
+                {project.status}
+              </span>
             </div>
-          </div>
 
-          {/* SUMMARY */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-2">📝 Executive Summary</h3>
-            <p className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-lg border">
-              {data.summary}
-            </p>
-          </div>
-
-          {/* MILESTONES TIMELINE */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">
-              📍 Execution Timeline
+            <h3 className="font-bold text-lg text-zinc-900 mb-2 truncate group-hover:text-emerald-600 transition-colors">
+              {project.contractName}
             </h3>
-            <div className="space-y-4">
-              {data.milestones.map((milestone, i) => (
-                <div
-                  key={i}
-                  className="group relative pl-8 border-l-2 border-gray-200 hover:border-blue-500 transition-colors pb-6 last:pb-0"
-                >
-                  {/* Dot */}
-                  <div className="absolute -left-[9px] top-0 w-4 h-4 bg-white border-2 border-gray-300 rounded-full group-hover:border-blue-500 group-hover:scale-110 transition-all"></div>
+            <p className="text-xs text-zinc-500 line-clamp-2 mb-6 h-8">
+              {project.summary || "No summary available."}
+            </p>
 
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-semibold text-gray-900">
-                      {milestone.title}
-                    </h4>
-                    <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">
-                      Due: {milestone.due_date}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-500 mt-1 italic">
-                    "Acceptance Criteria: {milestone.criteria}"
-                  </p>
+            <div className="flex items-center gap-4 pt-6 border-t border-zinc-100 text-xs font-medium text-zinc-500">
+              <div className="flex items-center gap-1.5">
+                <Clock size={14} />
+                <span>{new Date(project.createdAt).toLocaleDateString()}</span>
+              </div>
+              {isClient && !project.vendorEmail && (
+                <div className="flex items-center gap-1.5 text-amber-600">
+                  <AlertCircle size={14} />
+                  <span>No Vendor</span>
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        </div>
-      )}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

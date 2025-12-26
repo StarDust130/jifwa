@@ -61,9 +61,9 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans">
+    <div className="min-h-screen  font-sans">
       <ProjectHeader project={project} isClient={isClient} />
-      <main className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <main className="max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8">
           <div className="mb-8" id="execution-timeline">
             <h2 className="text-xl font-bold text-zinc-900">Execution Plan</h2>

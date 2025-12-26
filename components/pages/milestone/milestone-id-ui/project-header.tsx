@@ -60,9 +60,9 @@ export function ProjectHeader({
               align="end"
               className="w-48 bg-white border border-zinc-200 shadow-lg rounded-lg p-1"
             >
-              <DropdownMenuItem className="text-xs font-medium text-zinc-600 focus:bg-zinc-50 cursor-pointer p-2 rounded-md flex gap-2">
+              {/* <DropdownMenuItem className="text-xs font-medium text-zinc-600 focus:bg-zinc-50 cursor-pointer p-2 rounded-md flex gap-2">
                 <Download size={14} /> Download PDF
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
 
               {/* DELETE DIALOG TRIGGER */}
               <DeleteProjectDialog projectId={project._id.toString()}>

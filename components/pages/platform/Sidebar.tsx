@@ -20,8 +20,6 @@ import {
   Loader2,
   UserCircle,
   ChevronDown,
-  Circle,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -118,28 +116,23 @@ export default function Sidebar({
         <Link
           href={link.href}
           className={cn(
-            "group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden",
+            "group flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative",
             isActive
-              ? "bg-zinc-900 text-white shadow-lg shadow-zinc-900/20 ring-1 ring-black/5"
-              : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+              ? "bg-zinc-900 text-white shadow-md shadow-zinc-900/10 ring-1 ring-black/5"
+              : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
           )}
         >
-          {/* Active Gradient Shine */}
-          {isActive && (
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20 pointer-events-none" />
-          )}
-
           <div className="flex items-center gap-3 relative z-10">
             <div
               className={cn(
-                "transition-all duration-300 ease-spring",
-                "group-hover:scale-110 group-hover:-rotate-6",
+                "transition-transform duration-300 ease-out",
+                "group-hover:scale-110",
                 isActive
                   ? "text-white"
                   : "text-zinc-400 group-hover:text-zinc-900"
               )}
             >
-              <link.icon size={18} strokeWidth={2} />
+              <link.icon size={16} strokeWidth={2} />
             </div>
             <span>{link.name}</span>
           </div>
@@ -151,12 +144,12 @@ export default function Sidebar({
                 e.stopPropagation();
                 setIsMilestonesOpen(!isMilestonesOpen);
               }}
-              className="p-1 -mr-1 rounded-md hover:bg-white/10 text-current transition-colors cursor-pointer z-20"
+              className="p-0.5 -mr-1 rounded hover:bg-white/20 text-current transition-colors cursor-pointer z-20"
             >
               <ChevronDown
-                size={14}
+                size={12}
                 className={cn(
-                  "transition-transform duration-300",
+                  "transition-transform duration-200",
                   isMilestonesOpen && "rotate-180"
                 )}
               />
@@ -164,34 +157,36 @@ export default function Sidebar({
           )}
         </Link>
 
-        {/* --- TREE VIEW TASKS --- */}
+        {/* --- VENDOR TASK TREE --- */}
         <AnimatePresence>
           {hasDropdown && isMilestonesOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="overflow-hidden"
             >
-              <div className="ml-[21px] pl-4 border-l border-zinc-100 pt-2 pb-2 space-y-1">
-                <p className="px-2 py-1 text-[9px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1">
-                  <Sparkles size={8} className="text-amber-400" /> Priority
+              <div className="ml-[21px] pl-3 border-l border-zinc-100 mt-1 space-y-0.5">
+                <p className="px-2 py-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <Sparkles size={8} className="text-amber-500 fill-current" />{" "}
+                  Priority
                 </p>
                 {vendorTasks.map((task, i) => (
                   <Link
                     key={i}
                     href={`/projects/${task.projectId}`}
-                    className="group/item flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-zinc-50 transition-colors"
+                    className="group/item flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-zinc-50 transition-colors"
                   >
                     <div
                       className={cn(
-                        "w-1.5 h-1.5 rounded-full ring-2 ring-white shadow-sm",
+                        "w-1.5 h-1.5 rounded-full ring-1 ring-white shadow-sm",
                         task.status === "in_review"
                           ? "bg-amber-400"
                           : "bg-emerald-400"
                       )}
                     />
-                    <span className="text-xs font-medium text-zinc-500 group-hover/item:text-zinc-900 truncate max-w-[140px]">
+                    <span className="text-[11px] font-medium text-zinc-500 group-hover/item:text-zinc-900 truncate max-w-[130px]">
                       {task.title}
                     </span>
                   </Link>
@@ -205,49 +200,51 @@ export default function Sidebar({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64 shadow-[2px_0_40px_-20px_rgba(0,0,0,0.05)]">
+    <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
       {/* 1. LOGO */}
-      <div className="h-20 flex items-center px-6 mb-2">
-        <div className="relative w-32 h-10">
-          <Image
-            src="/logo.png"
-            alt="Jifwa"
-            fill
-            className="object-contain object-left"
-            priority
-          />
+      <Link href="/dashboard">
+        <div className="h-16 flex items-center px-5 mb-2">
+          <div className="relative w-28 h-16">
+            <Image
+              src="/logo.png"
+              alt="Jifwa"
+              fill
+              className="object-contain object-left"
+              priority
+            />
+          </div>
         </div>
-      </div>
+      </Link>
 
-      {/* 2. SUPER COOL ROLE SWITCHER */}
-      <div className="px-4 mb-6 relative z-30">
+      {/* 2. COMPACT ROLE SWITCHER */}
+      <div className="px-3 mb-6 relative z-30">
         <motion.button
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsSwitcherOpen(!isSwitcherOpen)}
-          className="w-full flex items-center justify-between p-2 rounded-xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50 hover:to-white hover:shadow-md transition-all group"
+          className="w-full flex items-center justify-between p-2 rounded-xl border border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-sm transition-all group"
         >
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-md transition-all duration-500",
+                "w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm transition-all duration-300",
                 currentRole === "client"
-                  ? "bg-zinc-900 group-hover:rotate-3"
-                  : "bg-emerald-600 group-hover:-rotate-3"
+                  ? "bg-zinc-900 group-hover:bg-black"
+                  : "bg-emerald-600 group-hover:bg-emerald-700"
               )}
             >
               {currentRole === "client" ? (
-                <Briefcase size={18} />
+                <Briefcase size={14} />
               ) : (
-                <Box size={18} />
+                <Box size={14} />
               )}
             </div>
             <div className="text-left">
-              <p className="text-xs font-bold text-zinc-900 capitalize leading-tight group-hover:text-blue-600 transition-colors">
+              <p className="text-xs font-bold text-zinc-900 capitalize leading-none mb-0.5">
                 {currentRole}
               </p>
               <p className="text-[10px] text-zinc-500 font-medium">
-                {currentRole === "client" ? "Organization" : "Workspace"}
+                {currentRole === "client" ? "Manage" : "Execute"}
               </p>
             </div>
           </div>
@@ -260,130 +257,92 @@ export default function Sidebar({
         <AnimatePresence>
           {isSwitcherOpen && (
             <>
-              {/* Backdrop Closure */}
               <div
                 className="fixed inset-0 z-40"
                 onClick={() => setIsSwitcherOpen(false)}
               />
 
               <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 10,
-                  scale: 0.95,
-                  filter: "blur(4px)",
-                }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(4px)" }}
-                transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                className="absolute top-full left-2 right-2 mt-2 bg-white/90 backdrop-blur-xl border border-zinc-200/80 rounded-2xl shadow-2xl shadow-zinc-900/20 z-50 p-2 ring-1 ring-black/5"
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                className="absolute top-full left-0 right-0 mt-2 mx-1 bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-xl shadow-2xl shadow-zinc-900/10 z-50 p-1.5 ring-1 ring-black/5"
               >
-                <div className="px-2 py-2 mb-1">
-                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
-                    Switch Context
-                  </p>
-                </div>
-
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   {/* CLIENT OPTION */}
-                  <motion.button
-                    whileHover={{ scale: 1.02, x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() =>
-                      currentRole !== "client" && handleRoleSwitch()
-                    }
+                  <button
                     disabled={isSwitching}
+                    onClick={() => {
+                      if (currentRole !== "client") handleRoleSwitch();
+                      setIsSwitcherOpen(false);
+                    }}
                     className={cn(
-                      "w-full flex items-center gap-3 p-2.5 rounded-xl transition-all border relative overflow-hidden",
+                      "w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left relative",
                       currentRole === "client"
-                        ? "bg-zinc-900 border-zinc-900 text-white shadow-md"
-                        : "bg-white border-transparent hover:bg-zinc-50 text-zinc-600"
+                        ? "bg-zinc-50"
+                        : "hover:bg-zinc-50"
                     )}
                   >
                     <div
                       className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center",
-                        currentRole === "client"
-                          ? "bg-white/20 text-white"
-                          : "bg-zinc-100 text-zinc-500"
+                        "w-7 h-7 rounded-md flex items-center justify-center text-zinc-700 border border-zinc-200 bg-white",
+                        currentRole === "client" &&
+                          "border-zinc-300 text-zinc-900"
                       )}
                     >
-                      <Briefcase size={16} />
+                      <Briefcase size={14} />
                     </div>
-                    <div className="flex-1 text-left">
-                      <span className="text-xs font-bold block">
-                        Client View
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-zinc-900 block">
+                        Client
                       </span>
-                      <span
-                        className={cn(
-                          "text-[10px]",
-                          currentRole === "client"
-                            ? "text-zinc-400"
-                            : "text-zinc-400"
-                        )}
-                      >
-                        Manage Projects
-                      </span>
+                      <span className="text-[10px] text-zinc-500">Manage</span>
                     </div>
                     {currentRole === "client" && (
-                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-zinc-900 mr-1" />
                     )}
-                  </motion.button>
+                  </button>
 
                   {/* VENDOR OPTION */}
-                  <motion.button
-                    whileHover={{ scale: 1.02, x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() =>
-                      currentRole !== "vendor" && handleRoleSwitch()
-                    }
+                  <button
                     disabled={isSwitching}
+                    onClick={() => {
+                      if (currentRole !== "vendor") handleRoleSwitch();
+                      setIsSwitcherOpen(false);
+                    }}
                     className={cn(
-                      "w-full flex items-center gap-3 p-2.5 rounded-xl transition-all border relative overflow-hidden",
+                      "w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left relative",
                       currentRole === "vendor"
-                        ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
-                        : "bg-white border-transparent hover:bg-zinc-50 text-zinc-600"
+                        ? "bg-emerald-50/50"
+                        : "hover:bg-zinc-50"
                     )}
                   >
                     <div
                       className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center",
-                        currentRole === "vendor"
-                          ? "bg-white/20 text-white"
-                          : "bg-emerald-50 text-emerald-600"
+                        "w-7 h-7 rounded-md flex items-center justify-center text-zinc-700 border border-zinc-200 bg-white",
+                        currentRole === "vendor" &&
+                          "border-emerald-200 text-emerald-600 bg-emerald-50"
                       )}
                     >
-                      <Box size={16} />
+                      <Box size={14} />
                     </div>
-                    <div className="flex-1 text-left">
-                      <span className="text-xs font-bold block">
-                        Vendor View
+                    <div className="flex-1">
+                      <span className="text-xs font-bold text-zinc-900 block">
+                        Vendor
                       </span>
-                      <span
-                        className={cn(
-                          "text-[10px]",
-                          currentRole === "vendor"
-                            ? "text-emerald-100"
-                            : "text-zinc-400"
-                        )}
-                      >
-                        Execute Work
-                      </span>
+                      <span className="text-[10px] text-zinc-500">Execute</span>
                     </div>
                     {currentRole === "vendor" && (
-                      <CheckCircle2 size={16} className="text-white" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1" />
                     )}
-
-                    {/* Loading Spinner */}
                     {isSwitching && currentRole !== "vendor" && (
-                      <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center">
-                        <Loader2
-                          size={16}
-                          className="animate-spin text-zinc-900"
-                        />
-                      </div>
+                      <Loader2
+                        size={12}
+                        className="animate-spin text-zinc-400"
+                      />
                     )}
-                  </motion.button>
+                  </button>
                 </div>
               </motion.div>
             </>
@@ -392,8 +351,8 @@ export default function Sidebar({
       </div>
 
       {/* 3. LINKS */}
-      <div className="flex-1 px-4 space-y-8 overflow-y-auto">
-        <div className="space-y-1">
+      <div className="flex-1 px-3 space-y-6 overflow-y-auto">
+        <div className="space-y-0.5">
           <p className="px-3 mb-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
             Platform
           </p>
@@ -402,7 +361,7 @@ export default function Sidebar({
           ))}
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <p className="px-3 mb-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
             Account
           </p>
@@ -414,14 +373,14 @@ export default function Sidebar({
 
       {/* 4. UPGRADE CARD (CLIENT ONLY) */}
       {currentRole === "client" && (
-        <div className="px-4 pb-4">
+        <div className="px-3 pb-4">
           <Link
             href="/billing"
-            className="group block rounded-2xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50/50 p-4 transition-all duration-300 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/50 hover:-translate-y-0.5"
+            className="group block rounded-xl border border-zinc-200 bg-gradient-to-br from-white to-zinc-50 p-3.5 transition-all duration-300 hover:border-zinc-300 hover:shadow-md hover:-translate-y-0.5"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-300">
-                <Zap size={14} className="fill-current" />
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-7 h-7 bg-zinc-900 rounded-md flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform duration-300">
+                <Zap size={12} className="fill-current" />
               </div>
               <span className="text-[9px] font-black bg-white border border-zinc-200 px-2 py-0.5 rounded-full text-zinc-900 uppercase tracking-wide">
                 Pro
@@ -431,8 +390,8 @@ export default function Sidebar({
               <p className="text-xs font-black text-zinc-900 uppercase tracking-wide">
                 Upgrade Plan
               </p>
-              <p className="text-[10px] text-zinc-500 mt-1 font-medium leading-snug">
-                Unlock AI limits & team seats
+              <p className="text-[10px] text-zinc-500 mt-0.5 font-medium leading-snug">
+                Unlock higher limits
               </p>
             </div>
           </Link>
@@ -440,32 +399,32 @@ export default function Sidebar({
       )}
 
       {/* 5. FOOTER */}
-      <div className="p-4 mt-auto border-t border-zinc-100 bg-zinc-50/30">
-        <div className="grid grid-cols-2 gap-3 mb-3">
+      <div className="p-3 mt-auto border-t border-zinc-100 bg-zinc-50/40">
+        <div className="grid grid-cols-2 gap-2 mb-2">
           <Link
             href="/docs"
-            className="group flex flex-col items-center justify-center p-3 rounded-xl bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
+            className="group flex flex-col items-center justify-center p-2 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
           >
             <BookOpen
-              size={16}
-              className="mb-1.5 text-zinc-400 group-hover:text-zinc-900 group-hover:scale-110 transition-all"
+              size={14}
+              className="mb-1 text-zinc-400 group-hover:text-zinc-900 transition-colors"
             />
-            <span className="text-[10px] font-bold">Docs</span>
+            <span className="text-[9px] font-bold">Docs</span>
           </Link>
           <Link
             href="/support"
-            className="group flex flex-col items-center justify-center p-3 rounded-xl bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
+            className="group flex flex-col items-center justify-center p-2 rounded-lg bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
           >
             <LifeBuoy
-              size={16}
-              className="mb-1.5 text-zinc-400 group-hover:text-zinc-900 group-hover:scale-110 transition-all"
+              size={14}
+              className="mb-1 text-zinc-400 group-hover:text-zinc-900 transition-colors"
             />
-            <span className="text-[10px] font-bold">Help</span>
+            <span className="text-[9px] font-bold">Help</span>
           </Link>
         </div>
 
         <SignOutButton>
-          <button className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl text-xs font-bold text-zinc-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all group">
+          <button className="w-full flex items-center justify-center gap-2 p-2 rounded-lg text-xs font-bold text-zinc-500 hover:text-red-600 hover:bg-red-50 hover:border-red-100 border border-transparent transition-all group">
             <LogOut
               size={14}
               className="group-hover:-translate-x-0.5 transition-transform"

@@ -8,9 +8,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { InviteVendorModal } from "@/components/pages/projects/project-id-ui/invite-vendor-modal";
-import { DeleteProjectDialog } from "@/components/pages/projects/project-id-ui/delete-project-dialog";
+
 import { Button } from "@/components/ui/button";
+import { InviteVendorModal } from "./invite-vendor-modal";
+import { DeleteProjectDialog } from "./delete-project-dialog";
 
 export function ProjectHeader({
   project,

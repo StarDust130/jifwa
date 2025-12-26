@@ -3,16 +3,15 @@
 import {
   Calendar,
   Check,
-  CircleDashed,
   Clock,
   Loader2,
-  ArrowRight,
   CornerDownRight,
   Play,
 } from "lucide-react";
-import { MilestoneActions } from "../milestone-actions";
+
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { MilestoneActions } from "../../projects/milestone-actions";
 
 export function ExecutionTimeline({
   milestones,

@@ -145,7 +145,7 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
         setStatus("success");
         setLoadingText("Redirecting...");
 
-        router.prefetch(`/projects/${createJson.projectId}`);
+        router.prefetch(`/milestones/${createJson.projectId}`);
 
         onUploadSuccess({
           _id: createJson.projectId,
@@ -156,7 +156,7 @@ export function UploadCard({ onUploadSuccess }: UploadCardProps) {
         });
 
         setTimeout(() => {
-          router.push(`/projects/${createJson.projectId}`);
+          router.push(`/milestones/${createJson.projectId}`);
         }, 500);
       }
     } catch (err: any) {

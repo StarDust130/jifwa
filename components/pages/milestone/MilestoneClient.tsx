@@ -22,23 +22,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { formatFullDate } from "@/lib/helper";
 
-// --- HELPERS ---
-const formatFullDate = (dateStr: string) => {
-  const d = new Date(dateStr);
-  return {
-    date: d.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    }),
-    time: d.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }),
-  };
-};
 
 const RichPdfIcon = () => (
   <div className="relative w-9 h-11 shrink-0 group">

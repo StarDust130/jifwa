@@ -1,25 +1,37 @@
-"use client";
 import React from "react";
-import { useUser } from "@clerk/nextjs";
-import Sidebar from "@/components/pages/plaform/Sidebar";
-import { Header } from "@/components/pages/plaform/Header";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import connectDB from "@/lib/db";
+import User from "@/models/User";
+
+import { Header } from "@/components/pages/platform/Header";
 import BackToTop from "@/components/elements/BackToTop";
+import Sidebar from "@/components/pages/platform/Sidebar";
 
-
-export default function PlatformLayout({
+export default async function PlatformLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isLoaded } = useUser();
+  // 1. Server-Side Auth Check
+  const { userId } = auth();
 
-  if (!isLoaded) return null;
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  // 2. Fetch User Role Securely on Server
+  await connectDB();
+  const user = await User.findOne({ clerkId: userId }).select("currentRole");
+
+  // Default to 'client' if role is missing
+  const role = user?.currentRole || "client";
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:block w-64 fixed inset-y-0 z-50">
-        <Sidebar />
+      {/* DESKTOP SIDEBAR - Passing the server-fetched role to the client component */}
+      <aside className="hidden md:block w-64 fixed inset-y-0 z-50 border-r border-gray-200">
+        <Sidebar initialRole={role} />
       </aside>
 
       {/* MAIN CONTENT WRAPPER */}
@@ -28,7 +40,7 @@ export default function PlatformLayout({
         <Header />
 
         {/* PAGE RENDER */}
-        <div className="flex-1 overflow-y-auto w-full max-w-[1400px] mx-auto">
+        <div className="flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8">
           {children}
           <BackToTop />
         </div>

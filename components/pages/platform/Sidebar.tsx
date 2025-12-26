@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,48 +12,64 @@ import {
   LifeBuoy,
   FileText,
   Briefcase,
-  UserCircle,
+  Box,
   ChevronsUpDown,
-  Loader2,
+  Check,
   Zap,
   LogOut,
+  Loader2,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import { SignOutButton } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+// 👇 This will now work because you created the file in Step 1
+import { toggleUserRole } from "@/app/actions/user";
 
- const Sidebar = ({
-  className,
+export default function Sidebar({
   initialRole = "client",
 }: {
-  className?: string;
   initialRole?: string;
-}) => {
+}) {
   const pathname = usePathname();
   const router = useRouter();
+
+  // State to track role locally for immediate UI feedback
   const [currentRole, setCurrentRole] = useState(initialRole);
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
 
+  // Sync state if parent prop changes (e.g. on refresh)
+  useEffect(() => {
+    setCurrentRole(initialRole);
+  }, [initialRole]);
+
   // --- ROLE SWITCH LOGIC ---
   const handleRoleSwitch = async () => {
+    if (isSwitching) return;
+
     setIsSwitching(true);
     try {
-      const res = await fetch("/api/role", { method: "POST" });
-      if (res.ok) {
-        const data = await res.json();
-        setCurrentRole(data.role);
+      // Call the Server Action
+      const result = await toggleUserRole();
+
+      if (result.success && result.role) {
+        // 1. Update UI Immediately (Hides Billing)
+        setCurrentRole(result.role);
+        setIsSwitcherOpen(false);
+
+        // 2. Refresh Server Data (Updates Page Content)
         router.refresh();
-        window.location.href = "/dashboard"; // Hard refresh to reset context
+      } else {
+        console.error("Failed to toggle role:", result.error);
       }
     } catch (e) {
-      console.error(e);
+      console.error("Action failed:", e);
     } finally {
       setIsSwitching(false);
     }
   };
 
-  // --- NAVIGATION CONFIG ---
   const navLinks = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
     { name: "Projects", href: "/projects", icon: FolderKanban },
@@ -64,7 +80,7 @@ import { SignOutButton } from "@clerk/nextjs";
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  // Only Clients see Billing [cite: 197]
+  // 🔒 LOGIC: Only show Billing if the current role is 'client'
   if (currentRole === "client") {
     managementLinks.unshift({
       name: "Billing",
@@ -102,12 +118,7 @@ import { SignOutButton } from "@clerk/nextjs";
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full bg-white md:border-r md:border-zinc-200 w-64",
-        className
-      )}
-    >
+    <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64">
       {/* 1. BRAND HEADER */}
       <div className="h-16 flex items-center px-5 border-b border-zinc-100">
         <div className="flex items-center gap-2">
@@ -120,7 +131,7 @@ import { SignOutButton } from "@clerk/nextjs";
         </div>
       </div>
 
-      {/* 2. WORKSPACE SWITCHER (CLIENT vs VENDOR) */}
+      {/* 2. ROLE SWITCHER */}
       <div className="p-4 relative">
         <button
           onClick={() => setIsSwitcherOpen(!isSwitcherOpen)}
@@ -136,7 +147,7 @@ import { SignOutButton } from "@clerk/nextjs";
               {currentRole === "client" ? (
                 <Briefcase size={14} />
               ) : (
-                <UserCircle size={16} />
+                <Box size={14} />
               )}
             </div>
             <div className="text-left">
@@ -216,7 +227,7 @@ import { SignOutButton } from "@clerk/nextjs";
         </div>
       </div>
 
-      {/* 4. UPGRADE CTA (Only for Client) */}
+      {/* 4. UPGRADE CARD (Only for Client) */}
       {currentRole === "client" && (
         <div className="px-4 pb-4">
           <Link
@@ -270,6 +281,4 @@ import { SignOutButton } from "@clerk/nextjs";
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}

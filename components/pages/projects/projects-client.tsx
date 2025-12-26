@@ -2,54 +2,41 @@
 
 import { useState, useEffect } from "react";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { UploadCard } from "./upload-card";
 import { RecentActivity } from "./recent-activity";
 import { cn } from "@/lib/utils";
+import { Activity, FileCheck } from "lucide-react";
 
 interface ProjectsClientProps {
   initialProjects: any[];
 }
 
 export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
-  // Initialize with props, but allow updates
+  const router = useRouter();
   const [projects, setProjects] = useState<any[]>(initialProjects);
-  const [loading, setLoading] = useState(true);
 
-  // 🔄 FIX: Fetch data on mount so history persists when you navigate back
+  // 🔄 Sync with server on mount
   useEffect(() => {
-    async function fetchRecentProjects() {
-      try {
-        const res = await fetch("/api/milestones"); // Connects to your existing API
-        const json = await res.json();
-        if (json.success && Array.isArray(json.data)) {
-          setProjects(json.data);
-        }
-      } catch (error) {
-        console.error("Failed to load projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    router.refresh();
+  }, [router]);
 
-    // Only fetch if we didn't get data from the server (SSR)
-    if (initialProjects.length === 0) {
-      fetchRecentProjects();
-    } else {
-      setLoading(false);
-    }
+  useEffect(() => {
+    setProjects(initialProjects);
   }, [initialProjects]);
+
+  const handleUploadSuccess = (newProject: any) => {
+    setProjects((prev) => [newProject, ...prev]);
+    router.refresh();
+  };
 
   const hasHistory = projects.length > 0;
 
-  const handleUploadSuccess = (newProject: any) => {
-    // ⚡️ Instant UI update: Add new project to top of list
-    setProjects((prev) => [newProject, ...prev]);
-  };
-
   return (
     <div className="w-full font-sans min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto mb-6">
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900">
+      <div className="max-w-7xl mx-auto mb-8">
+        <h1 className="text-2xl font-black tracking-tight text-zinc-900 flex items-center gap-3">
+          <Activity className="text-zinc-400" />
           Projects
         </h1>
       </div>
@@ -58,26 +45,26 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
         <motion.div
           layout
           className={cn(
-            "max-w-7xl mx-auto grid gap-4 h-[500px]",
-            // ANIMATION LOGIC:
-            // 100% Width if empty -> 75% Width if history exists
-            hasHistory ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
+            "max-w-7xl mx-auto grid gap-6",
+            hasHistory
+              ? "grid-cols-1 lg:grid-cols-12 items-start"
+              : "grid-cols-1"
           )}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          {/* Upload Card Area */}
+          {/* LEFT: UPLOAD CARD */}
           <motion.div
             layout
-            className={cn(
-              "h-full",
-              hasHistory ? "lg:col-span-8" : "lg:col-span-12"
-            )}
+            className={cn(hasHistory ? "lg:col-span-8" : "lg:col-span-12")}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <UploadCard onUploadSuccess={handleUploadSuccess} />
+            <UploadCard
+              onUploadSuccess={handleUploadSuccess}
+              isDisabled={hasHistory}
+            />
           </motion.div>
 
-          {/* Recent Activity Area */}
+          {/* RIGHT: ACTIVITY LIST (Only if history exists) */}
           <AnimatePresence>
             {hasHistory && (
               <motion.div
@@ -86,9 +73,28 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="lg:col-span-4 h-full"
+                className="lg:col-span-4 w-full"
               >
-                <RecentActivity projects={projects} />
+                {/* Visual Wrapper to match Upload Card style */}
+                <div className="bg-white border border-zinc-200 rounded-[2.5rem] p-6 shadow-sm h-full min-h-[400px] flex flex-col">
+                  <div className="flex items-center gap-3 mb-6 px-2">
+                    <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 text-emerald-600">
+                      <FileCheck size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-zinc-900">
+                        Active Contracts
+                      </h3>
+                      <p className="text-[10px] text-zinc-400 font-medium">
+                        {projects.length} Total Analysis
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto pr-1">
+                    <RecentActivity projects={projects} />
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

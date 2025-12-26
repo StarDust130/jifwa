@@ -101,6 +101,26 @@ export const Sidebar = ({ className }: { className?: string }) => {
           ))}
         </div>
       </div>
+      {/* UPGRADE CARD */}
+      <div className="px-3 pb-3">
+        <Link
+          href="/billing"
+          className="group block rounded-xl border border-gray-200 bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold">Upgrade now</p>
+              <p className="mt-1 text-xs text-gray-300">
+                Unlock advanced features & higher limits
+              </p>
+            </div>
+
+            <span className="text-gray-400 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+              ↗
+            </span>
+          </div>
+        </Link>
+      </div>
 
       {/* 3. BOTTOM ACTIONS */}
       <div className="p-3 mt-auto space-y-1 border-t border-gray-100">

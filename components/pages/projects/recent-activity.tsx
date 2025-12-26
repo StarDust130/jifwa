@@ -69,7 +69,7 @@ export function RecentActivity({ projects }: { projects: any[] }) {
             return (
               <Link
                 key={project._id || i}
-                href={`/projects/${project._id}`}
+                href={`/milestones/${project._id}`}
                 className="group relative p-3 rounded-xl hover:bg-zinc-50 transition-all duration-200 cursor-pointer border border-transparent hover:border-zinc-200/50 block"
               >
                 <div className="flex items-start gap-3">

@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
-  FileText,
   Calendar,
   Clock,
   ChevronRight,

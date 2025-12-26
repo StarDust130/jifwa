@@ -268,7 +268,7 @@ export default function Sidebar({
             <span className="text-[10px] font-bold">Docs</span>
           </Link>
           <Link
-            href="/support"
+            href="/help"
             className="group flex flex-col items-center justify-center p-3 rounded-xl bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-sm transition-all duration-200"
           >
             <LifeBuoy

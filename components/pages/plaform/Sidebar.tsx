@@ -13,6 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 // --- NAVIGATION CONFIG ---
 const PRIMARY_LINKS = [
@@ -80,6 +81,8 @@ export const Sidebar = ({ className }: { className?: string }) => {
           />
         </Link>
       </div>
+
+      <WorkspaceSwitcher />
 
       {/* 2. NAVIGATION GROUPS */}
       <div className="flex-1 px-3 space-y-8 overflow-y-auto scrollbar-none">

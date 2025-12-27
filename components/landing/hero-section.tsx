@@ -39,7 +39,7 @@ const LEFT_NOTIFICATIONS = [
   {
     id: 3,
     icon: <CheckSquare size={16} />,
-    bg: "bg-[#0052CC]", // Jira/Task color
+    bg: "bg-[#0052CC]", // jifwa/Task color
     title: "Task Exported",
     text: "Review Acceptance Criteria", // [cite: 51]
     position: "bottom-[25%] left-[-35px]",
@@ -323,7 +323,7 @@ const HeroSection = () => {
                 >
                   <Zap size={10} className="fill-white" />
                   <span className="text-[10px] font-bold tracking-wide">
-                    Push 2 Updates to Jira
+                    Push 2 Updates to jifwa
                   </span>
                 </motion.div>
               </div>

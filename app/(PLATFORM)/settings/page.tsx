@@ -1,6 +1,8 @@
+import ComingSoon from "@/components/elements/ComingSoon"
+
 const page = () => {
   return (
-    <div>page</div>
+    <ComingSoon name="Settings" />
   )
 }
 export default page

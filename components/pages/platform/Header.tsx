@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Menu, Bell, HelpCircle, Slash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger , SheetClose } from "@/components/ui/sheet";
 import  Sidebar  from "./Sidebar";
 
 export const Header = () => {
@@ -44,7 +44,9 @@ export const Header = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-72">
-              <Sidebar />
+              <SheetClose>
+                <Sidebar />
+              </SheetClose>
             </SheetContent>
           </Sheet>
         </div>
@@ -93,24 +95,49 @@ export const Header = () => {
             </HoverCardTrigger>
             <HoverCardContent className="w-80 p-4">
               <div className="space-y-4">
-          <h4 className="text-sm font-semibold">Help & Support</h4>
-          <div className="space-y-2">
-            <div>
-              <h5 className="text-xs font-medium text-gray-700">Quick Start Guide</h5>
-              <p className="text-xs text-gray-600">Get started with Jifwa in minutes.</p>
-              <Link href="/help/quick-start" className="text-xs text-blue-600 hover:underline">Learn more</Link>
-            </div>
-            <div>
-              <h5 className="text-xs font-medium text-gray-700">FAQ</h5>
-              <p className="text-xs text-gray-600">Find answers to common questions.</p>
-              <Link href="/help/faq" className="text-xs text-blue-600 hover:underline">View FAQ</Link>
-            </div>
-            <div>
-              <h5 className="text-xs font-medium text-gray-700">Contact Support</h5>
-              <p className="text-xs text-gray-600">Need help? We're here for you.</p>
-              <Link href="/help/contact" className="text-xs text-blue-600 hover:underline">Get in touch</Link>
-            </div>
-          </div>
+                <h4 className="text-sm font-semibold">Help & Support</h4>
+                <div className="space-y-2">
+                  <div>
+                    <h5 className="text-xs font-medium text-gray-700">
+                      Quick Start Guide
+                    </h5>
+                    <p className="text-xs text-gray-600">
+                      Get started with Jifwa in minutes.
+                    </p>
+                    <Link
+                      href="/help/quick-start"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      Learn more
+                    </Link>
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-medium text-gray-700">FAQ</h5>
+                    <p className="text-xs text-gray-600">
+                      Find answers to common questions.
+                    </p>
+                    <Link
+                      href="/help/faq"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      View FAQ
+                    </Link>
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-medium text-gray-700">
+                      Contact Support
+                    </h5>
+                    <p className="text-xs text-gray-600">
+                      Need help? We're here for you.
+                    </p>
+                    <Link
+                      href="/help/contact"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      Get in touch
+                    </Link>
+                  </div>
+                </div>
               </div>
             </HoverCardContent>
           </HoverCard>
@@ -130,7 +157,6 @@ export const Header = () => {
               </div>
             </HoverCardContent>
           </HoverCard>
-         
         </Button>
 
         <div className="hidden lg:flex flex-col items-end">

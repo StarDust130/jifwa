@@ -13,63 +13,63 @@ import {
   CreditCard,
   TrendingUp,
   Search,
-  Trello,
-  Layers,
+  AlertCircle,
+  CheckSquare,
 } from "lucide-react";
 import Link from "next/link";
 
-// --- DATA: LEFT SIDE (Execution & Workflow) ---
+// --- UPDATED DATA: LEFT SIDE (Execution Workflow from PDF) ---
 const LEFT_NOTIFICATIONS = [
   {
     id: 1,
     icon: <Slack size={16} />,
-    bg: "bg-[#4A154B]",
-    title: "Slack Sync",
-    text: "Milestone: UI Design sent to #ops",
+    bg: "bg-[#4A154B]", // Slack color
+    title: "Vendor Update",
+    text: "Proof submitted for Milestone 2", // [cite: 57]
     position: "top-[20%] left-[-40px]",
   },
   {
     id: 2,
-    icon: <Trello size={16} />,
-    bg: "bg-[#0052CC]",
-    title: "Task Exported",
-    text: "Review Clause 4.2 in Jira",
+    icon: <AlertCircle size={16} />,
+    bg: "bg-red-500", // Dispute color
+    title: "Dispute Flagged",
+    text: "Missing evidence for deliverable", // [cite: 13, 68]
     position: "top-[45%] left-[-50px]",
   },
   {
     id: 3,
-    icon: <Layers size={16} />,
-    bg: "bg-[#FC636B]",
-    title: "Linear Issue",
-    text: "Auto-created: Security Audit",
+    icon: <CheckSquare size={16} />,
+    bg: "bg-[#0052CC]", // Jira/Task color
+    title: "Task Exported",
+    text: "Review Acceptance Criteria", // [cite: 51]
     position: "bottom-[25%] left-[-35px]",
   },
 ];
 
-// --- DATA: RIGHT SIDE (Revenue & Legal Intelligence) ---
+// --- UPDATED DATA: RIGHT SIDE (Revenue & AI Intelligence from PDF) ---
 const RIGHT_NOTIFICATIONS = [
   {
     id: 1,
     icon: <Zap size={16} />,
     bg: "bg-yellow-500",
     title: "AI Extraction",
-    text: "3 Deliverables identified",
+    text: "5 Deliverables identified", // 
     position: "top-[25%] right-[-30px]",
   },
   {
     id: 2,
     icon: <ShieldCheck size={16} />,
     bg: "bg-green-500",
-    title: "Risk Scan",
-    text: "No liability gaps found",
+    title: "Secure Env",
+    text: "AES-256 Encryption Active", // 
     position: "top-[50%] right-[-45px]",
   },
   {
     id: 3,
     icon: <TrendingUp size={16} />,
     bg: "bg-blue-500",
-    title: "Contract Value",
-    text: "$24,500 ARR Locked",
+    title: "Revenue Ops",
+    text: "$45,200 Unlocked", //  - Matching PDF number
     position: "bottom-[30%] right-[-25px]",
   },
 ];
@@ -144,22 +144,24 @@ const HeroSection = () => {
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-gray-900 leading-[0.95] mb-8">
-            Turn signed PDFs <br />
-            into{" "}
-            <span className="relative inline-block whitespace-nowrap z-0">
+            Turn Contracts Into <br />
+            <span className="relative inline-block whitespace-normal z-0">
               <motion.span
                 variants={highlightVariant}
                 initial="hidden"
                 animate="visible"
                 className="absolute bottom-2 left-[-1%] h-[0.5em] bg-yellow-300 -z-10 -rotate-1 rounded-sm mix-blend-multiply opacity-100"
               />
-              <span className="relative z-10">actionable tasks.</span>
+              <span className="relative z-10">
+                Predictable, Trackable Execution.
+              </span>
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-lg mb-10 font-medium">
-            Jifwa automatically extracts deliverables, milestones, and payments
-            from legal docs and syncs them to your workflow tools.
+            Jifwa is an AI-native, fully encrypted contract execution platform
+            that ensures what's agreed in a contract actually happens during
+            delivery - with clarity, accountability, and zero ambiguity.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-10">
@@ -167,7 +169,7 @@ const HeroSection = () => {
               href="/dashboard"
               className="h-14 px-8 rounded-full bg-gray-900 text-white font-bold text-sm sm:text-base hover:bg-black hover:scale-105 transition-all duration-300 shadow-2xl shadow-gray-900/20 flex items-center justify-center gap-2 group"
             >
-              Start Execution Tracking
+              Get Started
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"
@@ -175,7 +177,7 @@ const HeroSection = () => {
             </Link>
             <button className="h-14 px-8 rounded-full bg-white text-gray-700 border border-gray-200 font-bold text-sm sm:text-base hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm">
               <Play size={18} className="fill-gray-700" />
-              Watch Demo
+              Book Demo
             </button>
           </div>
 
@@ -202,7 +204,6 @@ const HeroSection = () => {
             <div className="absolute inset-0 rounded-[3rem] border border-gray-600/40 pointer-events-none z-50 ring-1 ring-inset ring-white/10"></div>
 
             <div className="h-full w-full bg-white rounded-[2.7rem] overflow-hidden flex flex-col relative">
-              
               {/* --- STATUS BAR FIXED --- */}
               <div className="h-12 w-full bg-white relative z-20">
                 {/* Time: Pinned to absolute left */}
@@ -229,7 +230,9 @@ const HeroSection = () => {
               <div className="flex-1 bg-gray-50/60 pt-12 px-4 pb-6 flex flex-col font-sans relative">
                 <div className="bg-gray-200/50 h-8 rounded-xl mb-4 flex items-center px-3 gap-2">
                   <Search size={12} className="text-gray-400" />
-                  <span className="text-[10px] text-gray-400 font-medium">Search contracts...</span>
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    Search contracts...
+                  </span>
                 </div>
 
                 {/* Document Card */}
@@ -264,7 +267,7 @@ const HeroSection = () => {
                   </span>
                 </div>
 
-                {/* Tasks */}
+                {/* Tasks - Content from PDF [cite: 17, 18, 43] */}
                 <div className="space-y-2.5">
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
@@ -276,12 +279,15 @@ const HeroSection = () => {
                       <div className="flex items-center gap-2">
                         <CheckCircle2 size={12} className="text-blue-500" />
                         <span className="text-[11px] font-bold text-gray-800">
-                          Monthly Performance Report
+                          App V1.0 Milestone
                         </span>
                       </div>
                     </div>
                     <div className="pl-5 text-[9px] text-gray-400">
-                      Extracted from <span className="text-gray-600 font-medium">Clause 2.4</span>
+                      Extracted from{" "}
+                      <span className="text-gray-600 font-medium">
+                        Clause 2.4
+                      </span>
                     </div>
                   </motion.div>
 
@@ -300,16 +306,20 @@ const HeroSection = () => {
                       </div>
                     </div>
                     <div className="pl-5 text-[9px] text-gray-400">
-                      Syncing to <span className="text-gray-600 font-medium">Quickbooks</span>
+                      Syncing to{" "}
+                      <span className="text-gray-600 font-medium">
+                        Quickbooks
+                      </span>
                     </div>
                   </motion.div>
                 </div>
 
+                {/* Bottom Pill - Black as requested */}
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 2.5 }}
-                  className="mt-auto mx-auto bg-indigo-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 mb-1"
+                  className="mt-auto mx-auto bg-gray-900 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 mb-1"
                 >
                   <Zap size={10} className="fill-white" />
                   <span className="text-[10px] font-bold tracking-wide">
@@ -329,12 +339,18 @@ const HeroSection = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className={`absolute ${RIGHT_NOTIFICATIONS[rightIndex].position} z-30 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2.5 pr-4 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 w-auto min-w-[180px]`}
               >
-                <div className={`w-8 h-8 ${RIGHT_NOTIFICATIONS[rightIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}>
+                <div
+                  className={`w-8 h-8 ${RIGHT_NOTIFICATIONS[rightIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}
+                >
                   {RIGHT_NOTIFICATIONS[rightIndex].icon}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-900">{RIGHT_NOTIFICATIONS[rightIndex].title}</p>
-                  <p className="text-[9px] text-gray-500 truncate w-24">{RIGHT_NOTIFICATIONS[rightIndex].text}</p>
+                  <p className="text-[10px] font-bold text-gray-900">
+                    {RIGHT_NOTIFICATIONS[rightIndex].title}
+                  </p>
+                  <p className="text-[9px] text-gray-500 truncate w-24">
+                    {RIGHT_NOTIFICATIONS[rightIndex].text}
+                  </p>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -349,12 +365,18 @@ const HeroSection = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className={`absolute ${LEFT_NOTIFICATIONS[leftIndex].position} z-30 flex items-center gap-3 bg-white/90 backdrop-blur-md p-2.5 pr-4 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 w-auto min-w-[180px]`}
               >
-                <div className={`w-8 h-8 ${LEFT_NOTIFICATIONS[leftIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}>
+                <div
+                  className={`w-8 h-8 ${LEFT_NOTIFICATIONS[leftIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}
+                >
                   {LEFT_NOTIFICATIONS[leftIndex].icon}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-900">{LEFT_NOTIFICATIONS[leftIndex].title}</p>
-                  <p className="text-[9px] text-gray-500 truncate w-24">{LEFT_NOTIFICATIONS[leftIndex].text}</p>
+                  <p className="text-[10px] font-bold text-gray-900">
+                    {LEFT_NOTIFICATIONS[leftIndex].title}
+                  </p>
+                  <p className="text-[9px] text-gray-500 truncate w-24">
+                    {LEFT_NOTIFICATIONS[leftIndex].text}
+                  </p>
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -4,13 +4,10 @@ import { motion, Variants } from "framer-motion";
 import {
   ShieldCheck,
   Lock,
-  EyeOff,
-  FileKey,
-  Fingerprint,
   Cpu,
   Activity,
-  CheckCircle2,
-  Server,
+  Fingerprint,
+  FileKey,
 } from "lucide-react";
 
 // --- ANIMATIONS ---
@@ -76,6 +73,7 @@ const SecuritySection = () => {
             Zero-Trust Architecture
           </motion.div>
 
+          {/* PDF Source: Section 6 - Privacy & Security [cite: 274] */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -83,15 +81,16 @@ const SecuritySection = () => {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6"
           >
-            Your data never leaves <br />
+            Your Contract Data <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600">
-              our secure environment.
+              Stays Private. Always.
             </span>
           </motion.h2>
 
+          {/* PDF Source: Section 4 - AI Transparency [cite: 458] */}
           <p className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto">
-            We don't use OpenAI or Claude wrappers. We run our own self-hosted
-            models so your contracts are never shared with third parties.
+            We don&apos;t use external AI APIs (including OpenAI, Claude, or similar services). 
+            We run our own self-hosted models so your contracts are never shared with third parties.
           </p>
         </div>
 
@@ -114,8 +113,9 @@ const SecuritySection = () => {
               <h3 className="text-2xl font-bold mb-4 text-white">
                 Self-Hosted AI Models
               </h3>
+              {/* PDF Source: Section 4 - AI Transparency [cite: 458, 463] */}
               <p className="text-gray-400 text-sm leading-relaxed mb-8">
-                Unlike others, we don't send your data to OpenAI or Anthropic
+                Unlike others, we don&apos;t send your data to OpenAI or Anthropic
                 API. Jifwa runs a specialized legal LLM entirely within our own
                 private cloud.
               </p>
@@ -196,7 +196,7 @@ const SecuritySection = () => {
                 AES-256 Encryption
               </h3>
 
-              {/* COOL HIGHLIGHT ANIMATION */}
+              {/* PDF Source: Section 4 - Security & Encryption [cite: 466, 469] */}
               <p className="text-gray-500 text-sm leading-relaxed">
                 Data at rest is{" "}
                 <motion.span
@@ -227,7 +227,7 @@ const SecuritySection = () => {
             </div>
           </motion.div>
 
-          {/* CARD 3: REAL-TIME AUDIT */}
+          {/* CARD 3: AUDIT LOGGING */}
           <motion.div
             variants={cardHover}
             initial="rest"
@@ -241,6 +241,7 @@ const SecuritySection = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Audit Logging
               </h3>
+              {/* PDF Source: Data Processing [cite: 363] */}
               <p className="text-gray-500 text-sm">
                 Every action—view, download, or edit—is logged and timestamped.
               </p>
@@ -282,6 +283,7 @@ const SecuritySection = () => {
               <h3 className="text-2xl font-bold mb-2 text-gray-900">
                 SOC2 Type II Ready
               </h3>
+              {/* PDF Source: Section 4 - Solution [cite: 249] */}
               <p className="text-gray-500 text-sm max-w-md">
                 Our infrastructure is continuously monitored. We maintain
                 comprehensive evidence logs automatically.

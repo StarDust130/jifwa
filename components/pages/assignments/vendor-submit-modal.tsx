@@ -5,15 +5,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  UploadCloud,
-  Link as LinkIcon,
-  Loader2,
-  FileText,
-  X,
-} from "lucide-react";
+import { UploadCloud, Loader2, FileText, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-
 import { cn } from "@/lib/utils";
 import { updateMilestone } from "@/app/actions/milestone";
 
@@ -42,32 +35,52 @@ export function VendorSubmitModal({
     });
 
   const handleSubmit = async () => {
+    // 1. Basic validation
     if (!file && !linkUrl) {
       toast.error("Please provide a file or link");
       return;
     }
 
-    setLoading(true);
+    // 2. 1MB Limit validation
+    if (activeTab === "file" && file && file.size > 1024 * 1024) {
+      toast.error("File is too large! Maximum size is 1MB.");
+      return;
+    }
 
-    // ⚡️ Instant UI Update
-    onOptimisticUpdate();
-    setIsOpen(false);
-    toast.success("Submitted for review");
+    setLoading(true);
 
     try {
       let finalFileUrl = "";
-      if (file) {
-        if (file.size > 4 * 1024 * 1024) throw new Error("File max 4MB");
+      if (activeTab === "file" && file) {
         finalFileUrl = await toBase64(file);
       }
 
-      await updateMilestone(projectId, milestone._id, "submit_proof", {
-        fileUrl: finalFileUrl,
-        linkUrl,
-        notes,
-      });
+      // 3. Call Server Action
+      const result = await updateMilestone(
+        projectId,
+        milestone._id,
+        "submit_proof",
+        {
+          fileUrl: finalFileUrl,
+          linkUrl: activeTab === "link" ? linkUrl : "",
+          notes,
+        }
+      );
+
+      // 4. Handle UI Update ONLY on Success
+      if (result.success) {
+        onOptimisticUpdate(); // Update board UI
+        setIsOpen(false);
+        toast.success("Submitted for review");
+        // Clear form
+        setFile(null);
+        setLinkUrl("");
+        setNotes("");
+      } else {
+        toast.error(result.error || "Submission failed");
+      }
     } catch (error: any) {
-      toast.error("Submission failed");
+      toast.error("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -88,35 +101,26 @@ export function VendorSubmitModal({
             Submit Deliverable
           </DialogTitle>
           <p className="text-xs text-zinc-500 mt-1">
-            Upload evidence for the client.
+            Upload evidence (Max 1MB) for the client.
           </p>
         </div>
 
         <div className="p-5 space-y-4">
-          {/* Tabs */}
           <div className="flex bg-zinc-100 rounded-lg p-1">
-            <button
-              onClick={() => setActiveTab("file")}
-              className={cn(
-                "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
-                activeTab === "file"
-                  ? "bg-white shadow-sm text-zinc-900"
-                  : "text-zinc-500"
-              )}
-            >
-              File
-            </button>
-            <button
-              onClick={() => setActiveTab("link")}
-              className={cn(
-                "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
-                activeTab === "link"
-                  ? "bg-white shadow-sm text-zinc-900"
-                  : "text-zinc-500"
-              )}
-            >
-              Link
-            </button>
+            {["file", "link"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setActiveTab(t as any)}
+                className={cn(
+                  "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
+                  activeTab === t
+                    ? "bg-white shadow-sm text-zinc-900"
+                    : "text-zinc-500"
+                )}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </button>
+            ))}
           </div>
 
           {activeTab === "file" && (
@@ -124,11 +128,14 @@ export function VendorSubmitModal({
               {!file ? (
                 <label
                   htmlFor="f-up"
-                  className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50 cursor-pointer hover:bg-zinc-50"
+                  className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50 cursor-pointer hover:bg-zinc-100 transition-colors"
                 >
                   <UploadCloud className="w-6 h-6 text-zinc-300 mb-2" />
                   <p className="text-xs font-bold text-zinc-500">
                     Click to Upload
+                  </p>
+                  <p className="text-[10px] text-zinc-400 mt-1">
+                    Max 1MB allowed
                   </p>
                 </label>
               ) : (
@@ -141,8 +148,11 @@ export function VendorSubmitModal({
                       {file.name}
                     </p>
                   </div>
-                  <button onClick={() => setFile(null)}>
-                    <X size={14} />
+                  <button
+                    onClick={() => setFile(null)}
+                    className="text-zinc-400 hover:text-red-500"
+                  >
+                    <X size={16} />
                   </button>
                 </div>
               )}
@@ -150,7 +160,14 @@ export function VendorSubmitModal({
                 id="f-up"
                 type="file"
                 className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const selected = e.target.files?.[0] || null;
+                  if (selected && selected.size > 1024 * 1024) {
+                    toast.error("File exceeds 1MB limit");
+                    return;
+                  }
+                  setFile(selected);
+                }}
               />
             </div>
           )}
@@ -161,26 +178,26 @@ export function VendorSubmitModal({
               placeholder="https://..."
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
-              className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm outline-none focus:border-zinc-400"
+              className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm outline-none focus:ring-2 ring-zinc-900/5 transition-all"
             />
           )}
 
           <textarea
-            placeholder="Add notes..."
+            placeholder="Add notes for the client..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm outline-none focus:border-zinc-400 min-h-[80px]"
+            className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm outline-none focus:ring-2 ring-zinc-900/5 min-h-[80px] resize-none"
           />
 
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-all"
+            className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold text-sm hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
           >
             {loading ? (
-              <Loader2 className="animate-spin mx-auto" size={16} />
+              <Loader2 className="animate-spin" size={18} />
             ) : (
-              "Submit"
+              "Submit Material"
             )}
           </button>
         </div>

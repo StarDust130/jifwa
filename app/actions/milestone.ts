@@ -12,57 +12,54 @@ export async function updateMilestone(
   action: "submit_proof" | "approve" | "reject",
   data: any
 ) {
-  const { userId } = auth();
-  if (!userId) throw new Error("Unauthorized");
+  try {
+    const { userId } = auth();
+    if (!userId) return { success: false, error: "Unauthorized" };
 
-  // 1. SAFETY: Check if projectId exists before validating
-  if (!projectId || projectId === "undefined") {
-    throw new Error("Missing Project ID");
+    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+      return { success: false, error: "Invalid Project ID" };
+    }
+
+    await connectDB();
+    const project = await Project.findById(projectId);
+    if (!project) return { success: false, error: "Project not found" };
+
+    const milestone = project.milestones.find(
+      (m: any) => m._id.toString() === milestoneId
+    ) as any;
+    if (!milestone) return { success: false, error: "Milestone not found" };
+
+    if (action === "submit_proof") {
+      // Server-side check for empty data
+      if (!data.fileUrl && !data.linkUrl) {
+        return { success: false, error: "Proof content is missing" };
+      }
+      milestone.proof_url = data.fileUrl || data.linkUrl || "";
+      milestone.proof_notes = data.notes || "";
+      milestone.status = "in_review";
+      milestone.submittedAt = new Date();
+    } else if (action === "approve") {
+      if (project.userId !== userId)
+        return { success: false, error: "Only client can approve" };
+      milestone.status = "approved";
+    } else if (action === "reject") {
+      if (project.userId !== userId)
+        return { success: false, error: "Only client can reject" };
+      milestone.status = "dispute";
+      milestone.proof_url = "";
+      milestone.proof_notes = `[CLIENT REJECTED]: ${data.feedback} \n\n${
+        milestone.proof_notes || ""
+      }`;
+    }
+
+    await project.save();
+
+    revalidatePath(`/projects/${projectId}`);
+    revalidatePath(`/assignments/${projectId}`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Action Error:", error);
+    return { success: false, error: "Server error occurred" };
   }
-
-  // 2. Validate format
-  if (!mongoose.Types.ObjectId.isValid(projectId)) {
-    throw new Error(`Invalid Project ID format: ${projectId}`);
-  }
-
-  await connectDB();
-
-  // 3. Find Project
-  const project = await Project.findById(projectId);
-
-  if (!project) throw new Error("Project not found");
-
-  // 4. Find Milestone
-  const milestone = project.milestones.find(
-    (m: any) => m._id.toString() === milestoneId
-  ) as any;
-
-  if (!milestone) throw new Error("Milestone not found");
-
-  // --- LOGIC ---
-  if (action === "submit_proof") {
-    milestone.proof_url = data.fileUrl || data.linkUrl || "";
-    milestone.proof_notes = data.notes || "";
-    milestone.status = "in_review";
-    milestone.submittedAt = new Date();
-  } else if (action === "approve") {
-    if (project.userId !== userId) throw new Error("Only client can approve");
-    milestone.status = "approved";
-  } else if (action === "reject") {
-    if (project.userId !== userId) throw new Error("Only client can reject");
-    milestone.status = "dispute";
-    // Clear the proof URL so vendor has to upload again
-    milestone.proof_url = "";
-    milestone.proof_notes = `[CLIENT REJECTED]: ${data.feedback} \n\n${
-      milestone.proof_notes || ""
-    }`;
-  }
-
-  await project.save();
-
-  // ⚡️ Refresh paths
-  revalidatePath(`/projects/${projectId}`);
-  revalidatePath(`/assignments/${projectId}`);
-
-  return { success: true };
 }

@@ -1,7 +1,8 @@
-import { auth, currentUser, clerkClient } from "@clerk/nextjs/server"; // 👈 Import clerkClient
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
+import User from "@/models/User"; // 👈 Import User Model
 import mongoose from "mongoose";
 import { ProjectHeader } from "@/components/pages/milestone/milestone-id-ui/project-header";
 import { ExecutionTimeline } from "@/components/pages/milestone/milestone-id-ui/execution-timeline";
@@ -27,10 +28,29 @@ export default async function ProjectDetailPage({
   const { userId } = auth();
   if (!userId) redirect("/sign-in");
 
+  await connectDB();
+
+  // 1. GET USER & CHECK ROLE
+  const dbUser = await User.findOne({ clerkId: userId });
+
+  // 🔒 SECURITY: If Vendor, kick them out immediately
+  if (dbUser?.currentRole === "vendor") {
+    redirect("/dashboard");
+  }
+
+  // 2. Fetch Project
   const project = await getProject(params.id);
   if (!project) return notFound();
 
-  // 1. Fetch the Creator's Real Profile from Clerk
+  // 🔒 SECURITY: Verify Ownership (Only Client/Owner can see this)
+  const isClient = project.userId === userId;
+
+  if (!isClient) {
+    // If they aren't the vendor (blocked above) AND not the client, they shouldn't be here.
+    redirect("/dashboard");
+  }
+
+  // 3. Fetch the Creator's Real Profile from Clerk
   let creator = { fullName: "Client", imageUrl: "", email: "" };
   try {
     const user = await clerkClient.users.getUser(project.userId);
@@ -43,25 +63,8 @@ export default async function ProjectDetailPage({
     console.error("Failed to fetch creator:", e);
   }
 
-  // 2. Determine Permissions
-  const isClient = project.userId === userId;
-
-  // 3. Auto-Join Logic (For Vendor)
-  if (!isClient && project.vendorEmail) {
-    const currentUserData = await currentUser();
-    const myEmail = currentUserData?.emailAddresses[0]?.emailAddress;
-    if (myEmail === project.vendorEmail && !project.vendorId) {
-      await connectDB();
-      await Project.updateOne(
-        { _id: params.id },
-        { $set: { vendorId: userId, vendorJoinedAt: new Date() } }
-      );
-      project.vendorId = userId;
-    }
-  }
-
   return (
-    <div className="min-h-screen  font-sans">
+    <div className="min-h-screen font-sans">
       <ProjectHeader project={project} isClient={isClient} />
       <main className="max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8">
@@ -75,7 +78,6 @@ export default async function ProjectDetailPage({
         </div>
 
         <div className="lg:col-span-4">
-          {/* 👇 Pass the real creator profile here */}
           <ProjectMetadata
             project={project}
             isClient={isClient}

@@ -16,27 +16,22 @@ export default async function MilestonesPage() {
 
   await connectDB();
 
-  // 2. Get Current User & Role from DB
+  // 2. Get Current User from DB
   const dbUser = await User.findOne({ clerkId: userId });
 
-  // Fallback if user doesn't exist yet (Safety)
+  // Fallback for new users
   if (!dbUser) redirect("/dashboard");
 
-  const role = dbUser.currentRole; // "client" or "vendor"
-  const email = clerkUser.emailAddresses[0].emailAddress;
-
-  // 3. Fetch Projects Based on Role
-  let query = {};
-
-  if (role === "client") {
-    // Client: See projects I OWN
-    query = { userId: userId };
-  } else {
-    // Vendor: See projects assigned to MY EMAIL
-    query = { vendorEmail: email };
+  // 🔒 3. SECURITY: Block Vendors
+  // Vendors have their own page (/assignments), they shouldn't be here.
+  if (dbUser.currentRole === "vendor") {
+    redirect("/dashboard");
   }
 
-  // 4. Execute Query
+  // 4. Fetch Projects (Client Only)
+  // Since we blocked vendors above, we only need to query for Client ownership
+  const query = { userId: userId };
+
   const projects = await Project.find(query).sort({ createdAt: -1 }).lean();
 
   // 5. Serialize Data

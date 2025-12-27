@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 /* =========================
   Metadata
@@ -68,6 +69,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${GeistSans.variable} ${GeistMono.variable}`}>
           <main>{children}</main>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

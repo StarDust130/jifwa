@@ -7,6 +7,17 @@ import MilestoneClient from "@/components/pages/milestone/MilestoneClient";
 
 export const dynamic = "force-dynamic";
 
+// Define a basic interface for your Project structure to satisfy TypeScript
+interface IProject {
+  _id: string;
+  userId: string;
+  vendorEmail: string;
+  title?: string;
+  contractName?: string;
+  createdAt: string;
+  // Add other fields as per your Project model
+}
+
 export default async function MilestonesPage() {
   // 1. Auth Check
   const { userId } = auth();
@@ -18,25 +29,47 @@ export default async function MilestonesPage() {
 
   // 2. Get Current User from DB
   const dbUser = await User.findOne({ clerkId: userId });
+  const email = clerkUser.emailAddresses[0].emailAddress;
 
-  // Fallback for new users
-  if (!dbUser) redirect("/dashboard");
+  // 3. Role Detection
+  let role = "client";
 
-  // 🔒 3. SECURITY: Block Vendors
-  // Vendors have their own page (/assignments), they shouldn't be here.
-  if (dbUser.currentRole === "vendor") {
+  if (dbUser) {
+    role = dbUser.currentRole;
+  } else {
+    // Check if new user is a vendor
+    const hasAssignments = await Project.exists({ vendorEmail: email });
+    if (hasAssignments) {
+      role = "vendor";
+    }
+  }
+
+  // 🔒 4. SECURITY: Only redirect if they are confirmed VENDORS
+  if (role === "vendor") {
     redirect("/dashboard");
   }
 
-  // 4. Fetch Projects (Client Only)
-  // Since we blocked vendors above, we only need to query for Client ownership
-  const query = { userId: userId };
+  // 5. Fetch Projects (Client Only) - Explicitly Type the Array
+  let projects: IProject[] = [];
 
-  const projects = await Project.find(query).sort({ createdAt: -1 }).lean();
+  try {
+    // We cast the result to IProject[] to fix the implicit 'any' error
+    const fetchedProjects = await Project.find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .lean();
 
-  // 5. Serialize Data
+    projects = fetchedProjects as unknown as IProject[];
+  } catch (error) {
+    console.error("Fetch error:", error);
+    projects = [];
+  }
+
+  // 6. Serialize Data
   const serializedProjects = JSON.parse(JSON.stringify(projects));
-  const serializedUser = JSON.parse(JSON.stringify(dbUser));
+
+  const serializedUser = dbUser
+    ? JSON.parse(JSON.stringify(dbUser))
+    : { clerkId: userId, currentRole: "client", email };
 
   return (
     <MilestoneClient

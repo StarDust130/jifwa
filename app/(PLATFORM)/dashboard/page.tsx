@@ -8,11 +8,11 @@ import { getDashboardProjects } from "@/app/actions/projects";
 export default async function Dashboard() {
   const data = await getDashboardProjects();
 
-  if (data.error) {
-    return <div className="p-8 text-red-500">Error loading dashboard.</div>;
-  }
+  // 1. FIX: Instead of showing an error, default to empty values.
+  // This ensures new users see the "Empty State" placeholder instead of a crash.
+  const role = data?.role || "client";
+  const projects = data?.projects || [];
 
-  const { role, projects } = data;
   const isClient = role === "client";
 
   return (
@@ -32,7 +32,7 @@ export default async function Dashboard() {
 
         {isClient && (
           <Link
-            href="/projects/new"
+            href="/projects"
             className="flex items-center gap-2 bg-zinc-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-800 transition-all"
           >
             <Plus size={16} /> New Contract
@@ -40,7 +40,7 @@ export default async function Dashboard() {
         )}
       </div>
 
-      {/* EMPTY STATE */}
+      {/* EMPTY STATE (Placeholder for 1st Time Users) */}
       {projects.length === 0 && (
         <div className="text-center py-20 bg-zinc-50 rounded-3xl border border-dashed border-zinc-300">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-zinc-100">
@@ -54,6 +54,16 @@ export default async function Dashboard() {
               ? "Upload a contract PDF to start tracking execution."
               : "You haven't been invited to any contracts yet."}
           </p>
+
+          {/* Optional: Add a button here too for better UX */}
+          {isClient && (
+            <Link
+              href="/projects/new"
+              className="inline-block mt-6 text-sm font-bold text-blue-600 hover:underline"
+            >
+              Create your first project &rarr;
+            </Link>
+          )}
         </div>
       )}
 

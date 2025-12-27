@@ -6,34 +6,39 @@ import {
   Minus,
   MessageCircle,
   HelpCircle,
-  ArrowRight,
 } from "lucide-react";
 
+// --- UPDATED FAQs ---
 const faqs = [
   {
-    question: "How accurate is the AI extraction?",
+    question: "Is Jifwa a contract drafting or CLM tool?",
     answer:
-      "Jifwa uses a specialized LLM fine-tuned on 50,000+ legal contracts. We currently maintain a 99.8% accuracy rate for standard deliverables, dates, and payment terms. For low-confidence extractions, the system flags the item for human review before syncing.",
+      "No. Jifwa is an execution alignment layer that sits on top of your contracts. We are not a project management tool or a legal document repository. Our focus is solely on ensuring that what is agreed upon in a signed PDF actually gets delivered.",
   },
   {
-    question: "Is my contract data secure?",
+    question: "Do you use OpenAI, Claude, or third-party AI?",
     answer:
-      "Absolutely. We are SOC2 Type II compliant. Your data is encrypted at rest (AES-256) and in transit (TLS 1.3). We do not use your contracts to train our public models without explicit enterprise opt-in.",
+      "No. We do not use external AI APIs. All AI runs privately inside Jifwa's own secure infrastructure. We do not train models on your data, and your contracts are never shared with third-party providers.",
   },
   {
-    question: "Does it work with scanned PDFs?",
+    question: "Is my contract data safe?",
     answer:
-      "Yes. Jifwa includes an enterprise-grade OCR layer that digitizes scanned documents and images before processing them, allowing us to extract data even from non-selectable text.",
+      "Yes. We use a zero-trust architecture. Data is encrypted at rest using AES-256 and in transit via TLS 1.3. Even Jifwa's internal staff cannot view your contract content or uploaded documents.",
   },
   {
-    question: "What integrations are supported?",
+    question: "How do vendors submit their work?",
     answer:
-      "Out of the box, we support 2-way sync with Jira, Linear, Asana, Monday.com, and Slack. We also have a Zapier integration and a robust REST API for custom internal tools.",
+      "Clients invite vendors via email. Vendors get access to a restricted dashboard where they can upload files, notes, and proofs directly tied to specific milestones. They only see the milestones assigned to them.",
   },
   {
-    question: "What happens if I exceed my plan limits?",
+    question: "What is the refund policy?",
     answer:
-      "We don't pause your service. You'll simply be billed a small overage fee per extra document extracted, or prompted to upgrade to the next tier for better volume pricing.",
+      "Refunds are applicable only if you are unable to use the platform due to a verified technical issue originating from our systems. Requests must be submitted within 7 days of payment.",
+  },
+  {
+    question: "Can I upgrade my plan later?",
+    answer:
+      "Yes. Plans can be upgraded anytime from your profile settings. Features are unlocked instantly upon successful payment via Razorpay.",
   },
 ];
 
@@ -111,7 +116,7 @@ const FAQSection = () => {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-6 text-gray-500 leading-relaxed">
+                    <div className="px-6 pb-6 text-gray-500 leading-relaxed text-sm">
                       {faq.answer}
                     </div>
                   </motion.div>
@@ -136,7 +141,7 @@ const FAQSection = () => {
               Still have questions?
             </h3>
             <p className="text-gray-400 text-sm max-w-sm">
-              Can't find the answer you're looking for? Chat with our team.
+              Can&apos;t find the answer you&apos;re looking for? Chat with our team.
             </p>
           </div>
 

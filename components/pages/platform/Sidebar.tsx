@@ -125,7 +125,7 @@ export default function Sidebar({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#FAFAFA] border-r border-zinc-200/80 w-64 relative z-40 font-sans">
+    <div className="flex flex-col h-full md:bg-[#FAFAFA] md:border-r md:border-zinc-200/80 w-64 relative z-40 font-sans">
       <AnimatePresence mode="wait">
         {targetRole && (
           <motion.div

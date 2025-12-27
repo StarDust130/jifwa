@@ -41,7 +41,7 @@ export default function Sidebar({
 
   // Vendor State
   const [vendorTasks, setVendorTasks] = useState<any[]>([]);
-  const [isMilestonesOpen, setIsMilestonesOpen] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
   // 1. Force Redirect if Vendor tries to view Client Pages
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function Sidebar({
         setIsSwitcherOpen(false);
 
         if (result.role === "vendor") {
-          // 2. Immediate Redirect Logic on Switch
+          // Redirect logic when manually switching
           if (
             pathname.startsWith("/projects") ||
             pathname.startsWith("/billing")
@@ -90,25 +90,35 @@ export default function Sidebar({
   };
 
   // --- MENU CONFIG ---
-  let navLinks = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutGrid },
-    { name: "Projects", href: "/projects", icon: FolderKanban },
-    { name: "Milestones", href: "/milestones", icon: FileText },
-  ];
+  // 1. Define Base Links
+  let navLinks = [{ name: "Dashboard", href: "/dashboard", icon: LayoutGrid }];
+
+  // 2. Add Role-Specific Links
+  if (currentRole === "client") {
+    // Client sees Projects & Milestones
+    navLinks.push(
+      { name: "Projects", href: "/projects", icon: FolderKanban },
+      { name: "Milestones", href: "/milestones", icon: FileText }
+    );
+  } else {
+    // Vendor sees Assignments
+    navLinks.push({
+      name: "Assignments",
+      href: "/assignments",
+      icon: FileText,
+    });
+  }
 
   const managementLinks = [
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  // 3. Hide Links based on Role
   if (currentRole === "client") {
     managementLinks.unshift({
       name: "Billing",
       href: "/billing",
       icon: CreditCard,
     });
-  } else {
-    navLinks = navLinks.filter((link) => link.name !== "Projects");
   }
 
   // --- NAV ITEM COMPONENT ---
@@ -116,9 +126,11 @@ export default function Sidebar({
     const isActive =
       pathname === link.href ||
       (link.href !== "/dashboard" && pathname.startsWith(link.href));
+
+    // 3. Dropdown Logic (Attached to "Assignments" for Vendors)
     const hasDropdown =
       currentRole === "vendor" &&
-      link.name === "Milestones" &&
+      link.name === "Assignments" &&
       vendorTasks.length > 0;
 
     return (
@@ -152,7 +164,7 @@ export default function Sidebar({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setIsMilestonesOpen(!isMilestonesOpen);
+                setIsDropdownOpen(!isDropdownOpen);
               }}
               className="p-0.5 -mr-1 rounded hover:bg-white/20 text-current transition-colors cursor-pointer z-20"
             >
@@ -160,7 +172,7 @@ export default function Sidebar({
                 size={12}
                 className={cn(
                   "transition-transform duration-200",
-                  isMilestonesOpen && "rotate-180"
+                  isDropdownOpen && "rotate-180"
                 )}
               />
             </div>
@@ -169,7 +181,7 @@ export default function Sidebar({
 
         {/* --- VENDOR TASK TREE --- */}
         <AnimatePresence>
-          {hasDropdown && isMilestonesOpen && (
+          {hasDropdown && isDropdownOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -185,7 +197,7 @@ export default function Sidebar({
                 {vendorTasks.map((task, i) => (
                   <Link
                     key={i}
-                    href={`/milestones/${task.projectId}`} // 👈 Fixed Link Logic
+                    href={`/milestones/${task.projectId}`}
                     className="group/item flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-zinc-50 transition-colors"
                   >
                     <div
@@ -211,7 +223,7 @@ export default function Sidebar({
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-zinc-200 w-64 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
-      {/* 1. LOGO */}
+      {/* LOGO */}
       <Link href="/dashboard">
         <div className="h-16 flex items-center px-5 mb-2">
           <div className="relative w-28 h-16">
@@ -226,7 +238,7 @@ export default function Sidebar({
         </div>
       </Link>
 
-      {/* 2. ROLE SWITCHER */}
+      {/* ROLE SWITCHER */}
       <div className="px-3 mb-6 relative z-30">
         <motion.button
           whileHover={{ scale: 1.01 }}
@@ -280,6 +292,7 @@ export default function Sidebar({
                 className="absolute top-full left-0 right-0 mt-2 mx-1 bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-xl shadow-2xl shadow-zinc-900/10 z-50 p-1.5 ring-1 ring-black/5"
               >
                 <div className="space-y-0.5">
+                  {/* Client Option */}
                   <button
                     disabled={isSwitching}
                     onClick={() => {
@@ -313,6 +326,7 @@ export default function Sidebar({
                     )}
                   </button>
 
+                  {/* Vendor Option */}
                   <button
                     disabled={isSwitching}
                     onClick={() => {
@@ -358,7 +372,7 @@ export default function Sidebar({
         </AnimatePresence>
       </div>
 
-      {/* 3. LINKS */}
+      {/* LINKS */}
       <div className="flex-1 px-3 space-y-6 overflow-y-auto">
         <div className="space-y-0.5">
           <p className="px-3 mb-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
@@ -379,7 +393,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* 4. UPGRADE CARD (CLIENT ONLY) */}
+      {/* UPGRADE CARD (CLIENT ONLY) */}
       {currentRole === "client" && (
         <div className="px-3 pb-4">
           <Link
@@ -406,7 +420,7 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* 5. FOOTER */}
+      {/* FOOTER */}
       <div className="p-3 mt-auto border-t border-zinc-100 bg-zinc-50/40">
         <div className="grid grid-cols-2 gap-2 mb-2">
           <Link

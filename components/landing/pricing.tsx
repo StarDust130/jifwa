@@ -1,61 +1,77 @@
 "use client";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import React from "react";
+import { motion } from "framer-motion";
 import { Check, X, Zap, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 const PricingSection = () => {
-  const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
+  const router = useRouter();
+  const { isSignedIn } = useUser();
+
+  const handlePlanSelect = (planName: string) => {
+    // 1. Check if user is logged in
+    if (!isSignedIn) {
+      router.push("/sign-in");
+      return;
+    }
+
+    const planKey = planName.toLowerCase(); // e.g., 'Starter' -> 'starter'
+
+    // 2. Redirect to Billing Page
+    // Since your folder is app/(PLATFORM)/billing, the URL is just /billing
+    router.push(`/billing?plan=${planKey}`);
+  };
 
   const plans = [
     {
-      name: "Free", //
-      price: "0", //
-      description: "Best for product testing and evaluation", //
+      name: "Free",
+      price: "0",
+      description: "Best for product testing and evaluation",
       features: [
-        "1 Active Project", //
-        "Basic AI parsing", //
-        "Core execution workflow", //
+        "1 Active Project",
+        "Basic AI parsing",
+        "Core execution workflow",
       ],
-      // Inferred missing features based on higher tiers
-      missing: ["Custom branding", "Priority email support", "Team access"], 
+      missing: ["Custom branding", "Priority email support", "Team access"],
       cta: "Start Free",
       style: "basic",
     },
     {
-      name: "Starter", //
-      // Monthly: ₹499. Yearly (20% off): ~₹399
-      price: billing === "monthly" ? "499" : "399", 
-      description: "Best for freelancers & individual professionals", //
+      name: "Starter",
+      price: "499",
+      description: "Best for freelancers & individual professionals",
       features: [
-        "Up to 5 Active Projects", //
-        "Custom branding (your logo)", //
-        "Priority email support", //
+        "Up to 5 Active Projects",
+        "Custom branding (your logo)",
+        "Priority email support",
       ],
-      // Missing features from Agency/Enterprise tiers
-      missing: ["Unlimited projects", "Team access", "Private AI mode"], 
+      missing: ["Unlimited projects", "Team access", "Private AI mode"],
       cta: "Get Started",
-      style: "titanium", // Dark Mode Style for the middle tier
+      style: "titanium",
       tag: "Most Popular",
     },
     {
-      name: "Agency", //
-      // Monthly: ₹1,499. Yearly (20% off): ~₹1,199
-      price: billing === "monthly" ? "1,499" : "1,199", 
-      description: "Built for agencies managing multiple clients", //
+      name: "Agency",
+      price: "1,499",
+      description: "Built for agencies managing multiple clients",
       features: [
-        "Unlimited projects", //
-        "Team access (up to 3 members)", //
-        "Optimized for service delivery teams", //
+        "Unlimited projects",
+        "Team access (up to 3 members)",
+        "Optimized for service delivery teams",
       ],
-      // Missing features from Enterprise tier
-      missing: ["Private AI mode", "Single Sign-On (SSO)"], 
-      cta: "Contact Sales",
+      missing: ["Private AI mode", "Single Sign-On (SSO)"],
+      cta: "Get Started",
       style: "basic",
     },
   ];
 
   return (
-    <section id="pricing" className="relative w-full py-24 bg-white text-gray-900 overflow-hidden font-sans">
+    <section
+      id="pricing"
+      className="relative w-full py-24 bg-white text-gray-900 overflow-hidden font-sans"
+    >
       {/* Background Decor */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50 -z-10" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-blue-50/40 to-yellow-50/40 blur-[100px] -z-10 rounded-full" />
@@ -73,47 +89,12 @@ const PricingSection = () => {
             Simple Pricing
           </motion.div>
 
-          {/* Updated Headline */}
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6">
             Simple, Transparent Pricing. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900">
               Upgrade as You Grow.
             </span>
           </h2>
-
-          {/* TOGGLE */}
-          <div className="flex items-center justify-center mt-8 gap-4">
-            <span
-              className={`text-sm font-bold ${
-                billing === "monthly" ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              Monthly
-            </span>
-            <button
-              onClick={() =>
-                setBilling(billing === "monthly" ? "yearly" : "monthly")
-              }
-              className="w-14 h-8 bg-gray-200 rounded-full p-1 relative transition-colors duration-300 focus:outline-none"
-            >
-              <motion.div
-                layout
-                className="w-6 h-6 bg-white rounded-full shadow-md"
-                animate={{ x: billing === "yearly" ? 24 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
-            </button>
-            <span
-              className={`text-sm font-bold flex items-center gap-2 ${
-                billing === "yearly" ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              Yearly
-              <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
-                SAVE 20%
-              </span>
-            </span>
-          </div>
         </div>
 
         {/* PRICING GRID */}
@@ -132,7 +113,6 @@ const PricingSection = () => {
                   : "bg-white text-gray-900 border border-gray-200 shadow-sm hover:shadow-xl"
               }`}
             >
-              {/* Popular Tag */}
               {plan.tag && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
                   {plan.tag}
@@ -210,8 +190,8 @@ const PricingSection = () => {
                       <div
                         className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
                           plan.style === "titanium"
-                            ? "bg-gray-800 text-gray-600"
-                            : "bg-gray-100 text-gray-400"
+                            ? "bg-gray-800 text-green-400"
+                            : "bg-green-100 text-gray-400"
                         }`}
                       >
                         <X size={10} strokeWidth={3} />
@@ -231,6 +211,7 @@ const PricingSection = () => {
               </div>
 
               <button
+                onClick={() => handlePlanSelect(plan.name)}
                 className={`w-full h-12 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 ${
                   plan.style === "titanium"
                     ? "bg-white text-gray-900 hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
@@ -244,7 +225,7 @@ const PricingSection = () => {
           ))}
         </div>
 
-        {/* Footer Note - Updated to Razorpay message */}
+        {/* Footer Note */}
         <div className="mt-16 text-center">
           <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
             <ShieldCheck size={14} className="text-green-600" />

@@ -29,6 +29,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // UPDATED: Added "Security" link to match the new section
   const navLinks = [
     { name: "Features", href: "#features" },
     { name: "Security", href: "#security" },

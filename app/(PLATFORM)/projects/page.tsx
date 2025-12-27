@@ -8,7 +8,6 @@ import { ProjectsClient } from "@/components/pages/projects/projects-client";
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-  // 1. Auth Check
   const { userId } = auth();
   const clerkUser = await currentUser();
 
@@ -16,30 +15,34 @@ export default async function ProjectsPage() {
 
   await connectDB();
 
-  // 2. Get Current User & Role from DB
   const dbUser = await User.findOne({ clerkId: userId });
-
-  // Fallback if user doesn't exist yet
-  if (!dbUser) redirect("/dashboard");
-
-  const role = dbUser.currentRole; // "client" or "vendor"
   const email = clerkUser.emailAddresses[0].emailAddress;
 
-  // 3. Fetch Projects Based on Role
-  let query = {};
-
-  if (role === "client") {
-    // Client: See projects I OWN
-    query = { userId: userId };
+  // 1. Role Detection
+  let role = "client";
+  if (dbUser) {
+    role = dbUser.currentRole;
   } else {
-    // Vendor: See projects assigned to MY EMAIL
-    query = { vendorEmail: email };
+    // New user check
+    const hasAssignments = await Project.exists({ vendorEmail: email });
+    if (hasAssignments) role = "vendor";
   }
 
-  // 4. Execute Query
-  const projects = await Project.find(query).sort({ createdAt: -1 }).lean();
+  // 🔒 2. SECURITY: Vendors cannot access this page. Redirect them.
+  if (role === "vendor") {
+    redirect("/dashboard");
+  }
 
-  // 5. Serialize Data
+  // 3. Fetch Client Projects
+  let projects: any[] = [];
+  try {
+    projects = await Project.find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .lean();
+  } catch (error) {
+    projects = [];
+  }
+
   const serializedProjects = JSON.parse(JSON.stringify(projects));
 
   return <ProjectsClient initialProjects={serializedProjects} />;

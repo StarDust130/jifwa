@@ -215,7 +215,7 @@ export default function Sidebar({
 
       {/* Sidebar Content */}
       <Link href="/dashboard" className="h-16 flex items-center px-5 mb-2">
-        <div className="relative w-20 h-8">
+        <div className="relative w-20 h-20">
           <Image
             src="/logo.png"
             alt="Jifwa"
@@ -263,7 +263,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      <SidebarFooter />
+      <SidebarFooter currentRole={currentRole} />
     </div>
   );
 }

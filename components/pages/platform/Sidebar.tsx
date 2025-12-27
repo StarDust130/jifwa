@@ -18,7 +18,6 @@ import {
   Zap,
   LogOut,
   Loader2,
-  UserCircle,
   ChevronDown,
   Sparkles,
 } from "lucide-react";
@@ -44,12 +43,16 @@ export default function Sidebar({
   const [vendorTasks, setVendorTasks] = useState<any[]>([]);
   const [isMilestonesOpen, setIsMilestonesOpen] = useState(true);
 
+  // 1. Force Redirect if Vendor tries to view Client Pages
   useEffect(() => {
     setCurrentRole(initialRole);
     if (initialRole === "vendor") {
       fetchVendorTasks();
+      if (pathname.startsWith("/projects") || pathname.startsWith("/billing")) {
+        router.replace("/dashboard");
+      }
     }
-  }, [initialRole]);
+  }, [initialRole, pathname, router]);
 
   const fetchVendorTasks = async () => {
     const tasks = await getVendorSidebarData();
@@ -67,7 +70,13 @@ export default function Sidebar({
         setIsSwitcherOpen(false);
 
         if (result.role === "vendor") {
-          if (pathname.includes("/billing")) router.push("/dashboard");
+          // 2. Immediate Redirect Logic on Switch
+          if (
+            pathname.startsWith("/projects") ||
+            pathname.startsWith("/billing")
+          ) {
+            router.push("/dashboard");
+          }
           fetchVendorTasks();
         }
 
@@ -91,6 +100,7 @@ export default function Sidebar({
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
+  // 3. Hide Links based on Role
   if (currentRole === "client") {
     managementLinks.unshift({
       name: "Billing",
@@ -175,7 +185,7 @@ export default function Sidebar({
                 {vendorTasks.map((task, i) => (
                   <Link
                     key={i}
-                    href={`/projects/${task.projectId}`}
+                    href={`/milestones/${task.projectId}`} // 👈 Fixed Link Logic
                     className="group/item flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-zinc-50 transition-colors"
                   >
                     <div
@@ -216,7 +226,7 @@ export default function Sidebar({
         </div>
       </Link>
 
-      {/* 2. COMPACT ROLE SWITCHER */}
+      {/* 2. ROLE SWITCHER */}
       <div className="px-3 mb-6 relative z-30">
         <motion.button
           whileHover={{ scale: 1.01 }}
@@ -270,7 +280,6 @@ export default function Sidebar({
                 className="absolute top-full left-0 right-0 mt-2 mx-1 bg-white/95 backdrop-blur-md border border-zinc-200/80 rounded-xl shadow-2xl shadow-zinc-900/10 z-50 p-1.5 ring-1 ring-black/5"
               >
                 <div className="space-y-0.5">
-                  {/* CLIENT OPTION */}
                   <button
                     disabled={isSwitching}
                     onClick={() => {
@@ -304,7 +313,6 @@ export default function Sidebar({
                     )}
                   </button>
 
-                  {/* VENDOR OPTION */}
                   <button
                     disabled={isSwitching}
                     onClick={() => {

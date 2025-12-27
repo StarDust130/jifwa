@@ -12,7 +12,6 @@ import {
   ShieldCheck,
   Cpu,
   RefreshCw,
-  MoreHorizontal,
 } from "lucide-react";
 
 // --- ANIMATION VARIANTS (Fixed Types) ---
@@ -72,9 +71,9 @@ const FeaturesSection = () => {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6"
           >
-            More than just a <br />
+            Structure, Clarity, and <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900">
-              PDF Reader.
+              Accountability.
             </span>
           </motion.h2>
 
@@ -85,8 +84,8 @@ const FeaturesSection = () => {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-500"
           >
-            Jifwa transforms static legal text into a dynamic data layer that
-            powers your entire operations stack.
+            Jifwa converts a static contract into a guided execution workspace
+            powered by private AI and protected by end-to-end encryption[cite: 249].
           </motion.p>
         </div>
 
@@ -106,12 +105,13 @@ const FeaturesSection = () => {
                 <div className="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center mb-4 text-black shadow-lg shadow-yellow-200">
                   <Zap size={20} className="fill-black" />
                 </div>
+                {/* PDF Source: Section 4 - Key Capabilities [cite: 251] */}
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Contextual AI Extraction
+                  AI-Guided Milestones
                 </h3>
                 <p className="text-gray-500 max-w-md">
-                  Our model doesn't just read words; it understands obligations.
-                  Deadlines, penalties, and deliverables are auto-tagged.
+                  Extract contract terms and convert them into clear, actionable execution steps. 
+                  Deliverables are interpreted and auto-tagged[cite: 252].
                 </p>
               </div>
 
@@ -135,7 +135,7 @@ const FeaturesSection = () => {
                   <ArrowUpRight size={20} />
                 </div>
 
-                {/* Extracted Chips */}
+                {/* Extracted Chips - Matches PDF Source: Deliverables & Payment Terms [cite: 40, 43] */}
                 <div className="flex flex-wrap gap-2">
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -166,7 +166,7 @@ const FeaturesSection = () => {
             </div>
           </motion.div>
 
-          {/* CARD 2: INTEGRATIONS (Vertical) */}
+          {/* CARD 2: ALIGNMENT LAYER (Vertical) */}
           <motion.div
             variants={cardHover}
             initial="rest"
@@ -181,9 +181,10 @@ const FeaturesSection = () => {
                 <div className="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center mb-4 border border-gray-700">
                   <RefreshCw size={20} className="text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Universal Sync</h3>
+                {/* PDF Source: Section 3 - What Jifwa Does [cite: 244] */}
+                <h3 className="text-xl font-bold mb-2">Execution Alignment</h3>
                 <p className="text-gray-400 text-sm">
-                  Push tasks to Jira, Asana, and Slack instantly.
+                  Jifwa sits on top of your contracts and ensures delivery happens exactly as agreed[cite: 244].
                 </p>
               </div>
 
@@ -259,7 +260,7 @@ const FeaturesSection = () => {
             </div>
           </motion.div>
 
-          {/* CARD 3: REVENUE (Wide Bottom) */}
+          {/* CARD 3: MILESTONE PAYMENTS (Wide Bottom) */}
           <motion.div
             variants={cardHover}
             initial="rest"
@@ -272,12 +273,12 @@ const FeaturesSection = () => {
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mb-4 text-green-700">
                 <FileText size={20} />
               </div>
+              {/* PDF Source: Milestone Payments [cite: 60, 43] */}
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Revenue Ops
+                Milestone Payments
               </h3>
               <p className="text-gray-500 text-sm">
-                Never miss a billing trigger. Auto-draft invoices when
-                milestones are met.
+                Ensure payments are released only when specific acceptance criteria are met[cite: 51].
               </p>
             </div>
 
@@ -285,7 +286,7 @@ const FeaturesSection = () => {
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex justify-between items-center">
               <div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase">
-                  Unlockable Revenue
+                  Contract Value
                 </p>
                 <p className="text-xl font-mono font-bold text-gray-900">
                   $45,200
@@ -308,13 +309,13 @@ const FeaturesSection = () => {
               <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mb-4 text-gray-700">
                 <ShieldCheck size={20} />
               </div>
+              {/* PDF Source: Section 6 - Privacy & Security [cite: 274, 277] */}
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                Enterprise Grade Security
+                Your Contract Data Stays Private
               </h3>
               <p className="text-gray-500">
-                Your contracts are sensitive. We treat them that way. Jifwa is
-                SOC2 Type II ready and uses bank-grade encryption for all data
-                at rest and in transit.
+                End-to-end encryption by default. No third-party AI usage. 
+                Even Jifwa&apos;s team cannot view your content [cite: 277-280].
               </p>
 
               <div className="mt-6 flex gap-4">
@@ -323,8 +324,8 @@ const FeaturesSection = () => {
                   AES-256
                 </div>
                 <div className="px-3 py-1 bg-gray-100 rounded-lg text-xs font-bold text-gray-600 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div> SSO
-                  / SAML
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div> 
+                  SOC2 Type II
                 </div>
               </div>
             </div>

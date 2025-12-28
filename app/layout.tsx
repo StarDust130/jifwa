@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { CSPostHogProvider } from "@/components/elements/providers";
 
 /* =========================
   Metadata
@@ -68,7 +69,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${GeistSans.variable} ${GeistMono.variable}`}>
-          <main>{children}</main>
+          <main>
+            <CSPostHogProvider>{children}</CSPostHogProvider>
+          </main>
           <Toaster />
         </body>
       </html>

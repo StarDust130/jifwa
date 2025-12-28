@@ -18,17 +18,22 @@ import {
   CreditCard,
   Briefcase,
   Box,
+  X, // Added X icon
 } from "lucide-react";
 
 import { RoleSwitcher } from "./sidebar/role-switcher";
 import { NavItem } from "./sidebar/nav-item";
 import { SidebarFooter } from "./sidebar/sidebar-footer";
 
+interface SidebarProps {
+  initialRole?: string;
+  onNavClick?: () => void; // Function to close the mobile sheet
+}
+
 export default function Sidebar({
   initialRole = "client",
-}: {
-  initialRole?: string;
-}) {
+  onNavClick,
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -65,7 +70,6 @@ export default function Sidebar({
     }
   };
 
-  // 🚀 OPTIMIZED ROLE SWITCH
   const handleRoleSwitch = async (newRole: string) => {
     if (newRole === currentRole || targetRole) return;
 
@@ -74,10 +78,8 @@ export default function Sidebar({
     try {
       const result = await toggleUserRole();
       if (result.success && result.role) {
-        // ⚡️ INSTANT REDIRECT (Don't wait for server state to update locally)
         router.push("/dashboard");
 
-        // Cinematic delay to allow the redirect to load behind the scenes
         setTimeout(() => {
           setCurrentRole(result.role!);
           if (result.role === "vendor") {
@@ -86,8 +88,10 @@ export default function Sidebar({
             setRecentAssignments([]);
           }
           router.refresh();
-          // Close loader slightly faster
           setTargetRole(null);
+
+          // FIX: Close the sheet after switching roles
+          if (onNavClick) onNavClick();
         }, 1200);
       }
     } catch (e) {
@@ -125,7 +129,7 @@ export default function Sidebar({
   };
 
   return (
-    <div className="flex flex-col h-full md:bg-[#FAFAFA] md:border-r md:border-zinc-200/80 w-64 relative z-40 font-sans">
+    <div className="flex flex-col h-full bg-[#FAFAFA] md:bg-[#FAFAFA] md:border-r md:border-zinc-200/80 w-full md:w-64 relative z-40 font-sans">
       <AnimatePresence mode="wait">
         {targetRole && (
           <motion.div
@@ -134,7 +138,6 @@ export default function Sidebar({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9999] bg-[#000000] flex flex-col items-center justify-center overflow-hidden"
           >
-            {/* Pulsing Glow Background */}
             <motion.div
               animate={{
                 scale: [1, 1.1, 1],
@@ -145,7 +148,6 @@ export default function Sidebar({
             />
 
             <div className="relative z-10 flex flex-col items-center gap-8">
-              {/* 🔄 3D FLIP ANIMATION ICON */}
               <motion.div
                 initial={{ rotateY: 0, scale: 0.5, opacity: 0 }}
                 animate={{
@@ -198,17 +200,28 @@ export default function Sidebar({
         )}
       </AnimatePresence>
 
-      <Link href="/dashboard" className="h-16 flex items-center px-5 mb-2">
-        <div className="relative w-20 h-20">
-          <Image
-            src="/logo.png"
-            alt="Jifwa"
-            fill
-            className="object-contain object-left"
-            priority
-          />
-        </div>
-      </Link>
+      {/* Header Area with Logo and Close Button */}
+      <div className="h-16 flex items-center justify-between px-5 mb-2">
+        <Link href="/dashboard" onClick={onNavClick}>
+          <div className="relative w-20 h-20">
+            <Image
+              src="/logo.png"
+              alt="Jifwa"
+              fill
+              className="object-contain object-left"
+              priority
+            />
+          </div>
+        </Link>
+
+        {/* FIX: Mobile Close Button */}
+        <button
+          onClick={onNavClick}
+          className="md:hidden p-2 text-zinc-500 hover:bg-gray-200 rounded-full transition-colors"
+        >
+          <X size={24} />
+        </button>
+      </div>
 
       <div className="px-3 mb-6">
         <RoleSwitcher currentRole={currentRole!} onSwitch={handleRoleSwitch} />
@@ -220,17 +233,19 @@ export default function Sidebar({
             Platform
           </p>
           {getNavLinks().map((link) => (
-            <NavItem
-              key={link.href}
-              link={link}
-              isActive={
-                (pathname.startsWith(link.href) &&
-                  link.href !== "/dashboard") ||
-                pathname === link.href
-              }
-              dropdownItems={recentAssignments}
-              currentRole={currentRole}
-            />
+            // FIX: Close sheet on click
+            <div key={link.href} onClick={onNavClick}>
+              <NavItem
+                link={link}
+                isActive={
+                  (pathname.startsWith(link.href) &&
+                    link.href !== "/dashboard") ||
+                  pathname === link.href
+                }
+                dropdownItems={recentAssignments}
+                currentRole={currentRole}
+              />
+            </div>
           ))}
         </div>
         <div className="space-y-1">
@@ -238,11 +253,10 @@ export default function Sidebar({
             Account
           </p>
           {getAccountLinks().map((link) => (
-            <NavItem
-              key={link.href}
-              link={link}
-              isActive={pathname.startsWith(link.href)}
-            />
+            // FIX: Close sheet on click
+            <div key={link.href} onClick={onNavClick}>
+              <NavItem link={link} isActive={pathname.startsWith(link.href)} />
+            </div>
           ))}
         </div>
       </div>

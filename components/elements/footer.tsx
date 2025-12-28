@@ -69,6 +69,7 @@ const Footer = () => {
                 className="object-contain object-left"
               />
             </div>
+            
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
               The execution layer for legal contracts. Zero ambiguity, 100%
               compliance.

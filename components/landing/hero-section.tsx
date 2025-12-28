@@ -201,7 +201,7 @@ const HeroSection = () => {
 
         {/* --- RIGHT COLUMN: DEVICE --- */}
         {/* FIX: Reduced height for mobile (480px) to prevent massive gaps */}
-        <div className="relative h-[480px] lg:h-[700px] w-full flex items-center lg:items-start justify-center lg:justify-end perspective-[2500px] mt-8 lg:mt-0">
+        <div className="relative h-[550px] lg:h-[700px] w-full flex items-center lg:items-start justify-center lg:justify-end perspective-[2500px] mt-8 lg:mt-0">
           <motion.div
             // FIX: Removed rotation on Mobile (rotateY: 0) for readability
             initial={{
@@ -217,9 +217,8 @@ const HeroSection = () => {
               scale: 1,
             }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="relative w-[260px] sm:w-[320px] h-full max-h-[520px] lg:max-h-[600px] bg-gray-900 rounded-[2.5rem] lg:rounded-[3rem] p-[5px] lg:p-[6px] shadow-[0_30px_60px_-10px_rgba(0,0,0,0.3)] z-20"
+            className="relative w-[280px] sm:w-[300px] lg:w-[320px] h-full max-h-[580px] lg:max-h-[600px] bg-gray-900 rounded-[2.5rem] lg:rounded-[3rem] p-[5px] lg:p-[6px] shadow-[0_30px_60px_-10px_rgba(0,0,0,0.3)] z-20"
           >
-            {/* Glossy Bezel Reflection */}
             <div className="absolute inset-0 rounded-[2.5rem] lg:rounded-[3rem] border border-gray-600/40 pointer-events-none z-50 ring-1 ring-inset ring-white/10"></div>
 
             <div className="h-full w-full bg-white rounded-[2.2rem] lg:rounded-[2.6rem] overflow-hidden flex flex-col relative">
@@ -228,46 +227,47 @@ const HeroSection = () => {
                 <span className="absolute left-6 top-3 lg:top-4 text-[10px] lg:text-[12px] font-bold text-gray-900 font-mono tracking-tight z-40">
                   {currentTime}
                 </span>
+
                 {/* Dynamic Island */}
                 <div className="absolute top-2.5 lg:top-3 left-1/2 -translate-x-1/2 bg-black rounded-full z-30 flex items-center gap-2 px-3 py-1 lg:py-1.5 shadow-xl min-w-[90px] lg:min-w-[100px] justify-center">
                   <Loader2 size={10} className="text-gray-400 animate-spin" />
                   <span className="text-[9px] lg:text-[10px] font-bold text-white tracking-wide uppercase whitespace-nowrap">
-                    Scanning
+                    AI Scanning
                   </span>
                 </div>
+
                 <div className="absolute right-6 top-3 lg:top-4 flex gap-1.5 items-end z-40">
                   <div className="w-4 lg:w-5 h-2 lg:h-2.5 bg-gray-900 rounded-[2px]"></div>
                   <div className="w-0.5 h-1 lg:h-1.5 bg-gray-400 rounded-[1px]"></div>
                 </div>
               </div>
 
-              {/* APP CONTENT */}
+              {/* APP CONTENT - RESTORED JIFWA SPECIFIC UI */}
               <div className="flex-1 bg-gray-50/50 pt-5 lg:pt-6 px-3 lg:px-4 pb-6 flex flex-col font-sans relative">
                 {/* Search Bar */}
-                <div className="bg-gray-100 h-8 lg:h-9 rounded-xl mb-4 lg:mb-6 flex items-center px-3 gap-2">
+                <div className="bg-gray-100 h-8 lg:h-9 rounded-xl mb-3 flex items-center px-3 gap-2">
                   <Search size={14} className="text-gray-400" />
                   <span className="text-[10px] lg:text-[11px] text-gray-400 font-medium">
-                    Search...
+                    Search contracts...
                   </span>
                 </div>
 
-                {/* Main Card */}
-                <div className="bg-white p-3 lg:p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mb-4 lg:mb-6 relative overflow-hidden">
+                {/* Main Card - Restored MSA_Jifwa_Final */}
+                <div className="bg-white p-3 lg:p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 mb-3 relative overflow-hidden">
                   <div className="flex items-center gap-3 relative z-10">
                     <div className="w-9 h-9 lg:w-10 lg:h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100/50">
                       <FileText size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[11px] lg:text-[12px] font-bold text-gray-900 truncate">
-                        MSA_Service_Agrmt.pdf
+                        MSA_Jifwa_Final.pdf
                       </div>
                       <div className="text-[9px] lg:text-[10px] text-gray-500 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                        Processing
+                        Ready for extraction
                       </div>
                     </div>
                   </div>
-                  {/* Scan Line */}
                   <motion.div
                     variants={scanLine}
                     animate="animate"
@@ -275,8 +275,18 @@ const HeroSection = () => {
                   />
                 </div>
 
-                {/* Task List */}
-                <div className="space-y-2 lg:space-y-3">
+                {/* AI Header */}
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <span className="text-[8px] lg:text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                    Jifwa AI Intelligence
+                  </span>
+                  <span className="text-[8px] lg:text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                    Analysis Complete
+                  </span>
+                </div>
+
+                {/* Task List - Restored Clause 2.4 & Quickbooks */}
+                <div className="space-y-2 lg:space-y-2.5">
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -284,9 +294,15 @@ const HeroSection = () => {
                     className="bg-white p-2.5 lg:p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-1 border-l-[3px] border-l-blue-500"
                   >
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 size={14} className="text-blue-500" />
+                      <CheckCircle2 size={12} className="text-blue-500" />
                       <span className="text-[10px] lg:text-[11px] font-bold text-gray-800">
-                        Milestone 1: Kickoff
+                        App V1.0 Milestone
+                      </span>
+                    </div>
+                    <div className="pl-5 text-[8px] lg:text-[9px] text-gray-400">
+                      Extracted from{" "}
+                      <span className="text-gray-600 font-medium">
+                        Clause 2.4
                       </span>
                     </div>
                   </motion.div>
@@ -298,31 +314,36 @@ const HeroSection = () => {
                     className="bg-white p-2.5 lg:p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-1 border-l-[3px] border-l-green-500"
                   >
                     <div className="flex items-center gap-2">
-                      <CreditCard size={14} className="text-green-500" />
+                      <CreditCard size={12} className="text-green-500" />
                       <span className="text-[10px] lg:text-[11px] font-bold text-gray-800">
-                        Payment: $15,000
+                        Initial Deposit: $15,000
+                      </span>
+                    </div>
+                    <div className="pl-5 text-[8px] lg:text-[9px] text-gray-400">
+                      Syncing to{" "}
+                      <span className="text-gray-600 font-medium">
+                        Quickbooks
                       </span>
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Bottom Action */}
+                {/* Bottom Action - Restored Jifwa Text */}
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 2.5 }}
                   className="mt-auto mx-auto bg-gray-900 text-white px-4 lg:px-5 py-2 lg:py-2.5 rounded-full shadow-lg flex items-center gap-2 mb-1 lg:mb-2 hover:scale-105 transition-transform cursor-pointer"
                 >
-                  <Zap size={12} className="fill-white" />
-                  <span className="text-[10px] lg:text-[11px] font-bold tracking-wide">
-                    Execute Actions
+                  <Zap size={10} className="fill-white" />
+                  <span className="text-[9px] lg:text-[10px] font-bold tracking-wide">
+                    Push 2 Updates to jifwa
                   </span>
                 </motion.div>
               </div>
             </div>
 
             {/* --- RIGHT FLOATING NOTIFICATION --- */}
-            {/* FIX: Scaled down to 0.9 on mobile to save space */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={RIGHT_NOTIFICATIONS[rightIndex].id}
@@ -341,7 +362,7 @@ const HeroSection = () => {
                   <p className="text-[9px] lg:text-[10px] font-bold text-gray-900">
                     {RIGHT_NOTIFICATIONS[rightIndex].title}
                   </p>
-                  <p className="text-[8px] lg:text-[9px] text-gray-500 font-medium">
+                  <p className="text-[8px] lg:text-[9px] text-gray-500 font-medium truncate w-24">
                     {RIGHT_NOTIFICATIONS[rightIndex].text}
                   </p>
                 </div>
@@ -367,7 +388,7 @@ const HeroSection = () => {
                   <p className="text-[9px] lg:text-[10px] font-bold text-gray-900">
                     {LEFT_NOTIFICATIONS[leftIndex].title}
                   </p>
-                  <p className="text-[8px] lg:text-[9px] text-gray-500 font-medium">
+                  <p className="text-[8px] lg:text-[9px] text-gray-500 font-medium truncate w-24">
                     {LEFT_NOTIFICATIONS[leftIndex].text}
                   </p>
                 </div>

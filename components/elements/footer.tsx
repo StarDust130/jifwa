@@ -47,11 +47,11 @@ const Footer = () => {
           </div>
 
           <div className="flex gap-4">
-            <button className="h-10 px-6 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+            <button
+              onClick={() => (window.location.href = "/dashboard")}
+              className="h-10 px-6 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+            >
               Get Started
-            </button>
-            <button className="h-10 px-6 rounded-lg border border-white/10 hover:border-white/30 hover:bg-white/5 text-sm font-bold transition-all">
-              Book Demo
             </button>
           </div>
         </div>

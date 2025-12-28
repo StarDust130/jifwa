@@ -59,31 +59,39 @@ const Footer = () => {
         {/* 2. MAIN GRID (2 Cols on Mobile, 6 Cols on Desktop) */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-10 mb-12">
           {/* BRAND COLUMN (Full width on mobile) */}
-          <div className="col-span-2 lg:col-span-2 flex flex-col gap-6 pr-0 lg:pr-8">
-            {/* Logo */}
-            <div className="relative h-7 w-28 opacity-90 hover:opacity-100 transition-opacity">
-              <Image
-                src="/logo-2.png"
-                alt="Jifwa"
-                fill
-                className="object-contain object-left"
-              />
+          <div className="col-span-2 lg:col-span-2 flex flex-col gap-5 pr-0 lg:pr-8">
+            {/* Brand / Logo */}
+            <div className="group relative flex items-center w-fit cursor-default">
+              {/* Optional: Subtle background glow for depth */}
+              <div className="absolute -inset-2 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
+
+              <span className="relative text-4xl font-extrabold tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                Jifwa
+                {/* Accent dot for modern tech feel */}
+                <span className="text-blue-500">.</span>
+              </span>
             </div>
-            
-            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-              The execution layer for legal contracts. Zero ambiguity, 100%
-              compliance.
+
+            {/* Tagline */}
+            <p className="text-gray-400 text-base font-medium leading-relaxed max-w-sm">
+              The execution layer for legal contracts. <br />
+              <span className="text-gray-200">
+                Zero ambiguity, 100% compliance.
+              </span>
             </p>
 
-            {/* Social Icons (Magnetic Hover) */}
-            <div className="flex gap-3">
+            {/* Social Icons */}
+            <div className="flex gap-3 mt-2">
               {socialLinks.map((item, i) => (
                 <a
                   key={i}
                   href={item.href}
-                  className="w-9 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"
+                  className="group/icon w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 hover:-translate-y-1 transition-all duration-300"
                 >
-                  <item.icon size={15} />
+                  <item.icon
+                    size={18}
+                    className="group-hover/icon:scale-110 transition-transform"
+                  />
                 </a>
               ))}
             </div>

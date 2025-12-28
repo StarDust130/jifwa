@@ -110,7 +110,7 @@ export const Header = ({ userRole }: { userRole?: string }) => {
         <div className="hidden lg:flex flex-col items-end">
           <span className="text-xs font-bold">{user?.firstName || "User"}</span>
           <span className="text-[10px] text-gray-500 capitalize">
-            {userRole || "Free"} Plan
+            Free Plan
           </span>
         </div>
 

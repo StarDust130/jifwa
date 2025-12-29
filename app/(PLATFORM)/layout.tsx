@@ -37,10 +37,9 @@ export default async function PlatformLayout({
       {/* MAIN CONTENT WRAPPER */}
       <main className="flex-1 md:ml-64 min-h-screen flex flex-col bg-white">
         {/* TOPBAR */}
-        <Header />
-
+        <Header userRole={role} />
         {/* PAGE RENDER */}
-        <div className="flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8">
+        <div className="flex-1 w-full max-w-[1600px] mx-auto">
           {children}
           <BackToTop />
         </div>

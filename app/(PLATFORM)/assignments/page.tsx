@@ -2,8 +2,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
+import User from "@/models/User"; // 👈 IMPORT USER MODEL
 import { AssignmentsClient } from "@/components/pages/assignments/assignments-client";
-
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +15,23 @@ export default async function AssignmentsPage() {
 
   await connectDB();
 
+  // 🔒 1. SECURITY: Role Check
+  // We check the DB. If they are explicitly a "client", get them out.
+  const dbUser = await User.findOne({ clerkId: userId });
+
+  if (dbUser?.currentRole === "client") {
+    redirect("/dashboard");
+  }
+
+  // 2. Fetch Assignments (Only reachable if NOT a client)
   const email = user.emailAddresses[0].emailAddress;
 
-  // 1. Fetch ONLY projects where this user is the Vendor
-  const assignedProjects = await Project.find({ vendorEmail: email })
-    .sort({ updatedAt: -1 }) // Show most active jobs first
+  const query = {
+    $or: [{ vendorEmail: email }, { vendorId: userId }],
+  };
+
+  const assignedProjects = await Project.find(query)
+    .sort({ createdAt: -1 })
     .lean();
 
   const serializedData = JSON.parse(JSON.stringify(assignedProjects));

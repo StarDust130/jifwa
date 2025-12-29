@@ -1,8 +1,8 @@
-import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
-import User from "@/models/User"; // 👈 Import User Model
+import User from "@/models/User";
 import mongoose from "mongoose";
 import { ProjectHeader } from "@/components/pages/milestone/milestone-id-ui/project-header";
 import { ExecutionTimeline } from "@/components/pages/milestone/milestone-id-ui/execution-timeline";
@@ -26,14 +26,17 @@ export default async function ProjectDetailPage({
   params: { id: string };
 }) {
   const { userId } = auth();
-  if (!userId) redirect("/sign-in");
+  const user = await currentUser();
+
+  if (!userId || !user) redirect("/sign-in");
 
   await connectDB();
 
-  // 1. GET USER & CHECK ROLE
+  // 1. 🔍 GET USER & CHECK ROLE
   const dbUser = await User.findOne({ clerkId: userId });
 
-  // 🔒 SECURITY: If Vendor, kick them out immediately
+  // 🔒 SECURITY: VENDORS ARE NOT ALLOWED HERE
+  // If you are a vendor, you should be in the /assignments workspace, not here.
   if (dbUser?.currentRole === "vendor") {
     redirect("/dashboard");
   }
@@ -42,41 +45,51 @@ export default async function ProjectDetailPage({
   const project = await getProject(params.id);
   if (!project) return notFound();
 
-  // 🔒 SECURITY: Verify Ownership (Only Client/Owner can see this)
-  const isClient = project.userId === userId;
+  // 3. 🛡️ SECURITY: VERIFY CLIENT OWNERSHIP
+  // You must be the CREATOR (Owner) of this project to see this dashboard.
+  const isOwner = project.userId === userId;
 
-  if (!isClient) {
-    // If they aren't the vendor (blocked above) AND not the client, they shouldn't be here.
+  if (!isOwner) {
+    console.log(
+      "🚫 [Security] User attempted to access project they do not own."
+    );
     redirect("/dashboard");
   }
 
-  // 3. Fetch the Creator's Real Profile from Clerk
-  let creator = { fullName: "Client", imageUrl: "", email: "" };
-  try {
-    const user = await clerkClient.users.getUser(project.userId);
-    creator = {
-      fullName: `${user.firstName} ${user.lastName}`,
-      imageUrl: user.imageUrl,
-      email: user.emailAddresses[0]?.emailAddress || "",
-    };
-  } catch (e) {
-    console.error("Failed to fetch creator:", e);
-  }
+  // 4. Fetch Vendor Profile (Optional but good for UI)
+  // Since the Client is viewing, we might want to show who the Vendor is.
+  let creator = {
+    fullName: `${user.firstName} ${user.lastName}`,
+    imageUrl: user.imageUrl,
+    email: user.emailAddresses[0]?.emailAddress || "",
+  };
+
+  // NOTE: You can also fetch the *Vendor's* details here if you want to display them
+  // in the sidebar, but for now we keep it simple as requested.
+
+  // ✅ Client Mode Active
+  const isClient = true;
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen font-sans bg-[#F9FAFB]">
+      {/* Header with Client Controls Enabled */}
       <ProjectHeader project={project} isClient={isClient} />
-      <main className="max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+      <main className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Left Column: Timeline */}
         <div className="lg:col-span-8">
           <div className="mb-8" id="execution-timeline">
             <h2 className="text-xl font-bold text-zinc-900">Execution Plan</h2>
           </div>
+
           <ExecutionTimeline
             milestones={project.milestones}
+            projectId={params.id}
             isClient={isClient}
           />
         </div>
 
+        {/* Right Column: Project Info */}
         <div className="lg:col-span-4">
           <ProjectMetadata
             project={project}

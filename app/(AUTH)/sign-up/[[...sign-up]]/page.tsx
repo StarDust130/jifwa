@@ -14,6 +14,7 @@ import {
   Loader2,
   AlertCircle,
   ArrowRight,
+  Check,
 } from "lucide-react";
 
 export default function SignUpPage() {
@@ -24,12 +25,29 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  // Separate loading states for better UX
+  const [loading, setLoading] = useState(false); // For Email Form
+  const [googleLoading, setGoogleLoading] = useState(false); // For Google Button
+
   const [error, setError] = useState("");
+
+  // Terms State
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // 1. Google Sign Up
   const handleGoogleSignUp = async () => {
     if (!isLoaded) return;
+
+    // Validate Terms first
+    if (!termsAccepted) {
+      setError("Please agree to the Terms & Privacy Policy.");
+      return;
+    }
+
+    setGoogleLoading(true); // Show spinner on Google button
+    setError("");
+
     try {
       await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
@@ -39,6 +57,7 @@ export default function SignUpPage() {
     } catch (err: any) {
       console.error(err);
       setError("Connection to Google failed. Please try again.");
+      setGoogleLoading(false);
     }
   };
 
@@ -46,6 +65,12 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
+
+    if (!termsAccepted) {
+      setError("Please agree to the Terms & Privacy Policy.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -89,15 +114,13 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen w-full grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
-      {/* ================= LEFT: NEW "EXECUTION" BRANDING ================= */}
+      {/* ================= LEFT: BRANDING ================= */}
       <div className="relative hidden lg:flex flex-col justify-between bg-[#080808] text-white px-16 py-12">
-        {/* Different Background Pattern for Sign Up */}
         <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] bg-[size:24px_24px]" />
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px]" />
         </div>
 
-        {/* Back Link */}
         <Link
           href="/"
           className="relative z-10 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-white transition-colors group w-fit"
@@ -109,7 +132,6 @@ export default function SignUpPage() {
           Back to Home
         </Link>
 
-        {/* Main Content: Focused on EXECUTION now, not just contracts */}
         <div className="relative z-10 max-w-xl">
           <h1 className="text-[4rem] font-black tracking-tighter leading-[0.95] uppercase italic mb-6">
             Contracts <br />
@@ -124,9 +146,7 @@ export default function SignUpPage() {
             contract into a live, trackable workspace.
           </p>
 
-          {/* New Visuals: Showing "Milestones" instead of "Parsing" */}
           <div className="space-y-4">
-            {/* Card 1: Milestone Active */}
             <div className="flex items-center gap-4 p-4 rounded-xl bg-[#111] border-l-4 border-emerald-500 shadow-2xl w-full max-w-md">
               <div className="h-10 w-10 rounded-lg bg-emerald-900/20 flex items-center justify-center text-emerald-400">
                 <LayoutList size={20} />
@@ -146,7 +166,6 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            {/* Card 2: Auto-Verification */}
             <div className="flex items-center gap-4 p-4 rounded-xl bg-[#111] border border-white/5 w-full max-w-md ml-8 opacity-80">
               <div className="h-10 w-10 rounded-lg bg-blue-900/20 flex items-center justify-center text-blue-400">
                 <CheckSquare size={20} />
@@ -161,7 +180,6 @@ export default function SignUpPage() {
           </div>
         </div>
 
-        {/* Footer Badges */}
         <div className="relative z-10 flex items-center gap-6 text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">
           <span className="flex items-center gap-2">
             <Shield size={14} /> End-to-End Encrypted
@@ -174,18 +192,16 @@ export default function SignUpPage() {
 
       {/* ================= RIGHT: SIGN UP FORM ================= */}
       <div className="flex flex-col min-h-screen bg-white px-6 py-6 lg:px-0 lg:py-0 lg:justify-center lg:items-center">
-        {/* Mobile Header */}
         <div className="w-full flex justify-start lg:hidden mb-4">
           <Link
             href="/"
             className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-black transition-colors"
           >
-            <ArrowLeft size={16} /> 
+            <ArrowLeft size={16} /> Home
           </Link>
         </div>
 
         <div className="w-full max-w-[400px] mx-auto my-auto lg:mx-0 lg:my-0">
-          {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-2 flex items-center justify-center gap-2">
               {pendingVerification ? "Verify Email" : "Join"}
@@ -244,18 +260,33 @@ export default function SignUpPage() {
           ) : (
             /* === SIGN UP STATE === */
             <>
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2 text-red-600 text-xs font-medium animate-in fade-in slide-in-from-top-1">
+                  <AlertCircle size={14} />
+                  {error}
+                </div>
+              )}
+
+              {/* GOOGLE BUTTON - Now with Loading State */}
               <button
                 onClick={handleGoogleSignUp}
-                className="w-full h-12 bg-white text-gray-700 font-bold text-sm border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-3 mb-6 shadow-sm group"
+                disabled={googleLoading}
+                className="w-full h-12 bg-white text-gray-700 font-bold text-sm border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-3 mb-6 shadow-sm group disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <Image
-                  src="https://www.svgrepo.com/show/475656/google-color.svg"
-                  alt="G"
-                  width={20}
-                  height={20}
-                  className="group-hover:scale-110 transition-transform"
-                />
-                Sign up with Google
+                {googleLoading ? (
+                  <Loader2 size={20} className="animate-spin text-gray-400" />
+                ) : (
+                  <>
+                    <Image
+                      src="https://www.svgrepo.com/show/475656/google-color.svg"
+                      alt="G"
+                      width={20}
+                      height={20}
+                      className="group-hover:scale-110 transition-transform"
+                    />
+                    Sign up with Google
+                  </>
+                )}
               </button>
 
               <div className="relative flex py-2 items-center mb-6">
@@ -267,13 +298,6 @@ export default function SignUpPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2 text-red-600 text-xs font-medium">
-                    <AlertCircle size={14} />
-                    {error}
-                  </div>
-                )}
-
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-700">
                     Work Email
@@ -303,10 +327,47 @@ export default function SignUpPage() {
                   />
                 </div>
 
+                {/* TERMS CHECKBOX */}
+                <div className="pt-2">
+                  <div
+                    className="flex items-start gap-3 cursor-pointer group select-none"
+                    onClick={() => setTermsAccepted(!termsAccepted)}
+                  >
+                    <div
+                      className={`flex-shrink-0 w-5 h-5 rounded border transition-all flex items-center justify-center ${
+                        termsAccepted
+                          ? "bg-black border-black text-white"
+                          : "bg-white border-gray-300 group-hover:border-gray-400"
+                      }`}
+                    >
+                      {termsAccepted && <Check size={14} strokeWidth={3} />}
+                    </div>
+                    <p className="text-xs text-gray-500 leading-tight pt-0.5">
+                      I agree to the{" "}
+                      <Link
+                        href="/terms"
+                        className="text-gray-900 font-bold hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy"
+                        className="text-gray-900 font-bold hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Privacy Policy
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 bg-black text-white font-bold text-sm rounded-lg hover:bg-gray-900 transition-all shadow-xl shadow-gray-200 mt-4 flex items-center justify-center gap-2"
+                  className="w-full h-11 bg-black text-white font-bold text-sm rounded-lg hover:bg-gray-900 transition-all shadow-xl shadow-gray-200 mt-2 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -318,7 +379,6 @@ export default function SignUpPage() {
             </>
           )}
 
-          {/* Footer Links */}
           <div className="mt-8 text-center pb-6 lg:pb-0">
             <p className="text-sm text-gray-500 mb-6">
               Already have an account?{" "}
@@ -329,22 +389,6 @@ export default function SignUpPage() {
                 Log in
               </Link>
             </p>
-
-            <div className="flex justify-center gap-6 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-              <Link
-                href="/terms"
-                className="hover:text-gray-600 transition-colors"
-              >
-                Terms
-              </Link>
-              <span className="text-gray-200">•</span>
-              <Link
-                href="/privacy"
-                className="hover:text-gray-600 transition-colors"
-              >
-                Privacy
-              </Link>
-            </div>
           </div>
         </div>
       </div>

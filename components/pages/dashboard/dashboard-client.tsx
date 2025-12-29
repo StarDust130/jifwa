@@ -103,7 +103,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
   const isClient = role === "client";
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] pb-20 font-sans">
+    <div className="min-h-screen  pb-20 font-sans">
       <motion.div
         variants={containerVar}
         initial="hidden"

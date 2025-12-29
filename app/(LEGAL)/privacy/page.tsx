@@ -1,9 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { ArrowLeft, Shield, Lock, Eye, Globe, Download, Server, Cookie } from "lucide-react";
+import { ArrowLeft, Shield, Lock, Eye, Globe, Server, Database, Hexagon, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { Inter, Libre_Baskerville } from "next/font/google";
+
+// --- FONTS ---
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const libre = Libre_Baskerville({ 
+  weight: ["400", "700"], 
+  subsets: ["latin"], 
+  variable: "--font-libre" 
+});
+
+// --- JIFWA SECTIONS (Based on PDF) ---
+const SECTIONS = [
+  { id: "collection", title: "1. Information Collection" },
+  { id: "security", title: "2. Encryption & Security" },
+  { id: "ai", title: "3. AI Privacy (No Training)" },
+  { id: "sharing", title: "4. Data Sharing" },
+  { id: "rights", title: "5. Your Rights" },
+  { id: "contact", title: "6. Contact Us" },
+];
 
 export default function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState("collection");
@@ -17,11 +36,10 @@ export default function PrivacyPolicy() {
   // Scroll Spy Logic
   useEffect(() => {
     const handleScroll = () => {
-      const sections = SECTIONS.map(s => document.getElementById(s.id));
-      const scrollPosition = window.scrollY + 200;
-
-      sections.forEach((section) => {
-        if (section && section.offsetTop <= scrollPosition) {
+      const scrollPosition = window.scrollY + 250; // Offset for header
+      SECTIONS.forEach((section) => {
+        const element = document.getElementById(section.id);
+        if (element && element.offsetTop <= scrollPosition) {
           setActiveSection(section.id);
         }
       });
@@ -34,68 +52,65 @@ export default function PrivacyPolicy() {
     const element = document.getElementById(id);
     if (element) {
       window.scrollTo({
-        top: element.offsetTop - 100,
+        top: element.offsetTop - 120, // Offset for sticky header
         behavior: "smooth",
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-slate-900 font-sans selection:bg-teal-500 selection:text-white relative overflow-hidden">
+    <div className={`min-h-screen bg-[#FDFDFD] text-zinc-800 font-sans selection:bg-indigo-100 selection:text-indigo-900 ${inter.className} ${libre.variable}`}>
       
-      {/* --- BACKGROUND DESIGN ELEMENTS --- */}
-      <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
-        {/* 1. Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-        {/* 2. Glows (Teal/Blue for Privacy Theme) */}
-        <div className="absolute -top-[20%] -left-[10%] w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[100px] animate-pulse"></div>
-        <div className="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px]"></div>
-        {/* 3. Shapes */}
-        <div className="absolute top-32 right-20 w-32 h-32 border border-slate-200 rounded-full opacity-20"></div>
-        <div className="absolute bottom-20 left-10 w-20 h-20 border border-slate-200 rounded-xl opacity-20 rotate-12"></div>
+      {/* --- PREMIUM BACKGROUND TEXTURE --- */}
+      <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-50 to-transparent"></div>
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-50/50 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-50/50 rounded-full blur-[100px]"></div>
       </div>
 
-      {/* --- PROGRESS BAR --- */}
+      {/* --- READ PROGRESS BAR --- */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-blue-600 origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-emerald-500 origin-left z-50"
         style={{ scaleX }}
       />
 
       {/* --- HEADER --- */}
-      <header className="fixed top-0 w-full bg-white/70 backdrop-blur-xl border-b border-gray-200/50 z-40 h-16 flex items-center transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
+      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-zinc-100 z-40 h-20 flex items-center transition-all duration-300">
+        <div className="max-w-6xl mx-auto px-6 w-full flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="bg-zinc-900 text-white p-2 rounded-lg">
+               <Hexagon className="w-5 h-5 fill-current" />
+            </div>
+            <div className="flex flex-col">
+              <span className={`text-xl font-bold tracking-tight text-zinc-900 ${libre.className}`}>
+                Jifwa Legal
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold">
+                Privacy Policy
+              </span>
+            </div>
+          </div>
           <Link 
             href="/" 
-            className="flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-teal-600 transition-colors group"
+            className="hidden md:flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
           >
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-            Back to Jifwa
+            <ArrowLeft size={16} />
+            Back to Home
           </Link>
-          <div className="flex items-center gap-3">
-             <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-teal-300 hover:text-teal-600 text-slate-600 rounded-md text-xs font-bold transition-all shadow-sm">
-                <Download size={14} /> PDF
-             </button>
-          </div>
         </div>
       </header>
 
       {/* --- HERO SECTION --- */}
-      <div className="relative z-10 pt-32 pb-16 px-6 border-b border-gray-100/50">
-        <div className="max-w-4xl mx-auto">
+      <div className="relative z-10 pt-36 pb-12 px-6 border-b border-zinc-100/50">
+        <div className="max-w-6xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 mb-6"
           >
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-teal-600 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100">
-              <Shield size={24} />
-            </div>
-            <span className="px-3 py-1 rounded-full bg-teal-50/50 text-teal-700 text-xs font-bold border border-teal-100 flex items-center gap-1.5 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
-              </span>
-              Last Updated: Dec 25, 2025
+            <span className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+              Effective Date: December 25, 2025
             </span>
           </motion.div>
           
@@ -103,7 +118,7 @@ export default function PrivacyPolicy() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-6 tracking-tight"
+            className={`text-5xl md:text-6xl text-zinc-900 mb-6 leading-tight ${libre.className}`}
           >
             Privacy Policy
           </motion.h1>
@@ -111,192 +126,218 @@ export default function PrivacyPolicy() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-slate-500 leading-relaxed max-w-2xl"
+            className="text-xl text-zinc-500 leading-relaxed max-w-2xl"
           >
-            Your trust is our currency. We are transparent about how we protect your data, secure your contracts, and respect your rights.
+            We built Jifwa because we didn't trust existing tools with sensitive contracts. 
+            Here is exactly how we secure your data, protect your privacy, and respect your rights.
           </motion.p>
         </div>
       </div>
 
-      {/* --- CONTENT LAYOUT --- */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      {/* --- MAIN CONTENT LAYOUT --- */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-16">
         
-        {/* --- STICKY SIDEBAR --- */}
-        <div className="hidden lg:block lg:col-span-3">
-          <div className="sticky top-24 max-h-[80vh] overflow-y-auto pr-4 scrollbar-hide">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 px-4">
+        {/* --- SIDEBAR NAVIGATION (Sticky) --- */}
+        <aside className="hidden lg:block lg:col-span-3">
+          <div className="sticky top-28">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 pl-4">
               Contents
-            </h3>
-            <nav className="space-y-1 relative border-l border-gray-200 ml-4">
-              {SECTIONS.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => scrollTo(section.id)}
-                  className={`relative block w-full text-left px-4 py-2.5 text-sm transition-all duration-300 ${
-                    activeSection === section.id
-                      ? "text-teal-600 font-bold translate-x-1"
-                      : "text-slate-500 hover:text-slate-900 hover:translate-x-1"
-                  }`}
-                >
-                  {activeSection === section.id && (
-                    <motion.div 
-                      layoutId="active-dot"
-                      className="absolute -left-[5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-teal-600 rounded-full border-2 border-white shadow-sm"
-                    />
-                  )}
-                  {section.title}
-                </button>
-              ))}
+            </p>
+            <nav className="flex flex-col gap-1">
+              {SECTIONS.map((section) => {
+                const isActive = activeSection === section.id;
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => scrollTo(section.id)}
+                    className={`group flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-zinc-900 text-white shadow-lg shadow-zinc-900/10"
+                        : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50"
+                    }`}
+                  >
+                    <span>{section.title}</span>
+                    {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                  </button>
+                );
+              })}
             </nav>
-            
-            {/* Help Card */}
-            <div className="mt-8 p-5 bg-white/60 backdrop-blur-sm rounded-2xl border border-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-               <div className="flex items-start gap-3">
-                  <Lock size={20} className="text-teal-600 mt-1" />
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">Data Officer</h4>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                       Concerns about your data? Reach our DPO directly.
-                    </p>
-                    <a href="mailto:privacy@jifwa.com" className="text-xs font-bold text-teal-600 mt-3 block hover:underline">
-                      Contact DPO →
-                    </a>
-                  </div>
-               </div>
+
+            {/* DPO Contact Card */}
+            <div className="mt-8 p-5 bg-indigo-50/50 rounded-xl border border-indigo-100">
+               <p className="text-xs font-bold text-indigo-900 uppercase mb-2">Have concerns?</p>
+               <p className="text-xs text-indigo-700 mb-3">Reach our Data Protection Officer directly.</p>
+               <a href="mailto:contact@jifwa.com" className="text-xs font-bold text-indigo-600 flex items-center hover:underline">
+                 contact@jifwa.com <ChevronRight size={12} />
+               </a>
             </div>
           </div>
-        </div>
+        </aside>
 
         {/* --- MAIN TEXT CONTENT --- */}
-        <div className="lg:col-span-8 lg:col-start-5 pb-32">
+        <div className="lg:col-span-9 pb-32 space-y-24">
           
           {/* 1. DATA COLLECTION */}
-          <SectionWrapper id="collection" title="1. Data Collection">
+          <SectionWrapper id="collection" title="1. Information Collection" font={libre.className}>
              <p>
-               When you use Jifwa ("Service"), we collect specific data points to enable our contract extraction engine. We believe in data minimization—collecting only what is necessary.
+               Jifwa ("we", "our", "us") collects only the minimum amount of data necessary to operate the platform. We believe in data minimization.
              </p>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-                <div className="bg-white/80 p-5 rounded-xl border border-gray-200/60 shadow-sm">
-                   <h5 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
-                     <div className="w-2 h-2 rounded-full bg-teal-500"></div> User Uploads
-                   </h5>
-                   <p className="text-sm text-slate-600 leading-relaxed">
-                     PDF, DOCX, and text files you explicitly upload for processing. These are the core assets we protect.
-                   </p>
+             <div className="grid md:grid-cols-2 gap-6 mt-8">
+                <InfoCard 
+                  title="Account Information" 
+                  desc="Name and email address for authentication and account management." 
+                  icon={UserIcon}
+                />
+                <InfoCard 
+                  title="Contract Documents" 
+                  desc="PDFs and execution data you upload. These are encrypted immediately." 
+                  icon={FileIcon}
+                />
+                <InfoCard 
+                  title="Usage Metadata" 
+                  desc="Timestamps and action logs to help us improve platform performance." 
+                  icon={Database}
+                />
+                <InfoCard 
+                  title="Payment Information" 
+                  desc="Processed securely via Razorpay. We DO NOT store card, UPI, or banking details." 
+                  icon={CreditCardIcon}
+                />
+             </div>
+          </SectionWrapper>
+
+          {/* 2. SECURITY */}
+          <SectionWrapper id="security" title="2. Security & Encryption" font={libre.className}>
+             <p>
+               All contract content, uploaded files, and execution data are encrypted using industry-standard methods. Our architecture is <strong>privacy-first</strong>.
+             </p>
+             <div className="mt-8 bg-zinc-900 text-zinc-300 rounded-2xl p-8 shadow-xl">
+               <ul className="space-y-6">
+                 <li className="flex items-start gap-4">
+                   <div className="bg-emerald-500/10 p-2 rounded-lg text-emerald-400 mt-1">
+                     <Globe size={20} />
+                   </div>
+                   <div>
+                     <h5 className="text-white font-bold text-lg">Encryption In Transit</h5>
+                     <p className="text-sm mt-1 opacity-80">All data moving between your device and our servers is secured via <strong>TLS 1.3</strong>.</p>
+                   </div>
+                 </li>
+                 <li className="flex items-start gap-4">
+                   <div className="bg-emerald-500/10 p-2 rounded-lg text-emerald-400 mt-1">
+                     <Lock size={20} />
+                   </div>
+                   <div>
+                     <h5 className="text-white font-bold text-lg">Encryption At Rest</h5>
+                     <p className="text-sm mt-1 opacity-80">Stored files are protected with <strong>AES-256</strong> encryption standards.</p>
+                   </div>
+                 </li>
+                 <li className="flex items-start gap-4">
+                   <div className="bg-emerald-500/10 p-2 rounded-lg text-emerald-400 mt-1">
+                     <Eye size={20} />
+                   </div>
+                   <div>
+                     <h5 className="text-white font-bold text-lg">Zero Internal Access</h5>
+                     <p className="text-sm mt-1 opacity-80">Even Jifwa staff and administrators <strong>cannot view</strong> your contract content.</p>
+                   </div>
+                 </li>
+               </ul>
+             </div>
+          </SectionWrapper>
+
+          {/* 3. AI PRIVACY */}
+          <SectionWrapper id="ai" title="3. AI Privacy (No Training)" font={libre.className}>
+             <p>
+               Jifwa uses Artificial Intelligence to extract deliverables and suggest milestones. However, our AI usage is strictly controlled to ensure confidentiality.
+             </p>
+             
+             <div className="mt-8 grid md:grid-cols-2 gap-6">
+                <div className="bg-red-50 border border-red-100 p-6 rounded-xl">
+                  <h4 className="text-red-900 font-bold mb-4 flex items-center gap-2">
+                    <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded">WE DO NOT</span>
+                  </h4>
+                  <ul className="space-y-3 text-red-800 text-sm">
+                    <li className="flex gap-2"><span>×</span> Use external APIs (OpenAI, Claude, etc.)</li>
+                    <li className="flex gap-2"><span>×</span> Train our models on your customer data</li>
+                    <li className="flex gap-2"><span>×</span> Allow AI to make autonomous decisions</li>
+                  </ul>
                 </div>
-                <div className="bg-white/80 p-5 rounded-xl border border-gray-200/60 shadow-sm">
-                   <h5 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
-                     <div className="w-2 h-2 rounded-full bg-blue-500"></div> Account Info
-                   </h5>
-                   <p className="text-sm text-slate-600 leading-relaxed">
-                     Name, email, and billing details (processed via Stripe). We do not store full credit card numbers.
-                   </p>
+                
+                <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl">
+                  <h4 className="text-emerald-900 font-bold mb-4 flex items-center gap-2">
+                    <span className="bg-emerald-200 text-emerald-800 text-xs px-2 py-0.5 rounded">WE DO</span>
+                  </h4>
+                  <ul className="space-y-3 text-emerald-800 text-sm">
+                    <li className="flex gap-2"><span>✓</span> Run AI privately in our own infrastructure</li>
+                    <li className="flex gap-2"><span>✓</span> Use AI solely for execution clarity</li>
+                    <li className="flex gap-2"><span>✓</span> Keep human review mandatory for all AI outputs</li>
+                  </ul>
                 </div>
              </div>
           </SectionWrapper>
 
-          {/* 2. AI & PRIVACY */}
-          <SectionWrapper id="ai-processing" title="2. AI Processing & Privacy">
+          {/* 4. DATA SHARING */}
+          <SectionWrapper id="sharing" title="4. Data Sharing" font={libre.className}>
              <p>
-               Jifwa utilizes proprietary Large Language Models (LLMs) to analyze contracts. We understand the sensitivity of legal documents.
-             </p>
-             <div className="my-8 p-6 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-5">
-                   <Eye size={120} />
-                </div>
-                <h4 className="font-bold text-blue-900 text-sm uppercase tracking-wide mb-3 relative z-10">Zero-Training Policy</h4>
-                <p className="text-slate-700 text-base leading-relaxed relative z-10">
-                  We do <strong>not</strong> use your proprietary contracts to train our public models. Your data remains isolated within your tenant context (RAG Architecture). Data processed by our AI is ephemeral in the inference layer. Once the extraction JSON is delivered, the raw inference context is purged from the GPU cache.
-                </p>
-             </div>
-          </SectionWrapper>
-
-          {/* 3. SECURITY */}
-          <SectionWrapper id="security" title="3. Security Infrastructure">
-             <p>
-               Security is not an afterthought; it is our foundation. We employ defense-in-depth strategies to protect your information.
+               Jifwa does not sell, rent, or trade user data. Data may be shared only in the following strictly limited circumstances:
              </p>
              <ul className="mt-6 space-y-4">
-               <li className="flex items-start gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                 <div className="mt-1 bg-green-100 p-2 rounded-lg text-green-600"><Lock size={18} /></div>
-                 <div>
-                   <h5 className="font-bold text-slate-900">Encryption at Rest</h5>
-                   <p className="text-sm text-slate-500 mt-1">AES-256 encryption for all stored files in AWS S3 buckets.</p>
-                 </div>
-               </li>
-               <li className="flex items-start gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                 <div className="mt-1 bg-green-100 p-2 rounded-lg text-green-600"><Globe size={18} /></div>
-                 <div>
-                   <h5 className="font-bold text-slate-900">Encryption in Transit</h5>
-                   <p className="text-sm text-slate-500 mt-1">TLS 1.3 for all data moving between your client and our servers.</p>
-                 </div>
-               </li>
-               <li className="flex items-start gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                 <div className="mt-1 bg-green-100 p-2 rounded-lg text-green-600"><Server size={18} /></div>
-                 <div>
-                   <h5 className="font-bold text-slate-900">Access Controls</h5>
-                   <p className="text-sm text-slate-500 mt-1">Strict role-based access control (RBAC) ensures only authorized systems touch your data.</p>
-                 </div>
-               </li>
+                <li className="flex items-center gap-3 p-4 bg-white border border-zinc-100 rounded-lg shadow-sm">
+                   <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-xs">P</div>
+                   <span className="text-zinc-700"><strong>Razorpay:</strong> For secure payment processing.</span>
+                </li>
+                <li className="flex items-center gap-3 p-4 bg-white border border-zinc-100 rounded-lg shadow-sm">
+                   <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600 font-bold text-xs">L</div>
+                   <span className="text-zinc-700"><strong>Legal:</strong> Compliance with regulatory or governmental requirements.</span>
+                </li>
              </ul>
           </SectionWrapper>
 
-          {/* 4. COOKIES */}
-          <SectionWrapper id="cookies" title="4. Cookies & Tracking">
+          {/* 5. RIGHTS */}
+          <SectionWrapper id="rights" title="5. Your Rights" font={libre.className}>
              <p>
-               We use cookies to improve your experience and for analytics. We do not use cookies for cross-site tracking or selling data to ad networks.
+               You retain full ownership of your data. Under applicable laws, you have the right to:
              </p>
-             <div className="mt-4 flex gap-3 text-sm text-slate-600">
-                <Cookie size={18} className="text-slate-400" />
-                <span>Essential Cookies: For login sessions and security.</span>
+             <div className="mt-6 grid sm:grid-cols-2 gap-4">
+                {['Access your personal data', 'Correct inaccurate data', 'Delete your data', 'Terminate your account'].map((right, i) => (
+                  <div key={i} className="p-4 bg-zinc-50 border border-zinc-200 rounded-lg text-sm text-zinc-600 font-medium">
+                    {right}
+                  </div>
+                ))}
              </div>
-             <div className="mt-2 flex gap-3 text-sm text-slate-600">
-                <Cookie size={18} className="text-slate-400" />
-                <span>Analytics Cookies: To understand how users navigate our dashboard (e.g., PostHog).</span>
-             </div>
-          </SectionWrapper>
-
-          {/* 5. USER RIGHTS */}
-          <SectionWrapper id="rights" title="5. Your Rights (GDPR/CCPA)">
-             <p>
-               If you are a resident of the EEA, UK, or California, you have enhanced rights regarding your data.
+             <p className="mt-6 text-sm text-zinc-500">
+               To exercise any of these rights, simply email us at <strong className="text-zinc-900">contact@jifwa.com</strong>.
              </p>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                <button className="text-left p-4 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors border border-teal-100">
-                   <h5 className="font-bold text-teal-900 text-sm">Right to Access</h5>
-                   <p className="text-xs text-teal-700 mt-1">Request a copy of all data we hold.</p>
-                </button>
-                <button className="text-left p-4 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors border border-teal-100">
-                   <h5 className="font-bold text-teal-900 text-sm">Right to Erasure</h5>
-                   <p className="text-xs text-teal-700 mt-1">Request total deletion of your account.</p>
-                </button>
-             </div>
           </SectionWrapper>
 
           {/* 6. CONTACT */}
-          <SectionWrapper id="contact" title="6. Contact Us">
-             <p>
-               If you have any questions about this Privacy Policy, please contact us. We are committed to resolving complaints about your privacy and our collection or use of your personal information.
-             </p>
-             <div className="mt-6 p-6 bg-slate-900 text-white rounded-2xl">
-                <div className="font-bold text-lg mb-2">Jifwa Privacy Office</div>
-                <div className="space-y-1 text-slate-300 text-sm">
-                   <p>548 Market St, San Francisco, CA 94104</p>
-                   <p>Email: <a href="mailto:privacy@jifwa.com" className="text-teal-400 hover:underline">privacy@jifwa.com</a></p>
+          <SectionWrapper id="contact" title="6. Contact Information" font={libre.className}>
+             <div className="bg-zinc-900 text-zinc-200 p-8 rounded-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
+                <div className="relative z-10">
+                  <h3 className={`text-2xl text-white mb-6 ${libre.className}`}>Jifwa</h3>
+                  <div className="space-y-4 text-sm">
+                    <p className="flex gap-4">
+                      <span className="text-zinc-500 w-16 uppercase text-xs font-bold tracking-widest mt-1">Address</span>
+                      <span className="leading-relaxed">
+                        Sane Guruji Nagar,<br />
+                        Chopda, Jalgaon District,<br />
+                        Maharashtra - 425107, India
+                      </span>
+                    </p>
+                    <p className="flex gap-4">
+                      <span className="text-zinc-500 w-16 uppercase text-xs font-bold tracking-widest mt-1">Email</span>
+                      <a href="mailto:contact@jifwa.com" className="text-white hover:text-indigo-400 transition-colors">contact@jifwa.com</a>
+                    </p>
+                  </div>
                 </div>
              </div>
           </SectionWrapper>
 
-           {/* FOOTER SIGNOFF */}
-           <div className="mt-24 pt-10 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-slate-500">
-                 &copy; 2025 Jifwa Inc. All rights reserved.
-              </div>
-              <div className="flex gap-4">
-                 <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
-                 <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
-              </div>
-           </div>
+          {/* FOOTER */}
+          <div className="pt-12 border-t border-zinc-200 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500">
+             <p>&copy; 2025 Jifwa. All rights reserved.</p>
+             <p>Privacy-First Contract Execution.</p>
+          </div>
 
         </div>
       </div>
@@ -304,28 +345,37 @@ export default function PrivacyPolicy() {
   );
 }
 
-// Reusable Section Wrapper
-function SectionWrapper({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+// --- HELPER COMPONENTS ---
+
+function SectionWrapper({ id, title, children, font }: { id: string; title: string; children: React.ReactNode; font?: string }) {
   return (
-    <section id={id} className="mb-24 scroll-mt-32 group">
+    <section id={id} className="scroll-mt-32 group">
        <div className="flex items-center gap-4 mb-8">
-          <h2 className="text-3xl font-serif font-bold text-slate-900 group-hover:text-teal-900 transition-colors">
+          <h2 className={`text-3xl text-zinc-900 ${font} group-hover:text-indigo-900 transition-colors`}>
             {title}
           </h2>
-          <div className="h-px flex-1 bg-gray-200 group-hover:bg-teal-100 transition-colors"></div>
+          <div className="h-px flex-1 bg-zinc-200 group-hover:bg-indigo-100 transition-colors"></div>
        </div>
-       <div className="prose prose-lg prose-slate text-slate-600 leading-8">
+       <div className="prose prose-lg prose-zinc text-zinc-600 leading-8 max-w-none">
           {children}
        </div>
     </section>
   );
 }
 
-const SECTIONS = [
-  { id: "collection", title: "1. Data Collection" },
-  { id: "ai-processing", title: "2. AI Processing" },
-  { id: "security", title: "3. Security" },
-  { id: "cookies", title: "4. Cookies" },
-  { id: "rights", title: "5. Your Rights" },
-  { id: "contact", title: "6. Contact" },
-];
+function InfoCard({ title, desc, icon: Icon }: { title: string; desc: string; icon: any }) {
+  return (
+    <div className="bg-white p-5 rounded-xl border border-zinc-100 shadow-sm hover:shadow-md transition-shadow">
+       <div className="w-10 h-10 bg-zinc-50 rounded-lg flex items-center justify-center text-zinc-600 mb-4">
+         <Icon size={20} strokeWidth={1.5} />
+       </div>
+       <h5 className="font-bold text-zinc-900 mb-2">{title}</h5>
+       <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+// Icons
+function UserIcon({ size, ...props }: any) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>; }
+function FileIcon({ size, ...props }: any) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>; }
+function CreditCardIcon({ size, ...props }: any) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>; }

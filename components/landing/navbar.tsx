@@ -8,13 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { X } from "lucide-react";
 import { HiMenuAlt3 } from "react-icons/hi";
-import {
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  useUser,
-  ClerkLoaded,
-} from "@clerk/nextjs";
+import { UserButton, useUser, ClerkLoaded } from "@clerk/nextjs";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -29,7 +23,6 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // UPDATED: Added "Security" link to match the new section
   const navLinks = [
     { name: "Features", href: "#features" },
     { name: "Security", href: "#security" },
@@ -87,19 +80,22 @@ export function Navbar() {
           <ClerkLoaded>
             {!isSignedIn && (
               <div className="hidden md:flex items-center gap-3">
-                <SignInButton mode="modal">
+                {/* LOGIN LINK (No Modal) */}
+                <Link href="/sign-in">
                   <Button
                     variant="ghost"
                     className="text-gray-600 hover:text-gray-900 font-bold text-sm active:scale-95"
                   >
                     Log In
                   </Button>
-                </SignInButton>
-                <SignUpButton mode="modal">
+                </Link>
+
+                {/* SIGN UP LINK (No Modal) */}
+                <Link href="/sign-up">
                   <Button className="bg-gray-900 text-white hover:bg-black font-bold rounded-full h-11 px-8 text-sm shadow-xl shadow-gray-900/20 transition-all hover:scale-105 active:scale-95">
                     Get Started
                   </Button>
-                </SignUpButton>
+                </Link>
               </div>
             )}
 
@@ -178,25 +174,24 @@ export function Navbar() {
                   <ClerkLoaded>
                     {!isSignedIn ? (
                       <>
-                        <SignInButton mode="modal">
+                        <Link href="/sign-in" onClick={() => setIsOpen(false)}>
                           <Button
                             variant="outline"
                             size="lg"
                             className="w-full rounded-2xl text-xl font-bold border-2 h-16 active:scale-[0.98] transition-all"
-                            onClick={() => setIsOpen(false)}
                           >
                             Log In
                           </Button>
-                        </SignInButton>
-                        <SignUpButton mode="modal">
+                        </Link>
+
+                        <Link href="/sign-up" onClick={() => setIsOpen(false)}>
                           <Button
                             size="lg"
                             className="w-full rounded-2xl text-xl font-bold bg-gray-900 text-white h-16 shadow-xl active:scale-[0.98] transition-all"
-                            onClick={() => setIsOpen(false)}
                           >
                             Get Started Free
                           </Button>
-                        </SignUpButton>
+                        </Link>
                       </>
                     ) : (
                       <Link href="/dashboard" onClick={() => setIsOpen(false)}>

@@ -1,4 +1,6 @@
+import ComingSoon from "@/components/elements/ComingSoon";
+
 const page = () => {
-  return <div>page</div>;
+  return <ComingSoon name="Refund" />
 };
 export default page;

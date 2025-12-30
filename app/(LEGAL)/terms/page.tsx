@@ -1,5 +1,11 @@
 import React from "react";
 import { CheckCircle2, AlertTriangle, Scale } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Use - Jifwa Legal",
+  description: "Read the terms of use for Jifwa's platform.",
+};
 
 export default function TermsPage() {
   return (

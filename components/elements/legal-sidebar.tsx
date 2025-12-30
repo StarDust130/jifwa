@@ -33,12 +33,12 @@ export default function LegalSidebar() {
 
   return (
     <div className="sticky top-8">
-      {/* --- BACK BUTTON (FIXED UI) --- */}
+      {/* --- BACK BUTTON (PERFECTED UI) --- */}
       <button
         onClick={() => router.push("/")}
         className="group mb-8 flex items-center gap-3 text-sm font-bold transition-all
           /* MOBILE (Dark Header): Always White text */
-          text-white hover:text-white/80
+          text-white hover:text-white/90
           /* DESKTOP (Light Sidebar): Slate text -> Navy on Hover */
           lg:text-slate-500 lg:hover:text-white"
       >

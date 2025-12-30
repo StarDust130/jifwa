@@ -1,5 +1,12 @@
 import React from "react";
 import { Lock, Shield, EyeOff } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - Jifwa Legal",
+  description:
+    "Learn how Jifwa protects your data with AES-256 encryption and zero-training AI policies.",
+};
 
 export default function PrivacyPage() {
   return (
@@ -81,7 +88,6 @@ export default function PrivacyPage() {
               </li>
             </ul>
           </div>
-          {/* Decor */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#14B8A6]/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
         </div>
       </div>

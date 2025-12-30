@@ -1,5 +1,11 @@
 import React from "react";
 import { CheckCircle2, XCircle, Mail } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Refund Policy - Jifwa Legal",
+  description: "Read our 7-day refund policy for verified technical issues.",
+};
 
 export default function RefundPage() {
   return (

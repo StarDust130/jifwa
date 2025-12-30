@@ -1,5 +1,11 @@
 import React from "react";
 import { Cpu, Server, ShieldCheck, Lock, EyeOff } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Usage & Security - Jifwa Legal",
+  description: "Learn about our AI transparency and security measures.",
+};
 
 export default function AISecurityPage() {
   return (

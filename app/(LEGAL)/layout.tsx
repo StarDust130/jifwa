@@ -1,12 +1,18 @@
-import BackToTop from "@/components/elements/BackToTop";
-import LegalSidebar from "@/components/elements/legal-sidebar";
 import React from "react";
 
+import { Metadata } from "next";
+import BackToTop from "@/components/elements/BackToTop";
+import LegalSidebar from "@/components/elements/legal-sidebar";
 
-// Metadata for SEO
-export const metadata = {
+export const metadata: Metadata = {
   title: "Legal Center - Jifwa",
-  description: "Transparency, security, and trust are at the core of Jifwa.",
+  description:
+    "Transparency, security, and trust are at the core of Jifwa. Read our Privacy Policy, Terms, and AI Security protocols.",
+  openGraph: {
+    title: "Jifwa Legal Center",
+    description: "Transparency, security, and trust are at the core of Jifwa.",
+    type: "website",
+  },
 };
 
 export default function LegalLayout({
@@ -18,7 +24,7 @@ export default function LegalLayout({
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#0B2447] selection:bg-[#ccfbf1] selection:text-[#0B2447]">
       {/* GLOBAL HEADER BACKGROUND */}
       <div className="w-full bg-[#0B2447] text-white pt-32 pb-32 relative overflow-hidden">
-        {/* Abstract Shapes for "Cool" Factor */}
+        {/* Abstract Shapes for Premium Feel */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#14B8A6]/10 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/3 translate-y-1/3" />
 

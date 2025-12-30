@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   const data = await getDashboardData();
 
   if (!data) {
-    redirect("/sign-in");
+    redirect("/sign-up");
   }
 
   return <DashboardClient data={data} />;

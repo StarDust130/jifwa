@@ -8,42 +8,36 @@ import {
   Zap,
   Slack,
   Loader2,
-  ShieldCheck,
   CreditCard,
-  TrendingUp,
   Search,
   AlertCircle,
-  CheckSquare,
   Sparkles,
-  Play,
+  Wifi,
+  Battery,
 } from "lucide-react";
 import Link from "next/link";
 
-// --- DATA CONFIG ---
+// --- BRAND COLORS ---
+// Navy: #0B2447
+// Teal: #14B8A6
+
+// --- DATA CONFIG (Real SaaS Data) ---
 const LEFT_NOTIFICATIONS = [
   {
     id: 1,
     icon: <Slack size={14} />,
     bg: "bg-[#4A154B]",
     title: "Vendor Update",
-    text: "Proof submitted",
-    position: "top-[12%] left-[-5px] sm:left-[-40px]",
+    text: "Proof submitted for M1",
+    position: "top-[15%] left-[-10px] md:left-[-40px]",
   },
   {
     id: 2,
     icon: <AlertCircle size={14} />,
-    bg: "bg-red-500",
-    title: "Dispute Flagged",
-    text: "Missing evidence",
-    position: "top-[38%] left-[-10px] sm:left-[-50px]",
-  },
-  {
-    id: 3,
-    icon: <CheckSquare size={14} />,
-    bg: "bg-[#0052CC]",
-    title: "Task Exported",
-    text: "Review Criteria",
-    position: "bottom-[25%] left-[-5px] sm:left-[-35px]",
+    bg: "bg-rose-500",
+    title: "Risk Alert",
+    text: "Deadline approaching",
+    position: "top-[45%] left-[-5px] md:left-[-50px]",
   },
 ];
 
@@ -51,26 +45,18 @@ const RIGHT_NOTIFICATIONS = [
   {
     id: 1,
     icon: <Zap size={14} />,
-    bg: "bg-yellow-500",
-    title: "AI Extraction",
-    text: "5 Deliverables found",
-    position: "top-[18%] right-[-5px] sm:right-[-30px]",
+    bg: "bg-[#14B8A6]",
+    title: "AI Analysis",
+    text: "3 Deliverables extracted",
+    position: "top-[25%] right-[-10px] md:right-[-30px]",
   },
   {
     id: 2,
-    icon: <ShieldCheck size={14} />,
-    bg: "bg-green-500",
-    title: "Secure Env",
-    text: "AES-256 Encryption",
-    position: "top-[42%] right-[-15px] sm:right-[-45px]",
-  },
-  {
-    id: 3,
-    icon: <TrendingUp size={14} />,
-    bg: "bg-blue-500",
-    title: "Revenue Ops",
-    text: "$45,200 Unlocked",
-    position: "bottom-[30%] right-[-5px] sm:right-[-25px]",
+    icon: <CreditCard size={14} />,
+    bg: "bg-blue-600",
+    title: "Payment Ready",
+    text: "₹ 50,000 Escrow",
+    position: "bottom-[20%] right-[-5px] md:right-[-25px]",
   },
 ];
 
@@ -78,14 +64,10 @@ const HeroSection = () => {
   const [leftIndex, setLeftIndex] = useState(0);
   const [rightIndex, setRightIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState("00:00");
-  const [isMobile, setIsMobile] = useState(false);
   const [simulationKey, setSimulationKey] = useState(0);
 
+  // --- RESPONSIVE CHECK & TIME ---
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     const updateTime = () => {
       const now = new Date();
       setCurrentTime(
@@ -93,107 +75,93 @@ const HeroSection = () => {
       );
     };
     updateTime();
+    const timeInterval = setInterval(updateTime, 10000);
 
-    const timeInterval = setInterval(updateTime, 1000);
+    // Animation Loop
     const loopInterval = setInterval(() => {
       setSimulationKey((prev) => prev + 1);
-    }, 8000);
+    }, 12000);
 
     return () => {
       clearInterval(timeInterval);
       clearInterval(loopInterval);
-      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
+  // --- NOTIFICATION CYCLING ---
   useEffect(() => {
     const timer = setInterval(() => {
       setLeftIndex((prev) => (prev + 1) % LEFT_NOTIFICATIONS.length);
-    }, 3500);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setRightIndex((prev) => (prev + 1) % RIGHT_NOTIFICATIONS.length);
-    }, 4000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 
-  // --- VARIANTS ---
+  // --- ANIMATION VARIANTS ---
   const highlightVariant: Variants = {
     hidden: { scaleX: 0 },
     visible: {
       scaleX: 1,
-      transition: { duration: 0.8, delay: 0.8, ease: "circOut" },
-    },
-  };
-
-  const scanLineVariant: Variants = {
-    initial: { top: "0%", opacity: 0 },
-    animate: {
-      top: ["0%", "100%"],
-      opacity: [1, 1, 0],
-      transition: { duration: 2.5, ease: "linear" },
+      transition: { duration: 0.8, delay: 0.2, ease: "circOut" },
     },
   };
 
   const itemVariant: Variants = {
-    hidden: { opacity: 0, y: 10, scale: 0.95 },
+    hidden: { opacity: 0, y: 15 },
     visible: (custom) => ({
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: { delay: custom * 0.8, type: "spring", stiffness: 150 },
+      transition: {
+        delay: custom * 0.5,
+        type: "spring",
+        stiffness: 100,
+        damping: 20,
+      },
     }),
   };
 
   return (
-    <section className="relative w-full min-h-screen bg-white text-gray-900 overflow-hidden pt-28  pb-10 font-sans selection:bg-yellow-200 selection:text-black">
+    <section className="relative w-full min-h-screen lg:min-h-[800px] flex flex-col justify-center items-center bg-white text-[#0B2447] overflow-hidden font-sans pt-28 pb-16 lg:pt-0 lg:pb-0">
       {/* --- BACKGROUND --- */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f5_1px,transparent_1px),linear-gradient(to_bottom,#f5f5f5_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] z-0 pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] z-0 pointer-events-none opacity-60" />
 
-      {/* --- BLOBS --- */}
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-100/60 rounded-full blur-[100px] -z-10"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 10, repeat: Infinity, delay: 1 }}
-        className="absolute bottom-[10%] left-[-10%] w-[500px] h-[500px] bg-blue-50/60 rounded-full blur-[100px] -z-10"
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 relative z-10 items-center">
         {/* --- LEFT COLUMN: CONTENT --- */}
-        <div className="flex flex-col items-center lg:items-start text-center lg:text-left pt-6 lg:pt-0">
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.0] mb-8 relative z-10">
-            Turn Contracts Into <br />
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left order-1">
+          {/* HEADLINE */}
+          <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold tracking-tight text-[#0B2447] leading-[1.05] mb-6 relative z-10">
+            Turn Contracts <br className="hidden lg:block" /> Into <br />
             Predictable, Trackable, <br />
-            {/* FIX: Highlight is strictly restricted to "Execution" */}
-            <span className="relative inline-block mt-1">
+            <span className="relative inline-block mt-1 whitespace-nowrap">
               <motion.span
                 variants={highlightVariant}
                 initial="hidden"
                 animate="visible"
                 style={{ originX: 0 }}
-                className="absolute bottom-2 left-[-2%] w-[104%] h-[40%] bg-yellow-300 -z-10 -rotate-1 rounded-sm opacity-100 mix-blend-multiply"
+                className="absolute bottom-3 left-[-2%] w-[104%] h-[30%] bg-[#2DD4BF] -z-10 -rotate-1 rounded-sm opacity-60 mix-blend-multiply"
               />
               <span className="relative z-10">Execution.</span>
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-md lg:max-w-lg mb-8 lg:mb-10 font-medium px-2 lg:px-0">
+          {/* SUB-HEADLINE */}
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-lg mb-8 font-medium">
             Jifwa is an AI-native, fully encrypted contract execution platform
             that ensures what's agreed in a contract actually happens during
-            delivery.
+            delivery—with clarity, accountability, and zero ambiguity.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-12 justify-center lg:justify-start px-6 sm:px-0">
+          {/* CTA BUTTONS */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center lg:justify-start">
             <Link
               href="/dashboard"
-              className="h-14 px-8 rounded-full bg-gray-900 text-white font-bold text-base hover:bg-black hover:scale-105 transition-all duration-300 shadow-xl shadow-gray-900/20 flex items-center justify-center gap-2 group"
+              className="h-14 px-8 rounded-full bg-[#0B2447] text-white font-bold text-base hover:bg-[#15345A] hover:shadow-xl hover:shadow-[#0B2447]/20 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group w-full sm:w-auto"
             >
               Get Started
               <ArrowRight
@@ -201,253 +169,222 @@ const HeroSection = () => {
                 className="group-hover:translate-x-1 transition-transform"
               />
             </Link>
-            <button className="h-14 px-8 rounded-full bg-white text-gray-700 border border-gray-200 font-bold text-base hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm">
-              <Play size={18} className="fill-gray-700" />
-              Book Demo
-            </button>
-          </div>
-
-          <div className="flex flex-wrap justify-center lg:justify-start items-center gap-x-6 gap-y-3 text-xs sm:text-sm font-bold text-gray-500">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-gray-900" /> SOC2 Type II
-              Ready
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-gray-900" /> No credit card
-              needed
-            </div>
           </div>
         </div>
 
         {/* --- RIGHT COLUMN: PHONE UI --- */}
-        <div className="relative h-[550px] lg:h-[570px] w-full flex items-center lg:items-start justify-center lg:justify-end perspective-[2500px] mt-8 lg:mt-0">
+        <div className="relative w-full flex items-center justify-center lg:justify-end order-2 mt-8 lg:mt-0">
           <motion.div
-            initial={{
-              rotateY: isMobile ? 0 : -15,
-              rotateX: isMobile ? 0 : 5,
-              opacity: 0,
-              scale: 0.9,
-            }}
-            animate={{
-              rotateY: isMobile ? 0 : -10,
-              rotateX: 0,
-              opacity: 1,
-              scale: 1,
-            }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-            className="relative w-[280px] sm:w-[320px] h-full max-h-[600px] lg:max-h-[660px] bg-gray-900 rounded-[2.5rem] lg:rounded-[3rem] p-[6px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] z-20"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="
+              relative z-20 
+              w-[280px] sm:w-[300px] lg:w-[320px] 
+              h-[580px] sm:h-[620px] lg:h-[630px] 
+              bg-[#0B2447] rounded-[2.5rem] p-[6px] 
+              shadow-[0_40px_80px_-20px_rgba(11,36,71,0.3)] 
+              ring-1 ring-white/10
+            "
           >
-            {/* Phone Bezel Reflection */}
-            <div className="absolute inset-0 rounded-[2.5rem] lg:rounded-[3rem] border border-gray-600/30 pointer-events-none z-50 ring-1 ring-inset ring-white/10"></div>
+            {/* Glossy Edge Reflection */}
+            <div className="absolute inset-0 rounded-[2.5rem] border border-white/5 pointer-events-none z-30"></div>
 
-            <div className="h-full w-full bg-white rounded-[2.2rem] lg:rounded-[2.7rem] overflow-hidden flex flex-col relative">
-              {/* --- STATUS BAR --- */}
-              <div className="h-12 w-full bg-white relative z-20 shrink-0 border-b border-gray-50">
-                <span className="absolute left-6 top-4 text-[11px] font-bold text-gray-900 font-mono tracking-tight z-40">
+            {/* Screen Content */}
+            <div className="h-full w-full bg-slate-50 rounded-[2.2rem] overflow-hidden flex flex-col relative shadow-inner">
+              {/* Status Bar */}
+              <div className="h-10 w-full bg-white relative z-20 flex items-center justify-between px-5 pt-1.5 shrink-0">
+                <span className="text-[11px] font-bold text-slate-900 font-mono">
                   {currentTime}
                 </span>
 
-                {/* Dynamic Island */}
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-black rounded-full z-30 flex items-center gap-2 px-3 py-1.5 shadow-xl min-w-[100px] justify-center overflow-hidden">
+                {/* Dynamic Island - AI Status */}
+                <div className="absolute left-1/2 top-2.5 -translate-x-1/2 bg-black h-[26px] px-3 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,0,0,0.4)] z-30 overflow-hidden ring-1 ring-white/10">
                   <motion.div
-                    key={simulationKey}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
-                    <Loader2 size={10} className="text-gray-400 animate-spin" />
+                    <Loader2 size={11} className="text-[#14B8A6]" />
                   </motion.div>
                   <motion.span
-                    key={simulationKey + "txt"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 1, 1, 0] }}
-                    transition={{ duration: 2.5, times: [0, 0.1, 0.8, 1] }}
-                    className="text-[10px] font-bold text-white tracking-wide uppercase whitespace-nowrap"
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="text-[9px] font-bold text-white tracking-widest uppercase whitespace-nowrap"
                   >
-                    AI Scanning
+                    AI Processing
                   </motion.span>
                 </div>
 
-                <div className="absolute right-6 top-4 flex gap-1.5 items-end z-40">
-                  <div className="w-5 h-2.5 bg-gray-900 rounded-[2px]"></div>
-                  <div className="w-0.5 h-1.5 bg-gray-400 rounded-[1px]"></div>
+                <div className="flex gap-1 items-center text-slate-800">
+                  <Wifi size={13} />
+                  <Battery size={13} />
                 </div>
               </div>
 
-              {/* APP CONTENT */}
-              <div className="flex-1 bg-gray-50/40 pt-6 px-4 pb-6 flex flex-col font-sans relative">
-                <div className="bg-gray-100 h-9 rounded-xl mb-4 flex items-center px-3 gap-2">
-                  <Search size={14} className="text-gray-400" />
-                  <span className="text-[11px] text-gray-400 font-medium">
+              {/* App Body */}
+              <div className="flex-1 p-4 flex flex-col relative">
+                {/* Search */}
+                <div className="bg-white h-9 rounded-xl border border-slate-200 flex items-center px-3 gap-2 mb-4 shadow-sm">
+                  <Search size={14} className="text-slate-400" />
+                  <span className="text-[11px] text-slate-400">
                     Search contracts...
                   </span>
                 </div>
 
-                {/* PDF Scanning Card */}
-                <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 relative overflow-hidden group">
+                {/* Main PDF Card */}
+                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden mb-4 group">
                   <div className="flex items-center gap-3 relative z-10">
-                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 border border-indigo-100/50">
-                      <FileText size={20} />
+                    <div className="w-9 h-9 bg-teal-50 rounded-lg flex items-center justify-center text-[#14B8A6] border border-teal-100">
+                      <FileText size={18} />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-bold text-gray-900 truncate">
+                    <div className="min-w-0">
+                      <div className="text-[12px] font-bold text-[#0B2447] truncate">
                         MSA_Jifwa_Final.pdf
                       </div>
-                      <div className="text-[10px] text-gray-500 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                      <div className="text-[10px] font-medium text-slate-500 flex items-center gap-1.5 mt-0.5">
+                        <span className="w-1.5 h-1.5 bg-[#14B8A6] rounded-full animate-pulse"></span>
                         Ready for extraction
                       </div>
                     </div>
                   </div>
-
-                  {/* Laser Line */}
+                  {/* Scanning Beam */}
                   <motion.div
                     key={simulationKey}
-                    variants={scanLineVariant}
-                    initial="initial"
-                    animate="animate"
-                    className="absolute left-0 right-0 h-[2px] bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.8)] z-0 pointer-events-none blur-[0.5px]"
-                  />
-                  {/* Laser Trail */}
-                  <motion.div
-                    key={simulationKey + "trail"}
-                    initial={{ height: "0%", opacity: 0 }}
-                    animate={{ height: "100%", opacity: 0.1 }}
-                    transition={{ duration: 2.5, ease: "linear" }}
-                    className="absolute top-0 left-0 right-0 bg-indigo-500 z-0 pointer-events-none"
+                    className="absolute top-0 left-0 right-0 h-full bg-gradient-to-b from-transparent via-[#14B8A6]/10 to-transparent z-0 pointer-events-none"
+                    initial={{ top: "-100%" }}
+                    animate={{ top: "100%" }}
+                    transition={{ duration: 2, ease: "linear" }}
                   />
                 </div>
 
-                {/* AI Badge */}
+                {/* Extracted Data Section */}
                 <div className="flex items-center justify-between mb-2 px-1">
-                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                     Jifwa AI Intelligence
                   </span>
-                  <motion.div
-                    key={simulationKey + "badge"}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 2.5, type: "spring" }}
-                    className="flex items-center gap-1 text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md"
-                  >
-                    <Sparkles size={10} /> Analysis Complete
-                  </motion.div>
+                  <div className="flex items-center gap-1 text-[9px] font-bold text-[#14B8A6] bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
+                    <Sparkles size={9} /> Analysis Complete
+                  </div>
                 </div>
 
-                {/* Extracted Data Items */}
-                <div className="space-y-3">
+                <div className="space-y-2.5">
+                  {/* Card 1 */}
                   <motion.div
-                    key={simulationKey + "item1"}
+                    key={simulationKey + "c1"}
                     custom={1}
                     variants={itemVariant}
                     initial="hidden"
                     animate="visible"
-                    className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-1 border-l-[3px] border-l-blue-500"
+                    className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm border-l-[3px] border-l-[#0B2447]"
                   >
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 size={13} className="text-blue-500" />
-                      <span className="text-[11px] font-bold text-gray-800">
-                        App V1.0 Milestone
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckCircle2 size={13} className="text-[#0B2447]" />
+                      <span className="text-[11px] font-bold text-slate-800">
+                        Milestone 1: Prototype
                       </span>
                     </div>
-                    <div className="pl-5 text-[9px] text-gray-400">
+                    <div className="pl-5 text-[10px] text-slate-400">
                       Extracted from{" "}
-                      <span className="text-gray-600 font-medium">
+                      <span className="font-semibold text-slate-500">
                         Clause 2.4
                       </span>
                     </div>
                   </motion.div>
 
+                  {/* Card 2 */}
                   <motion.div
-                    key={simulationKey + "item2"}
-                    custom={2.5}
+                    key={simulationKey + "c2"}
+                    custom={2}
                     variants={itemVariant}
                     initial="hidden"
                     animate="visible"
-                    className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-1 border-l-[3px] border-l-green-500"
+                    className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm border-l-[3px] border-l-[#14B8A6]"
                   >
-                    <div className="flex items-center gap-2">
-                      <CreditCard size={13} className="text-green-500" />
-                      <span className="text-[11px] font-bold text-gray-800">
-                        Initial Deposit: $15,000
+                    <div className="flex items-center gap-2 mb-1">
+                      <CreditCard size={13} className="text-[#14B8A6]" />
+                      <span className="text-[11px] font-bold text-slate-800">
+                        Advance: ₹ 50,000
                       </span>
                     </div>
-                    <div className="pl-5 text-[9px] text-gray-400">
+                    <div className="pl-5 text-[10px] text-slate-400">
                       Syncing to{" "}
-                      <span className="text-gray-600 font-medium">
-                        Quickbooks
+                      <span className="font-semibold text-slate-500">
+                        Razorpay
                       </span>
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Action Button */}
-                <motion.div
-                  key={simulationKey + "btn"}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 3.2, type: "spring" }}
-                  className="mt-auto mx-auto bg-gray-900 text-white px-5 py-2.5 rounded-full shadow-xl flex items-center gap-2 mb-2 hover:scale-105 transition-transform cursor-pointer"
-                >
-                  <Zap size={11} className="fill-white" />
-                  <span className="text-[10px] font-bold tracking-wide">
-                    Push 2 Updates to jifwa
-                  </span>
-                </motion.div>
+                {/* Button */}
+                <div className="mt-auto mb-1">
+                  <Link href="/dashboard">
+                    <button className="w-full h-10 bg-[#0B2447] text-white rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center justify-center gap-2 shadow-lg hover:bg-[#15345A] transition-colors">
+                      <Zap size={12} className="fill-white" /> Create Execution
+                      Flow
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* --- FLOATING NOTIFICATIONS (Right) --- */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={RIGHT_NOTIFICATIONS[rightIndex].id}
-                initial={{ opacity: 0, x: 20, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: isMobile ? 0.85 : 1 }}
-                exit={{ opacity: 0, x: -10, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className={`absolute ${RIGHT_NOTIFICATIONS[rightIndex].position} z-30 flex items-center gap-3 bg-white/80 backdrop-blur-xl p-2.5 pr-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/40 w-auto min-w-[170px]`}
-              >
-                <div
-                  className={`w-8 h-8 ${RIGHT_NOTIFICATIONS[rightIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}
+            {/* Floating Notifications (Visible on larger screens) */}
+            <div className="hidden sm:block">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={rightIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className={`absolute ${RIGHT_NOTIFICATIONS[rightIndex].position} z-50 bg-white/95 backdrop-blur-sm border border-slate-100 p-2.5 rounded-xl shadow-lg flex items-center gap-3 min-w-[160px]`}
                 >
-                  {RIGHT_NOTIFICATIONS[rightIndex].icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-gray-900">
-                    {RIGHT_NOTIFICATIONS[rightIndex].title}
-                  </p>
-                  <p className="text-[9px] text-gray-500 font-medium truncate w-24">
-                    {RIGHT_NOTIFICATIONS[rightIndex].text}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${RIGHT_NOTIFICATIONS[rightIndex].bg}`}
+                  >
+                    {RIGHT_NOTIFICATIONS[rightIndex].icon}
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold text-[#0B2447]">
+                      {RIGHT_NOTIFICATIONS[rightIndex].title}
+                    </div>
+                    <div className="text-[9px] text-slate-500 font-medium">
+                      {RIGHT_NOTIFICATIONS[rightIndex].text}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
 
-            {/* --- FLOATING NOTIFICATIONS (Left) --- */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={LEFT_NOTIFICATIONS[leftIndex].id}
-                initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                animate={{ opacity: 1, x: 0, scale: isMobile ? 0.85 : 1 }}
-                exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className={`absolute ${LEFT_NOTIFICATIONS[leftIndex].position} z-30 flex items-center gap-3 bg-white/80 backdrop-blur-xl p-2.5 pr-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/40 w-auto min-w-[170px]`}
-              >
-                <div
-                  className={`w-8 h-8 ${LEFT_NOTIFICATIONS[leftIndex].bg} rounded-full flex items-center justify-center text-white shrink-0 shadow-sm`}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={leftIndex}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className={`absolute ${LEFT_NOTIFICATIONS[leftIndex].position} z-50 bg-white/95 backdrop-blur-sm border border-slate-100 p-2.5 rounded-xl shadow-lg flex items-center gap-3 min-w-[160px]`}
                 >
-                  {LEFT_NOTIFICATIONS[leftIndex].icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-gray-900">
-                    {LEFT_NOTIFICATIONS[leftIndex].title}
-                  </p>
-                  <p className="text-[9px] text-gray-500 font-medium truncate w-24">
-                    {LEFT_NOTIFICATIONS[leftIndex].text}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${LEFT_NOTIFICATIONS[leftIndex].bg}`}
+                  >
+                    {LEFT_NOTIFICATIONS[leftIndex].icon}
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold text-[#0B2447]">
+                      {LEFT_NOTIFICATIONS[leftIndex].title}
+                    </div>
+                    <div className="text-[9px] text-slate-500 font-medium">
+                      {LEFT_NOTIFICATIONS[leftIndex].text}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </motion.div>
         </div>
       </div>

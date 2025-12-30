@@ -49,25 +49,25 @@ export function RoleSwitcher({ currentRole, onSwitch }: RoleSwitcherProps) {
               "w-9 h-9 rounded-lg flex items-center justify-center border shadow-sm transition-colors",
               // Current Role Icon is Dark (High Contrast) to stand out
               currentRole === "client"
-                ? "bg-zinc-900 border-zinc-800 text-white"
-                : "bg-white border-zinc-200 text-zinc-900"
+                ? "bg-primary border-primary text-white"
+                : "bg-white border-zinc-200 text-primary"
             )}
           >
             <activeRole.icon size={16} strokeWidth={2} />
           </div>
 
           <div className="text-left">
-            <p className="text-sm font-bold text-zinc-900 capitalize leading-none mb-0.5">
+            <p className="text-sm font-bold text-primary capitalize leading-none mb-0.5">
               {activeRole.label}
             </p>
-            <p className="text-[10px] text-zinc-500 font-bold tracking-wide uppercase">
+            <p className="text-[10px] text-primary font-bold tracking-wide uppercase">
               {activeRole.sub} Workspace
             </p>
           </div>
         </div>
         <ChevronsUpDown
           size={14}
-          className="text-zinc-400 group-hover:text-zinc-900 transition-colors"
+          className="text-primary group-hover:text-primary transition-colors"
         />
       </button>
 
@@ -105,7 +105,7 @@ export function RoleSwitcher({ currentRole, onSwitch }: RoleSwitcherProps) {
                       className={cn(
                         "w-8 h-8 rounded-md flex items-center justify-center border transition-all",
                         isActive
-                          ? "bg-white border-zinc-200 text-zinc-900 shadow-sm"
+                          ? "bg-white border-zinc-200 text-primary shadow-sm"
                           : "border-transparent text-zinc-400 group-hover:text-zinc-600"
                       )}
                     >
@@ -116,12 +116,12 @@ export function RoleSwitcher({ currentRole, onSwitch }: RoleSwitcherProps) {
                       <span
                         className={cn(
                           "text-xs font-bold block",
-                          isActive ? "text-zinc-900" : "text-zinc-700"
+                          isActive ? "text-primary" : "text-primary"
                         )}
                       >
                         {role.label}
                       </span>
-                      <span className="text-[10px] text-zinc-500 font-medium">
+                      <span className="text-[10px] text-primary font-medium">
                         {role.desc}
                       </span>
                     </div>
@@ -129,7 +129,7 @@ export function RoleSwitcher({ currentRole, onSwitch }: RoleSwitcherProps) {
                     {isActive && (
                       <Check
                         size={14}
-                        className="text-zinc-900"
+                        className="text-primary"
                         strokeWidth={3}
                       />
                     )}

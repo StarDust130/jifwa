@@ -137,14 +137,17 @@ const HeroSection = () => {
           {/* HEADLINE */}
           <h1 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-extrabold tracking-tight text-[#0B2447] leading-[1.05] mb-6 relative z-10">
             Turn Contracts <br className="hidden lg:block" /> Into <br />
-            Predictable, Trackable, <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#14B8A6] to-[#0d9488]">
+              Predictable,
+            </span>
+            <br /> Trackable, <br />
             <span className="relative inline-block mt-1 whitespace-nowrap">
               <motion.span
                 variants={highlightVariant}
                 initial="hidden"
                 animate="visible"
                 style={{ originX: 0 }}
-                className="absolute bottom-3 left-[-2%] w-[104%] h-[30%] bg-[#2DD4BF] -z-10 -rotate-1 rounded-sm opacity-60 mix-blend-multiply"
+                className="absolute bottom-3 left-[-2%] w-[104%] h-[30%] bg-[#2DD4BF] -z-10 -rotate-1 rounded-sm opacity-100"
               />
               <span className="relative z-10">Execution.</span>
             </span>

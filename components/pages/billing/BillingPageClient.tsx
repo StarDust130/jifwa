@@ -48,7 +48,6 @@ export default function BillingPageClient({
   userName,
 }: BillingPageClientProps) {
   const { user } = useUser();
-  const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 

@@ -79,7 +79,7 @@ export default async function ProjectDetailPage({
         {/* Left Column: Timeline */}
         <div className="lg:col-span-8">
           <div className="mb-8" id="execution-timeline">
-            <h2 className="text-xl font-bold text-zinc-900">Execution Plan</h2>
+            <h2 className="text-xl font-bold text-primary">Execution Plan</h2>
           </div>
 
           <ExecutionTimeline

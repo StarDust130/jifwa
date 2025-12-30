@@ -5,7 +5,6 @@ import { Check, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateMilestone } from "@/app/actions/milestone";
 
-
 interface MilestoneActionsProps {
   milestone: any;
   projectId: string;
@@ -64,7 +63,7 @@ export function MilestoneActions({
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           placeholder="Explain what needs fixing..."
-          className="w-full text-sm p-3 rounded-lg border border-red-200 focus:outline-none focus:ring-2 focus:ring-red-500/20 bg-red-50 text-zinc-900 mb-2 resize-none"
+          className="w-full text-sm p-3 rounded-lg border border-red-200 focus:outline-none focus:ring-2 focus:ring-red-500/20 bg-red-50 text-primary mb-2 resize-none"
           rows={2}
         />
         <div className="flex gap-2">
@@ -95,7 +94,7 @@ export function MilestoneActions({
       <button
         onClick={() => handleAction("approve")}
         disabled={loading}
-        className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-xs font-bold rounded-lg hover:bg-black shadow-md shadow-zinc-900/10 transition-all active:scale-95"
+        className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-black shadow-md shadow-zinc-900/10 transition-all active:scale-95"
       >
         {loading ? (
           <Loader2 size={12} className="animate-spin" />

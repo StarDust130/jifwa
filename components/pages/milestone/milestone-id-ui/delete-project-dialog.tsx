@@ -52,15 +52,16 @@ export function DeleteProjectDialog({
           <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mb-2 border border-red-100">
             <AlertTriangle size={20} className="text-red-600" />
           </div>
-          <AlertDialogTitle className="text-zinc-900">
+          <AlertDialogTitle className="text-primary">
             Delete Project?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-zinc-500 text-sm">
-            This will remove the project, including contracts, milestones, and vendor data. You can restore it later if needed.
+            This will remove the project, including contracts, milestones, and
+            vendor data. You can restore it later if needed.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel className="text-sm font-medium rounded-lg border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 h-10">
+          <AlertDialogCancel className="text-sm font-medium rounded-lg border-zinc-200 hover:bg-zinc-50 hover:text-primary h-10">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

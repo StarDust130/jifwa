@@ -67,7 +67,7 @@ export function AssignmentsClient({
         <div className="w-20 h-20 bg-zinc-50 rounded-[2rem] flex items-center justify-center mb-6 border border-zinc-100 shadow-sm">
           <Briefcase size={32} className="text-zinc-300" />
         </div>
-        <h2 className="text-2xl font-black text-zinc-900 tracking-tight">
+        <h2 className="text-2xl font-black text-primary tracking-tight">
           No Assignments Yet
         </h2>
         <p className="text-zinc-500 mt-2 max-w-xs text-sm font-medium leading-relaxed">
@@ -83,7 +83,7 @@ export function AssignmentsClient({
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-3xl font-black text-zinc-900 tracking-tight flex items-center gap-3">
+          <h1 className="text-3xl font-black text-primary tracking-tight flex items-center gap-3">
             Assignments
             <span className="bg-zinc-100 text-zinc-500 text-sm font-bold px-3 py-1 rounded-full border border-zinc-200">
               {initialData.length}
@@ -117,7 +117,7 @@ export function AssignmentsClient({
             className={cn(
               "p-2.5 rounded-xl border transition-all flex items-center gap-2 text-sm font-bold",
               statusFilter === "active"
-                ? "bg-zinc-900 text-white border-zinc-900"
+                ? "bg-primary text-white border-zinc-900"
                 : "bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50"
             )}
           >
@@ -169,7 +169,7 @@ export function AssignmentsClient({
                             "w-10 h-10 rounded-xl flex items-center justify-center border transition-colors",
                             project.status === "completed"
                               ? "bg-emerald-50 border-emerald-100 text-emerald-600"
-                              : "bg-zinc-900 border-zinc-800 text-white"
+                              : "bg-primary border-zinc-800 text-white"
                           )}
                         >
                           {project.status === "completed" ? (
@@ -183,7 +183,7 @@ export function AssignmentsClient({
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-zinc-900 text-sm group-hover:text-blue-600 transition-colors">
+                          <p className="font-bold text-primary text-sm group-hover:text-blue-600 transition-colors">
                             {project.contractName}
                           </p>
                           <p className="text-[11px] text-zinc-400 font-medium">
@@ -221,7 +221,7 @@ export function AssignmentsClient({
                         </div>
                         <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-zinc-900 rounded-full transition-all duration-500"
+                            className="h-full bg-primary rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -230,7 +230,7 @@ export function AssignmentsClient({
 
                     {/* 5. Action Column */}
                     <td className="px-6 py-5 text-right pr-8">
-                      <button className="text-zinc-300 hover:text-zinc-900 transition-colors">
+                      <button className="text-zinc-300 hover:text-primary transition-colors">
                         <ArrowUpRight size={20} />
                       </button>
                     </td>
@@ -245,7 +245,8 @@ export function AssignmentsClient({
               No assignments match your search.
             </div>
           )}
-        </div>s
+        </div>
+        s
       </div>
     </div>
   );

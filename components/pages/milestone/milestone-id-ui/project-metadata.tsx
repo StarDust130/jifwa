@@ -47,7 +47,7 @@ export function ProjectMetadata({
   return (
     <div className="space-y-6 sticky top-24">
       {/* CARD 1: CONTRACT VALUE */}
-      <div className="bg-zinc-900 rounded-xl p-6 text-white shadow-2xl shadow-zinc-900/20 relative overflow-hidden group border border-zinc-800">
+      <div className="bg-primary rounded-xl p-6 text-white shadow-2xl shadow-zinc-900/20 relative overflow-hidden group border border-zinc-800">
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none group-hover:bg-white/10 transition-all duration-500" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
@@ -71,14 +71,14 @@ export function ProjectMetadata({
       <div className="bg-white border border-zinc-200 rounded-xl p-1 shadow-sm">
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-2">
               <Briefcase size={12} className="text-zinc-400" /> Scope of Work
             </h3>
             <button
               onClick={copyId}
               className="group flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-zinc-50 transition-colors"
             >
-              <span className="text-[10px] font-mono text-zinc-400 group-hover:text-zinc-900">
+              <span className="text-[10px] font-mono text-zinc-400 group-hover:text-primary">
                 {_id.toString().slice(-6)}
               </span>
               {copied ? (
@@ -100,7 +100,7 @@ export function ProjectMetadata({
       {/* CARD 3: TEAM HUB */}
       <div className="bg-white border border-zinc-200 rounded-xl shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-          <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-2">
+          <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-2">
             <Users size={12} className="text-zinc-400" /> Project Team
           </h3>
           {isActive && (
@@ -126,7 +126,7 @@ export function ProjectMetadata({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-zinc-900 truncate">
+              <p className="text-xs font-bold text-primary truncate">
                 {creator.fullName}
               </p>
               <p className="text-[10px] text-zinc-500">Project Owner</p>
@@ -147,7 +147,7 @@ export function ProjectMetadata({
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0",
                   isActive
-                    ? "bg-zinc-900 text-white"
+                    ? "bg-primary text-white"
                     : "bg-white border border-zinc-200 text-zinc-400"
                 )}
               >
@@ -160,7 +160,7 @@ export function ProjectMetadata({
 
               <div className="flex-1 min-w-0">
                 <p
-                  className="text-xs font-bold text-zinc-900 truncate"
+                  className="text-xs font-bold text-primary truncate"
                   title={vendorEmail}
                 >
                   {vendorEmail}
@@ -181,7 +181,7 @@ export function ProjectMetadata({
                 No vendor assigned
               </p>
               {isClient && (
-                <div className="[&_button]:w-full [&_button]:h-7 [&_button]:text-[10px] [&_button]:bg-white [&_button]:text-zinc-900 [&_button]:border [&_button]:border-zinc-300 [&_button]:hover:bg-zinc-100 [&_button]:shadow-sm">
+                <div className="[&_button]:w-full [&_button]:h-7 [&_button]:text-[10px] [&_button]:bg-white [&_button]:text-primary [&_button]:border [&_button]:border-zinc-300 [&_button]:hover:bg-zinc-100 [&_button]:shadow-sm">
                   <InviteVendorModal
                     projectId={_id}
                     onSuccess={(email) => setVendorEmail(email)}
@@ -195,7 +195,7 @@ export function ProjectMetadata({
         <div className="p-2 border-t border-zinc-100 bg-zinc-50/30">
           <Link
             href={`/milestones`}
-            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-600 hover:text-white hover:bg-zinc-900 py-2.5 rounded-lg transition-all border border-zinc-200 hover:border-zinc-900 bg-white shadow-sm group"
+            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-600 hover:text-white hover:bg-primary py-2.5 rounded-lg transition-all border border-zinc-200 hover:border-zinc-900 bg-white shadow-sm group"
           >
             <LayoutList size={12} /> View Full Milestones
             <ArrowRight

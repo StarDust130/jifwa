@@ -61,7 +61,7 @@ export function InviteVendorModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-zinc-900 border border-zinc-900 rounded-md hover:bg-zinc-800 transition-all shadow-sm w-full justify-center">
+        <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-primary border border-zinc-900 rounded-md hover:bg-zinc-800 transition-all shadow-sm w-full justify-center">
           <Mail size={12} /> Invite Vendor
         </button>
       </DialogTrigger>
@@ -73,7 +73,7 @@ export function InviteVendorModal({
               <CheckCircle2 size={24} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-zinc-900">Invite Sent!</h3>
+              <h3 className="text-sm font-bold text-primary">Invite Sent!</h3>
               <p className="text-xs text-zinc-500 mt-1">
                 We've emailed {email}.
               </p>
@@ -82,7 +82,7 @@ export function InviteVendorModal({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="text-sm font-bold text-zinc-900">
+              <DialogTitle className="text-sm font-bold text-primary">
                 Invite Collaborator
               </DialogTitle>
               <DialogDescription className="text-xs text-zinc-500">
@@ -107,7 +107,7 @@ export function InviteVendorModal({
               <button
                 onClick={handleInvite}
                 disabled={status === "sending" || !email}
-                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                className="w-full bg-primary hover:bg-zinc-800 text-white rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-2"
               >
                 {status === "sending" ? (
                   <Loader2 size={14} className="animate-spin" />

@@ -18,10 +18,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4 text-emerald-600" />,
-        info: <InfoIcon className="size-4 text-zinc-900" />,
+        info: <InfoIcon className="size-4 text-primary" />,
         warning: <TriangleAlertIcon className="size-4 text-amber-600" />,
         error: <OctagonXIcon className="size-4 text-rose-600" />,
-        loading: <Loader2Icon className="size-4 animate-spin text-zinc-900" />,
+        loading: <Loader2Icon className="size-4 animate-spin text-primary" />,
       }}
       toastOptions={{
         // Using a multi-layered shadow for that 'z-50' depth

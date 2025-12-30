@@ -121,13 +121,13 @@ export default function MilestoneClient({
               {/* Icon changes based on Role */}
               {isVendor ? (
                 <Briefcase
-                  className="text-zinc-300 group-hover:text-zinc-900 transition-colors"
+                  className="text-zinc-300 group-hover:text-primary transition-colors"
                   size={48}
                   strokeWidth={1.5}
                 />
               ) : (
                 <FolderOpen
-                  className="text-zinc-300 group-hover:text-zinc-900 transition-colors"
+                  className="text-zinc-300 group-hover:text-primary transition-colors"
                   size={48}
                   strokeWidth={1.5}
                 />
@@ -136,7 +136,7 @@ export default function MilestoneClient({
           </div>
 
           <div className="space-y-3 mb-8">
-            <h2 className="text-2xl font-black tracking-tight text-zinc-900">
+            <h2 className="text-2xl font-black tracking-tight text-primary">
               {isVendor ? "No Jobs Assigned" : "No Contracts Found"}
             </h2>
             <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-xs mx-auto">
@@ -150,7 +150,7 @@ export default function MilestoneClient({
           {!isVendor && (
             <button
               onClick={() => router.push("/projects")}
-              className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
+              className="group inline-flex items-center gap-2 bg-primary text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
             >
               <span>Create First Contract</span>
               <ArrowRight
@@ -228,7 +228,7 @@ export default function MilestoneClient({
                   className={cn(
                     "flex-1 sm:flex-none px-4 py-3 border rounded-2xl transition-all flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-tighter",
                     statusFilter === "active"
-                      ? "bg-zinc-900 border-zinc-900 text-white shadow-lg"
+                      ? "bg-primary border-zinc-900 text-white shadow-lg"
                       : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                   )}
                 >
@@ -277,7 +277,7 @@ export default function MilestoneClient({
                         <div className="flex items-center gap-5">
                           <RichPdfIcon />
                           <div className="min-w-0">
-                            <span className="block text-sm font-bold text-zinc-900 group-hover:text-red-600 transition-colors truncate">
+                            <span className="block text-sm font-bold text-primary group-hover:text-red-600 transition-colors truncate">
                               {p.contractName}
                             </span>
                             <span className="text-[9px] text-zinc-400 font-mono">
@@ -325,12 +325,12 @@ export default function MilestoneClient({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">
-                      <h3 className="text-sm font-bold text-zinc-900 line-clamp-2 leading-tight">
+                      <h3 className="text-sm font-bold text-primary line-clamp-2 leading-tight">
                         {p.contractName}
                       </h3>
                       <StatusBadge status={p.status} />
                     </div>
-                    <p className="text-[13px] font-black text-zinc-900 mt-2">
+                    <p className="text-[13px] font-black text-primary mt-2">
                       {p.total_value || "$0.00"}
                     </p>
                     <div className="flex items-center gap-4 mt-3 text-[9px] text-zinc-400 font-bold uppercase tracking-wider">

@@ -84,7 +84,7 @@ function TaskCard({
         <div
           className={cn(
             "absolute top-8 bottom-[-24px] w-[2px] transition-colors",
-            isDone ? "bg-zinc-900" : "bg-zinc-100"
+            isDone ? "bg-primary" : "bg-zinc-100"
           )}
         />
         <div
@@ -97,7 +97,7 @@ function TaskCard({
               : needsFix
               ? "border-red-500 text-red-600"
               : isActive
-              ? "border-zinc-900 text-zinc-900"
+              ? "border-zinc-900 text-primary"
               : "border-zinc-200 text-zinc-300"
           )}
         >
@@ -111,7 +111,7 @@ function TaskCard({
             <div
               className={cn(
                 "w-2 h-2 rounded-full",
-                isActive ? "bg-zinc-900" : "bg-zinc-300"
+                isActive ? "bg-primary" : "bg-zinc-300"
               )}
             />
           )}
@@ -165,7 +165,7 @@ function TaskCard({
               <h3
                 className={cn(
                   "text-base font-bold",
-                  isDone ? "text-zinc-400 line-through" : "text-zinc-900"
+                  isDone ? "text-zinc-400 line-through" : "text-primary"
                 )}
               >
                 {milestone.title}
@@ -223,7 +223,7 @@ function EmptyState() {
   return (
     <div className="py-12 text-center border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
       <FileText size={20} className="text-zinc-300 mx-auto mb-2" />
-      <p className="text-sm font-bold text-zinc-900">No milestones yet</p>
+      <p className="text-sm font-bold text-primary">No milestones yet</p>
     </div>
   );
 }

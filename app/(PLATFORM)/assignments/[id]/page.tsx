@@ -75,13 +75,13 @@ export default async function AssignmentWorkspacePage({
           <div className="flex items-center gap-4">
             <Link
               href="/assignments"
-              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-all"
+              className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-all"
             >
               <ArrowLeft size={18} />
             </Link>
             <div className="flex items-center gap-2">
               <Briefcase size={16} className="text-zinc-400" />
-              <h1 className="text-sm font-bold text-zinc-900 truncate max-w-[200px] sm:max-w-md">
+              <h1 className="text-sm font-bold text-primary truncate max-w-[200px] sm:max-w-md">
                 {project.contractName}
               </h1>
             </div>
@@ -94,7 +94,7 @@ export default async function AssignmentWorkspacePage({
 
       <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="mb-10">
-          <h1 className="text-3xl font-extrabold text-zinc-900 tracking-tight">
+          <h1 className="text-3xl font-extrabold text-primary tracking-tight">
             Your Assignments
           </h1>
           <p className="text-zinc-500 text-lg mt-1">

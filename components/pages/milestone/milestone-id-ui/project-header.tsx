@@ -27,13 +27,13 @@ export function ProjectHeader({
         <div className="flex items-center gap-3">
           <Link
             href="/milestones"
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+            className="p-1.5 rounded-md text-zinc-400 hover:text-primary hover:bg-zinc-100 transition-colors"
           >
             <ArrowLeft size={16} />
           </Link>
 
           <div className="flex items-center gap-2 text-sm">
-            <h1 className="font-bold text-zinc-900 truncate max-w-[150px] sm:max-w-md">
+            <h1 className="font-bold text-primary truncate max-w-[150px] sm:max-w-md">
               {project.contractName}
             </h1>
           </div>
@@ -52,7 +52,7 @@ export function ProjectHeader({
 
           {/* More Menu */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 transition-colors outline-none focus:ring-0">
+            <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-primary transition-colors outline-none focus:ring-0">
               <MoreHorizontal size={16} />
             </DropdownMenuTrigger>
 

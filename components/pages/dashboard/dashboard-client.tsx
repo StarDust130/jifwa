@@ -182,7 +182,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
             label={isClient ? "Total Budget" : "Pipeline Value"}
             value={formatCurrency(stats.totalValue)}
             icon={Wallet}
-            color="text-zinc-900"
+            color="text-primary"
             bg="bg-white border-zinc-200"
           />
         </motion.div>
@@ -245,7 +245,7 @@ function EmptyState({ isClient }: { isClient: boolean }) {
       <div className="w-16 h-16 bg-zinc-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
         <Briefcase className="text-zinc-300" />
       </div>
-      <h3 className="text-lg font-bold text-zinc-900">No active contracts</h3>
+      <h3 className="text-lg font-bold text-primary">No active contracts</h3>
       <p className="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">
         {isClient
           ? "Upload a contract PDF to let AI generate milestones."
@@ -277,7 +277,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
             className={cn(
               "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wide border",
               project.status === "active"
-                ? "bg-zinc-900 text-white border-zinc-900"
+                ? "bg-primary text-white border-zinc-900"
                 : "bg-zinc-50 text-zinc-400 border-zinc-100"
             )}
           >
@@ -322,7 +322,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
           {/* Progress Bar */}
           <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden mb-3">
             <div
-              className="h-full bg-zinc-900 rounded-full transition-all duration-500"
+              className="h-full bg-primary rounded-full transition-all duration-500"
               style={{ width: `${project.progress}%` }}
             />
           </div>
@@ -387,7 +387,7 @@ function VendorProjectCard({ project }: { project: SerializedProject }) {
             <p
               className={cn(
                 "text-xs font-bold mt-0.5 truncate",
-                project.isUrgent ? "text-rose-600" : "text-zinc-900"
+                project.isUrgent ? "text-rose-600" : "text-primary"
               )}
             >
               {project.nextDeadline || "None"}

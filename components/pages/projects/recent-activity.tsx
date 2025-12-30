@@ -85,7 +85,7 @@ export function RecentActivity({ projects }: { projects: any[] }) {
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-zinc-900 truncate pr-6">
+                    <h4 className="text-sm font-semibold text-primary truncate pr-6">
                       {project.contractName}
                     </h4>
 
@@ -120,7 +120,7 @@ export function RecentActivity({ projects }: { projects: any[] }) {
                 <div className="absolute top-1/2 right-3 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <ArrowUpRight
                     size={14}
-                    className="text-zinc-400 hover:text-zinc-900"
+                    className="text-zinc-400 hover:text-primary"
                   />
                 </div>
               </Link>
@@ -133,7 +133,7 @@ export function RecentActivity({ projects }: { projects: any[] }) {
       <div className="p-3 border-t border-zinc-100 bg-zinc-50/50">
         <Link
           href="/projects/all"
-          className="flex items-center justify-center w-full py-2.5 rounded-lg border border-zinc-200 bg-white text-xs font-semibold text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-all shadow-sm"
+          className="flex items-center justify-center w-full py-2.5 rounded-lg border border-zinc-200 bg-white text-xs font-semibold text-zinc-600 hover:bg-zinc-50 hover:text-primary transition-all shadow-sm"
         >
           View All Projects
         </Link>

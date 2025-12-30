@@ -3,7 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useClerk } from "@clerk/nextjs";
-import { BookOpen, LifeBuoy, LogOut, ChevronRight, Eclipse } from "lucide-react";
+import {
+  BookOpen,
+  LifeBuoy,
+  LogOut,
+  ChevronRight,
+  Eclipse,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface SidebarFooterProps {
@@ -65,7 +71,7 @@ export function SidebarFooter({ currentRole }: SidebarFooterProps) {
                       </span>
                     </div>
                     <span className="text-[10px] text-zinc-500 font-medium group-hover:text-zinc-400 transition-colors">
-                      Upgrade  Workspace
+                      Upgrade Workspace
                     </span>
                   </div>
                 </div>
@@ -90,9 +96,9 @@ export function SidebarFooter({ currentRole }: SidebarFooterProps) {
               <div className="flex flex-col items-center justify-center py-2 rounded-lg bg-white border border-zinc-200 shadow-sm hover:border-zinc-300 hover:shadow-md transition-all cursor-pointer group">
                 <item.icon
                   size={14}
-                  className="text-zinc-400 group-hover:text-zinc-900 transition-colors mb-1"
+                  className="text-zinc-400 group-hover:text-primary transition-colors mb-1"
                 />
-                <span className="text-[10px] font-bold text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                <span className="text-[10px] font-bold text-zinc-500 group-hover:text-primary transition-colors">
                   {item.name}
                 </span>
               </div>
@@ -137,7 +143,7 @@ export function SidebarFooter({ currentRole }: SidebarFooterProps) {
                     <LogOut size={20} className="text-red-600 ml-1" />
                   </div>
                 </div>
-                <h3 className="text-lg font-black text-zinc-900 mb-2">
+                <h3 className="text-lg font-black text-primary mb-2">
                   Signing out?
                 </h3>
                 <p className="text-[13px] text-zinc-500 font-medium leading-relaxed px-2">

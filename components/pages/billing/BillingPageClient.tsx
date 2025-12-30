@@ -152,7 +152,7 @@ export default function BillingPageClient({
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-zinc-900 font-sans pb-20">
+    <div className="min-h-screen bg-[#FDFDFD] text-primary font-sans pb-20">
       <Script
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
@@ -186,8 +186,8 @@ export default function BillingPageClient({
                 className={cn(
                   "relative p-6 rounded-3xl flex flex-col justify-between border transition-all duration-300",
                   isDark
-                    ? "bg-zinc-900 text-white border-zinc-900 shadow-xl shadow-zinc-900/20 z-10 scale-[1.02]"
-                    : "bg-white text-zinc-900 border-zinc-200 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/50"
+                    ? "bg-primary text-white border-zinc-900 shadow-xl shadow-zinc-900/20 z-10 scale-[1.02]"
+                    : "bg-white text-primary border-zinc-200 hover:border-zinc-300 hover:shadow-lg hover:shadow-zinc-200/50"
                 )}
               >
                 {plan.popular && (
@@ -307,7 +307,7 @@ export default function BillingPageClient({
                       ? "bg-white text-black hover:bg-zinc-200"
                       : isActive
                       ? "bg-zinc-100 text-zinc-400 cursor-default"
-                      : "bg-zinc-900 text-white hover:bg-black shadow-lg shadow-zinc-900/10"
+                      : "bg-primary text-white hover:bg-black shadow-lg shadow-zinc-900/10"
                   )}
                 >
                   {loadingPlan === plan.id ? (
@@ -367,7 +367,7 @@ export default function BillingPageClient({
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full flex items-center justify-between p-4 text-left"
                 >
-                  <span className="text-xs font-bold text-zinc-900">
+                  <span className="text-xs font-bold text-primary">
                     {faq.q}
                   </span>
                   {openFaq === i ? (
@@ -400,7 +400,7 @@ export default function BillingPageClient({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-zinc-900 text-white rounded-[2rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg relative overflow-hidden"
+          className="bg-primary text-white rounded-[2rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg relative overflow-hidden"
         >
           <div className="relative z-10 text-center md:text-left">
             <h2 className="text-xl font-black uppercase italic tracking-tight mb-2">
@@ -414,7 +414,7 @@ export default function BillingPageClient({
           <Link
             href="mailto:contact@jifwa.com"
             target="_blank"
-            className="relative z-10 px-6 py-3 bg-white text-zinc-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-colors"
+            className="relative z-10 px-6 py-3 bg-white text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-colors"
           >
             Contact Sales
           </Link>

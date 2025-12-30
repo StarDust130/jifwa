@@ -89,7 +89,7 @@ export function VendorSubmitModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-lg text-xs font-bold shadow-lg hover:bg-black transition-all">
+        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold shadow-lg hover:bg-black transition-all">
           <UploadCloud size={14} className="text-zinc-400" />
           <span>Submit Proof</span>
         </button>
@@ -97,7 +97,7 @@ export function VendorSubmitModal({
 
       <DialogContent className="sm:max-w-[440px] bg-white p-0 overflow-hidden rounded-2xl border-zinc-100">
         <div className="p-5 border-b border-zinc-100 bg-zinc-50/50">
-          <DialogTitle className="text-lg font-bold text-zinc-900">
+          <DialogTitle className="text-lg font-bold text-primary">
             Submit Deliverable
           </DialogTitle>
           <p className="text-xs text-zinc-500 mt-1">
@@ -114,7 +114,7 @@ export function VendorSubmitModal({
                 className={cn(
                   "flex-1 py-1.5 text-xs font-bold rounded-md transition-all",
                   activeTab === t
-                    ? "bg-white shadow-sm text-zinc-900"
+                    ? "bg-white shadow-sm text-primary"
                     : "text-zinc-500"
                 )}
               >
@@ -144,7 +144,7 @@ export function VendorSubmitModal({
                     <div className="w-8 h-8 bg-white rounded flex items-center justify-center border border-zinc-100">
                       <FileText size={16} />
                     </div>
-                    <p className="text-xs font-bold text-zinc-900 truncate">
+                    <p className="text-xs font-bold text-primary truncate">
                       {file.name}
                     </p>
                   </div>
@@ -192,7 +192,7 @@ export function VendorSubmitModal({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold text-sm hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
+            className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={18} />

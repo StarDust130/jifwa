@@ -76,7 +76,7 @@ export function UploadScanner() {
               <div className="w-16 h-16 bg-zinc-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 border border-zinc-100">
                 <UploadCloud className="w-8 h-8 text-zinc-400 group-hover:text-blue-600 transition-colors" />
               </div>
-              <h3 className="text-lg font-bold text-zinc-900">
+              <h3 className="text-lg font-bold text-primary">
                 Upload Contract PDF
               </h3>
               <p className="text-zinc-500 text-sm mt-2 max-w-sm mx-auto">
@@ -93,7 +93,7 @@ export function UploadScanner() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-zinc-900 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden border border-zinc-800"
+            className="bg-primary rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden border border-zinc-800"
           >
             {/* The Scanning Beam */}
             <motion.div
@@ -136,7 +136,7 @@ export function UploadScanner() {
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-green-600" />
             </div>
-            <h3 className="text-xl font-bold text-zinc-900">
+            <h3 className="text-xl font-bold text-primary">
               Analysis Complete!
             </h3>
             <p className="text-zinc-500 text-sm mt-1">

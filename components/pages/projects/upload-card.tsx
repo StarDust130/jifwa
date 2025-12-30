@@ -240,7 +240,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                 </p>
                 <button
                   onClick={() => router.push("/billing")}
-                  className="group relative px-8 py-3 rounded-xl bg-zinc-900 text-white font-bold text-sm hover:bg-zinc-800 transition-all shadow-lg flex items-center gap-2"
+                  className="group relative px-8 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-zinc-800 transition-all shadow-lg flex items-center gap-2"
                 >
                   <Zap size={16} className="fill-current text-yellow-400" />
                   <span>Upgrade to Add More</span>
@@ -249,7 +249,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
             ) : (
               // 🔓 ACTIVE STATE
               <>
-                <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-2">
+                <h3 className="text-2xl font-bold text-primary tracking-tight mb-2">
                   Upload Contract
                 </h3>
                 <p className="text-zinc-500 text-sm mb-8 max-w-xs mx-auto font-medium">
@@ -257,7 +257,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                 </p>
                 <button
                   onClick={() => inputRef.current?.click()}
-                  className="group relative px-6 py-3 rounded-xl bg-zinc-900 text-white font-semibold text-sm hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center gap-2"
+                  className="group relative px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center gap-2"
                 >
                   <Plus size={18} />
                   <span>Select Document</span>
@@ -276,7 +276,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
             <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-amber-100">
               <AlertCircle size={36} className="text-amber-500" />
             </div>
-            <h3 className="text-xl font-bold text-zinc-900 mb-2 tracking-tight">
+            <h3 className="text-xl font-bold text-primary mb-2 tracking-tight">
               {errorTitle}
             </h3>
             <p className="text-zinc-500 font-medium text-sm mb-8 text-center px-6 leading-relaxed">
@@ -303,7 +303,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                   "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors",
                   status === "success"
                     ? "bg-green-50 text-green-600"
-                    : "bg-zinc-50 text-zinc-900"
+                    : "bg-zinc-50 text-primary"
                 )}
               >
                 {status === "success" ? (
@@ -313,7 +313,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <h4 className="text-sm font-bold text-zinc-900 truncate">
+                <h4 className="text-sm font-bold text-primary truncate">
                   {fileName}
                 </h4>
                 <div className="h-5 overflow-hidden relative w-full mt-1">
@@ -353,7 +353,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                     ? "bg-green-500"
                     : status === "analyzing"
                     ? "bg-indigo-500"
-                    : "bg-zinc-900"
+                    : "bg-primary"
                 )}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}

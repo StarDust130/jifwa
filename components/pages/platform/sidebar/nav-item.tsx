@@ -125,7 +125,7 @@ export function NavItem({
             "flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 relative z-10 border select-none",
             isActive
               ? "bg-white text-primary border-zinc-200/60 shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
-              : "text-zinc-500 border-transparent hover:bg-white hover:text-zinc-900 hover:shadow-sm hover:border-zinc-200/40"
+              : "text-zinc-500 border-transparent hover:bg-white hover:text-primary hover:shadow-sm hover:border-zinc-200/40"
           )}
         >
           <div className="flex items-center gap-3">
@@ -135,8 +135,8 @@ export function NavItem({
               className={cn(
                 "flex items-center justify-center origin-center",
                 isActive
-                  ? "text-zinc-900"
-                  : "text-zinc-400 group-hover:text-zinc-900"
+                  ? "text-primary"
+                  : "text-zinc-400 group-hover:text-primary"
               )}
             >
               <link.icon size={18} strokeWidth={2} />
@@ -189,8 +189,8 @@ export function NavItem({
                     className={cn(
                       "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium truncate transition-all group/sub",
                       isProjectActive
-                        ? "bg-white text-zinc-900 border border-zinc-100 shadow-sm"
-                        : "text-zinc-500 hover:text-zinc-900 hover:bg-white/60"
+                        ? "bg-white text-primary border border-zinc-100 shadow-sm"
+                        : "text-zinc-500 hover:text-primary hover:bg-white/60"
                     )}
                   >
                     {/* Sub-item micro-interaction */}
@@ -203,8 +203,8 @@ export function NavItem({
                         className={cn(
                           "shrink-0",
                           isProjectActive
-                            ? "text-zinc-900"
-                            : "text-zinc-300 group-hover/sub:text-zinc-900"
+                            ? "text-primary"
+                            : "text-zinc-300 group-hover/sub:text-primary"
                         )}
                       />
                     </motion.div>

@@ -16,6 +16,7 @@ import {
   Moon,
   AlertTriangle,
   Check,
+  ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -143,7 +144,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 mx-auto font-sans w-full max-w-[100vw] overflow-x-hidden">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6  mx-auto font-sans w-full max-w-[100vw] overflow-x-hidden">
       {/* HEADER */}
       <div className="mb-6 px-1">
         <h2 className="text-3xl font-bold tracking-tight text-primary">
@@ -312,7 +313,7 @@ export default function SettingsPage() {
             </form>
           </TabsContent>
 
-          {/* ACCOUNT TAB */}
+          {/* ACCOUNT TAB (Improved Delete UI) */}
           <TabsContent
             value="account"
             className="space-y-6 m-0 animate-in fade-in slide-in-from-right-4 duration-500"
@@ -325,39 +326,40 @@ export default function SettingsPage() {
             </div>
             <Separator className="hidden lg:block" />
 
-            <Card className="border-destructive/20 bg-destructive/5 shadow-none overflow-hidden rounded-xl">
-              <CardHeader className="bg-destructive/10 pb-4 border-b border-destructive/10">
-                <div className="flex items-center gap-2 text-destructive mb-1">
+            {/* Danger Zone Card */}
+            <div className="rounded-xl border border-red-200 overflow-hidden bg-white">
+              <div className="bg-red-50/50 p-4 border-b border-red-100 flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-full text-red-600">
                   <AlertTriangle className="h-5 w-5" />
-                  <CardTitle className="text-sm font-bold uppercase tracking-wider">
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-red-900 uppercase tracking-wider">
                     Danger Zone
-                  </CardTitle>
+                  </h4>
+                  <p className="text-xs text-red-700 font-medium mt-0.5">
+                    Irreversible actions. Proceed with caution.
+                  </p>
                 </div>
-                <CardDescription className="text-destructive/80 text-xs font-medium">
-                  These actions are permanent and cannot be undone.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <span className="block text-sm font-bold text-primary">
-                      Delete Account
-                    </span>
-                    <span className="block text-xs text-muted-foreground mt-0.5">
-                      Permanently remove your account and data.
-                    </span>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => setIsDeleteOpen(true)}
-                    className="bg-destructive hover:bg-destructive/90 font-bold shadow-sm whitespace-nowrap h-10 px-6"
-                  >
+              </div>
+              <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div>
+                  <h5 className="text-sm font-bold text-gray-900">
                     Delete Account
-                  </Button>
+                  </h5>
+                  <p className="text-xs text-gray-500 mt-1 max-w-sm leading-relaxed">
+                    Permanently remove your personal data, projects, and billing
+                    information. This action cannot be undone.
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsDeleteOpen(true)}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold shadow-md shadow-red-100 h-10 px-5 whitespace-nowrap rounded-lg"
+                >
+                  Delete Account
+                </Button>
+              </div>
+            </div>
           </TabsContent>
 
           {/* APPEARANCE TAB */}
@@ -436,14 +438,14 @@ export default function SettingsPage() {
         <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-0 shadow-2xl rounded-2xl bg-white gap-0">
           {deleteStep === 1 && (
             <div className="flex flex-col animate-in fade-in zoom-in-95 duration-200">
-              <div className="bg-destructive/5 p-8 flex flex-col items-center text-center border-b border-destructive/10">
-                <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm ring-4 ring-destructive/10">
-                  <AlertTriangle className="h-8 w-8 text-destructive" />
+              <div className="bg-red-50 p-8 flex flex-col items-center text-center border-b border-red-100">
+                <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm ring-4 ring-red-100">
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
                 </div>
-                <DialogTitle className="text-2xl font-bold text-primary">
+                <DialogTitle className="text-2xl font-bold text-gray-900">
                   Delete account?
                 </DialogTitle>
-                <DialogDescription className="text-muted-foreground font-medium mt-2 max-w-xs mx-auto">
+                <DialogDescription className="text-gray-500 font-medium mt-2 max-w-xs mx-auto">
                   This will permanently delete your data, projects, and
                   settings.
                 </DialogDescription>
@@ -453,12 +455,12 @@ export default function SettingsPage() {
                   <Button
                     variant="outline"
                     onClick={resetDeleteModal}
-                    className="h-12 font-bold border-border text-muted-foreground hover:bg-muted hover:text-primary rounded-xl"
+                    className="h-12 font-bold border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl"
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="h-12 font-bold bg-destructive hover:bg-destructive/90 text-white shadow-lg shadow-destructive/20 rounded-xl transition-all active:scale-95"
+                    className="h-12 font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 rounded-xl transition-all active:scale-95"
                     onClick={() => setDeleteStep(2)}
                   >
                     Continue
@@ -472,19 +474,19 @@ export default function SettingsPage() {
             <div className="bg-white flex flex-col animate-in slide-in-from-right-8 duration-300">
               <div className="p-8 pb-0">
                 <div className="flex items-center justify-between mb-1">
-                  <DialogTitle className="text-xl font-bold text-primary">
+                  <DialogTitle className="text-xl font-bold text-gray-900">
                     Security Check
                   </DialogTitle>
                   <Badge
                     variant="outline"
-                    className="border-destructive/30 text-destructive bg-destructive/5 font-bold"
+                    className="border-red-200 text-red-600 bg-red-50 font-bold"
                   >
                     FINAL STEP
                   </Badge>
                 </div>
-                <DialogDescription className="text-muted-foreground text-sm mt-2">
+                <DialogDescription className="text-gray-500 text-sm mt-2">
                   Type{" "}
-                  <span className="font-black text-primary select-all">
+                  <span className="font-black text-gray-900 select-all">
                     DELETE ACCOUNT
                   </span>{" "}
                   below.
@@ -498,7 +500,7 @@ export default function SettingsPage() {
                       setDeleteInput(e.target.value.toUpperCase())
                     }
                     placeholder="DELETE ACCOUNT"
-                    className="h-14 border-2 border-border focus-visible:ring-0 focus-visible:border-destructive focus-visible:bg-destructive/5 font-mono text-center text-xl font-bold uppercase tracking-widest placeholder:text-muted-foreground/30 rounded-xl transition-all"
+                    className="h-14 border-2 border-gray-200 focus-visible:ring-0 focus-visible:border-red-500 focus-visible:bg-red-50/20 font-mono text-center text-xl font-bold uppercase tracking-widest placeholder:text-gray-300 rounded-xl transition-all"
                     autoFocus
                   />
                   <div
@@ -519,7 +521,7 @@ export default function SettingsPage() {
                   variant="ghost"
                   onClick={() => setDeleteStep(1)}
                   disabled={isDeleting}
-                  className="flex-1 h-12 font-bold text-muted-foreground hover:text-primary hover:bg-muted rounded-xl"
+                  className="flex-1 h-12 font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
                 >
                   Back
                 </Button>
@@ -527,7 +529,7 @@ export default function SettingsPage() {
                   variant="destructive"
                   onClick={handleDeleteAccount}
                   disabled={deleteInput !== "DELETE ACCOUNT" || isDeleting}
-                  className="flex-[2] h-12 bg-destructive hover:bg-destructive/90 font-bold text-white shadow-xl shadow-destructive/20 disabled:opacity-50 disabled:shadow-none transition-all rounded-xl"
+                  className="flex-[2] h-12 bg-red-600 hover:bg-red-700 font-bold text-white shadow-xl shadow-red-200 disabled:opacity-50 disabled:shadow-none transition-all rounded-xl"
                 >
                   {isDeleting ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />

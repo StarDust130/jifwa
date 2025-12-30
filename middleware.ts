@@ -1,19 +1,17 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-// 🌐 Public routes: Add '/api(.*)' so Postman can use it!
 const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  '/terms',
-  '/help',
+  "/terms",
+  "/help",
   "/ai-security",
   "/forgot-password",
-  '/privacy',
-  '/refund',
-  '/api/webhooks(.*)', // Keep webhooks public if you use them later
-  "/api(.*)", // 👈 ADD THIS LINE
+  "/privacy",
+  "/refund",
+  "/api/webhooks(.*)",
 ]);
 
 const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
@@ -21,20 +19,31 @@ const isAuthRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 export default clerkMiddleware((auth, req) => {
   const { userId } = auth();
 
-  // 🔄 If logged in, kick them out of sign-in/up pages to dashboard
+  const dashboardUrl = new URL("/dashboard", req.url);
+
+  // 1️⃣ Logged-in users should never see sign-in / sign-up again
   if (userId && isAuthRoute(req)) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    const redirectUrl =
+      req.nextUrl.searchParams.get("redirect_url") || "/dashboard";
+
+    return NextResponse.redirect(new URL(redirectUrl, req.url));
   }
 
-  // 🛡️ If not logged in and trying to access private pages, force login
+  // 2️⃣ User NOT logged in → protect private routes
   if (!isPublicRoute(req)) {
-    auth().protect();
+    const redirectAfterAuth = req.nextUrl.pathname + req.nextUrl.search;
+
+    const signUpUrl = new URL("/sign-up", req.url);
+    signUpUrl.searchParams.set("redirect_url", redirectAfterAuth);
+
+    auth().protect({
+      unauthenticatedUrl: signUpUrl.toString(), // ✅ WITH redirect_url
+    });
   }
 });
 
 export const config = {
   matcher: [
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    "/((?!_next|[^?]*\\.(?:html?|css|js|png|jpg|jpeg|svg|ico|woff2?|ttf)).*)",
   ],
 };

@@ -1,53 +1,81 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSignUp } from "@clerk/nextjs";
+import { useSignUp, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  LayoutList,
-  CheckSquare,
-  Shield,
-  Zap,
   Loader2,
   AlertCircle,
   ArrowRight,
+  ShieldCheck,
+  Zap,
   Check,
+  Globe,
+  Lock,
 } from "lucide-react";
+
+// --- BRAND COLORS ---
+// Navy: #0B2447
+// Teal: #14B8A6
 
 export default function SignUpPage() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { isSignedIn, isLoaded: isUserLoaded } = useUser();
   const router = useRouter();
 
+  // --- FORM STATE ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
 
-  // Separate loading states for better UX
-  const [loading, setLoading] = useState(false); // For Email Form
-  const [googleLoading, setGoogleLoading] = useState(false); // For Google Button
-
+  // --- UX STATES ---
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // Terms State
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [highlightTerms, setHighlightTerms] = useState(false);
 
-  // 1. Google Sign Up
+  // --- LOADING CHECK ---
+  // If Clerk is still loading, or if user is signed in (redirecting), show Loading UI
+  const isPageLoading =
+    !isLoaded || !isUserLoaded || (isUserLoaded && isSignedIn);
+
+  useEffect(() => {
+    if (isUserLoaded && isSignedIn) {
+      router.push("/dashboard");
+    }
+  }, [isUserLoaded, isSignedIn, router]);
+
+  const isAnyLoading = loading || googleLoading || isPageLoading;
+
+  // --- LOGIC ---
+  const toggleTerms = () => {
+    if (loading || googleLoading) return;
+    setTermsAccepted((prev) => {
+      const newState = !prev;
+      if (newState && error.includes("Terms")) {
+        setError("");
+        setHighlightTerms(false);
+      }
+      return newState;
+    });
+  };
+
   const handleGoogleSignUp = async () => {
     if (!isLoaded) return;
-
-    // Validate Terms first
     if (!termsAccepted) {
       setError("Please agree to the Terms & Privacy Policy.");
+      setHighlightTerms(true);
+      setTimeout(() => setHighlightTerms(false), 1500);
       return;
     }
-
-    setGoogleLoading(true); // Show spinner on Google button
+    setGoogleLoading(true);
     setError("");
-
     try {
       await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
@@ -56,24 +84,22 @@ export default function SignUpPage() {
       });
     } catch (err: any) {
       console.error(err);
-      setError("Connection to Google failed. Please try again.");
+      setError("Connection failed. Please try again.");
       setGoogleLoading(false);
     }
   };
 
-  // 2. Email Sign Up
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
-
     if (!termsAccepted) {
       setError("Please agree to the Terms & Privacy Policy.");
+      setHighlightTerms(true);
+      setTimeout(() => setHighlightTerms(false), 1500);
       return;
     }
-
     setLoading(true);
     setError("");
-
     try {
       await signUp.create({
         emailAddress: email,
@@ -89,13 +115,11 @@ export default function SignUpPage() {
     }
   };
 
-  // 3. Verify Code
   const handleVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
     setLoading(true);
     setError("");
-
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
@@ -113,283 +137,335 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen w-full grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
-      {/* ================= LEFT: BRANDING ================= */}
-      <div className="relative hidden lg:flex flex-col justify-between bg-[#080808] text-white px-16 py-12">
-        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] bg-[size:24px_24px]" />
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px]" />
-        </div>
+    <div className="min-h-screen w-full mb-10 md:mb-0 grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
+      {/* ================= LEFT: BRANDING PANEL ================= */}
+      <div className="relative hidden lg:flex flex-col justify-between bg-[#0B2447] text-white px-16 py-12 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#14B8A6]/10 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/3 translate-y-1/3" />
 
-        <Link
-          href="/"
-          className="relative z-10 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-white transition-colors group w-fit"
-        >
-          <ArrowLeft
-            size={16}
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-          Back to Home
-        </Link>
-
-        <div className="relative z-10 max-w-xl">
-          <h1 className="text-[4rem] font-black tracking-tighter leading-[0.95] uppercase italic mb-6">
-            Contracts <br />
-            Don't Fail. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-              Execution Does.
-            </span>
-          </h1>
-
-          <p className="text-gray-400 text-lg font-medium max-w-md mb-12 leading-relaxed">
-            Most disputes happen because execution drifts. Jifwa converts your
-            contract into a live, trackable workspace.
-          </p>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-[#111] border-l-4 border-emerald-500 shadow-2xl w-full max-w-md">
-              <div className="h-10 w-10 rounded-lg bg-emerald-900/20 flex items-center justify-center text-emerald-400">
-                <LayoutList size={20} />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-white">
-                    Milestone 1: Prototype
-                  </span>
-                  <span className="text-[10px] font-bold bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded">
-                    ACTIVE
-                  </span>
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  Due in 2 days • $2,500 Escrow
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-[#111] border border-white/5 w-full max-w-md ml-8 opacity-80">
-              <div className="h-10 w-10 rounded-lg bg-blue-900/20 flex items-center justify-center text-blue-400">
-                <CheckSquare size={20} />
-              </div>
-              <div className="flex-1 text-sm font-medium text-gray-300">
-                Deliverable Verified{" "}
-                <span className="text-[10px] text-gray-500 ml-2 italic">
-                  AUTO-MATCHED
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 flex items-center gap-6 text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">
-          <span className="flex items-center gap-2">
-            <Shield size={14} /> End-to-End Encrypted
-          </span>
-          <span className="flex items-center gap-2">
-            <Zap size={14} /> Private AI Core
-          </span>
-        </div>
-      </div>
-
-      {/* ================= RIGHT: SIGN UP FORM ================= */}
-      <div className="flex flex-col min-h-screen bg-white px-6 py-6 lg:px-0 lg:py-0 lg:justify-center lg:items-center">
-        <div className="w-full flex justify-start lg:hidden mb-4">
+        <div className="relative z-10 w-full">
           <Link
             href="/"
-            className="flex items-center gap-2 text-gray-500 font-bold text-xs uppercase hover:text-black transition-colors"
+            className="group flex items-center gap-3 text-sm font-bold text-slate-300 hover:text-white transition-colors w-fit"
           >
-            <ArrowLeft size={16} /> Home
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-[#0B2447] transition-all">
+              <ArrowLeft size={18} />
+            </div>
+            Back to Website
           </Link>
         </div>
 
-        <div className="w-full max-w-[400px] mx-auto my-auto lg:mx-0 lg:my-0">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-2 flex items-center justify-center gap-2">
-              {pendingVerification ? "Verify Email" : "Join"}
-              {!pendingVerification && (
-                <span className="font-black tracking-tighter text-black">
-                  Jifwa<span className="text-indigo-600">.</span>
-                </span>
-              )}
-            </h2>
-            <p className="text-gray-500 text-sm">
-              {pendingVerification
-                ? `Enter the code sent to ${email}`
-                : "Create your workspace. No credit card required."}
-            </p>
+        <div className="relative z-10 my-auto">
+          <h1 className="text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
+            Contracts <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#14B8A6] to-teal-200">
+              Executed.
+            </span>
+          </h1>
+          <p className="text-xl text-slate-300 max-w-md leading-relaxed font-medium">
+            Turn static documents into active workflows. Monitor milestones,
+            payments, and compliance in real-time.
+          </p>
+
+          <div className="mt-12 flex flex-col gap-4">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md w-full max-w-sm hover:bg-white/10 transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-[#14B8A6]/20 flex items-center justify-center text-[#14B8A6]">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white">
+                  Bank-Grade Security
+                </div>
+                <div className="text-xs text-slate-400">AES-256 Encryption</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md w-full max-w-sm hover:bg-white/10 transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-300">
+                <Zap size={20} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white">
+                  Private AI Core
+                </div>
+                <div className="text-xs text-slate-400">Zero Data Training</div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          {/* === VERIFICATION STATE === */}
-          {pendingVerification ? (
-            <form onSubmit={handleVerification} className="space-y-4">
-              {error && (
-                <div className="p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2 text-red-600 text-xs font-medium">
-                  <AlertCircle size={14} />
-                  {error}
+        <div className="relative z-10 flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <Globe size={14} /> Made for Global Teams
+        </div>
+      </div>
+
+      {/* ================= RIGHT: AUTH FORM OR LOADING ================= */}
+      <div className="flex flex-col min-h-screen bg-white relative">
+        {/* Mobile Header */}
+        <div className="lg:hidden flex items-center justify-between p-6">
+          <Link
+            href="/"
+            className="p-2 bg-slate-50 rounded-full text-[#0B2447] hover:bg-slate-100 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+        </div>
+
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 xl:px-24">
+          {/* --- COOL LOADING STATE --- */}
+          {isPageLoading ? (
+            <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in duration-500">
+              <div className="relative">
+                {/* Pulsing Ring */}
+                <div className="absolute inset-0 rounded-full border-2 border-[#14B8A6] opacity-20 animate-ping"></div>
+                <div className="relative w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 shadow-sm">
+                  <Lock className="text-[#0B2447]" size={28} />
                 </div>
-              )}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">
-                  6-Digit Code
-                </label>
-                <input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="123456"
-                  maxLength={6}
-                  className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-lg text-lg outline-none focus:bg-white focus:border-black focus:ring-0 transition-all placeholder:text-gray-300 text-gray-900 font-mono tracking-[0.5em] text-center"
-                />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 bg-black text-white font-bold text-sm rounded-lg hover:bg-gray-900 transition-all mt-4 flex items-center justify-center gap-2 group"
-              >
-                {loading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <>
-                    Verify & Enter{" "}
-                    <ArrowRight
-                      size={14}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
-                  </>
-                )}
-              </button>
-            </form>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-[#0B2447]">
+                  Securing Workspace
+                </h3>
+                <p className="text-slate-400 text-sm font-medium">
+                  Initializing encrypted session...
+                </p>
+              </div>
+              <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-[#14B8A6] w-1/2 animate-[loading_1.5s_ease-in-out_infinite]"></div>
+              </div>
+            </div>
           ) : (
-            /* === SIGN UP STATE === */
-            <>
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2 text-red-600 text-xs font-medium animate-in fade-in slide-in-from-top-1">
-                  <AlertCircle size={14} />
-                  {error}
-                </div>
-              )}
+            /* --- MAIN FORM --- */
+            <div className="w-full max-w-md mx-auto flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* LOGO (Top Right Panel) */}
+              {/* <div className="relative h-28 w-28   self-center">
+                <Image
+                  src="/logo-2.png"
+                  alt="Jifwa"
+                  fill
+                  className="object-contain object-center"
+                  priority
+                />
+              </div> */}
 
-              {/* GOOGLE BUTTON - Now with Loading State */}
-              <button
-                onClick={handleGoogleSignUp}
-                disabled={googleLoading}
-                className="w-full h-12 bg-white text-gray-700 font-bold text-sm border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-3 mb-6 shadow-sm group disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {googleLoading ? (
-                  <Loader2 size={20} className="animate-spin text-gray-400" />
-                ) : (
-                  <>
-                    <Image
-                      src="https://www.svgrepo.com/show/475656/google-color.svg"
-                      alt="G"
-                      width={20}
-                      height={20}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                    Sign up with Google
-                  </>
-                )}
-              </button>
-
-              <div className="relative flex py-2 items-center mb-6">
-                <div className="flex-grow border-t border-gray-100"></div>
-                <span className="flex-shrink-0 mx-4 text-gray-300 text-[10px] font-bold uppercase">
-                  OR
-                </span>
-                <div className="flex-grow border-t border-gray-100"></div>
+              {/* HEADING */}
+              <div className="mb-8 text-center w-full">
+                <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B2447] tracking-tight mb-3">
+                  {pendingVerification ? "Check your inbox" : "Get started"}
+                </h2>
+                <p className="text-slate-500 text-sm font-medium">
+                  {pendingVerification
+                    ? `We sent a code to ${email}`
+                    : "Create your workspace. No credit card required."}
+                </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">
-                    Work Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
-                    required
-                    className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:bg-white focus:border-black transition-all placeholder:text-gray-400 text-gray-900"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min. 8 characters"
-                    required
-                    minLength={8}
-                    className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:bg-white focus:border-black transition-all placeholder:text-gray-400 text-gray-900 font-sans"
-                  />
-                </div>
-
-                {/* TERMS CHECKBOX */}
-                <div className="pt-2">
-                  <div
-                    className="flex items-start gap-3 cursor-pointer group select-none"
-                    onClick={() => setTermsAccepted(!termsAccepted)}
+              {/* ERROR ALERT */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="w-full mb-6 p-4 bg-rose-50 border border-rose-100 rounded-xl flex items-center gap-3 text-rose-600 text-sm font-medium"
                   >
-                    <div
-                      className={`flex-shrink-0 w-5 h-5 rounded border transition-all flex items-center justify-center ${
-                        termsAccepted
-                          ? "bg-black border-black text-white"
-                          : "bg-white border-gray-300 group-hover:border-gray-400"
+                    <AlertCircle size={18} className="shrink-0" />
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* VERIFICATION FORM */}
+              {pendingVerification ? (
+                <form
+                  onSubmit={handleVerification}
+                  className="w-full space-y-6"
+                >
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-[#0B2447] uppercase tracking-wide ml-1">
+                      Verification Code
+                    </label>
+                    <input
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      placeholder="123456"
+                      maxLength={6}
+                      disabled={loading}
+                      className="w-full h-14 px-4 bg-slate-50 border border-slate-200 rounded-2xl text-3xl text-center font-mono tracking-[0.5em] outline-none focus:bg-white focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10 transition-all placeholder:text-slate-300 text-[#0B2447] disabled:opacity-50"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-12 bg-[#0B2447] text-white font-bold text-sm rounded-xl hover:bg-[#15345A] transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-900/10 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <Loader2
+                        size={20}
+                        className="animate-spin text-[#14B8A6]"
+                      />
+                    ) : (
+                      <>
+                        Verify <ArrowRight size={16} />
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                /* SIGN UP FORM */
+                <div className="w-full">
+                  <button
+                    onClick={handleGoogleSignUp}
+                    disabled={isAnyLoading}
+                    className="w-full h-12 bg-white text-slate-700 font-bold text-sm border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 mb-8 shadow-sm active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed group"
+                  >
+                    {googleLoading ? (
+                      <Loader2
+                        size={20}
+                        className="animate-spin text-slate-400"
+                      />
+                    ) : (
+                      <>
+                        <Image
+                          src="https://www.svgrepo.com/show/475656/google-color.svg"
+                          alt="Google"
+                          width={20}
+                          height={20}
+                          className="group-hover:scale-110 transition-transform"
+                        />
+                        Continue with Google
+                      </>
+                    )}
+                  </button>
+
+                  <div className="relative flex py-2 items-center mb-8">
+                    <div className="flex-grow border-t border-slate-100"></div>
+                    <span className="flex-shrink-0 mx-4 text-slate-400 text-[10px] font-extrabold uppercase tracking-widest">
+                      OR REGISTER WITH EMAIL
+                    </span>
+                    <div className="flex-grow border-t border-slate-100"></div>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-[#0B2447] ml-1">
+                        Work Email
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@company.com"
+                        required
+                        disabled={isAnyLoading}
+                        className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10 transition-all placeholder:text-slate-400 text-[#0B2447] font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-[#0B2447] ml-1">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Min. 8 characters"
+                        required
+                        minLength={8}
+                        disabled={isAnyLoading}
+                        className="w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10 transition-all placeholder:text-slate-400 text-[#0B2447] font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                      />
+                    </div>
+
+                    {/* CHECKBOX (Blinks on Error) */}
+                    <motion.div
+                      animate={highlightTerms ? { x: [-5, 5, -5, 5, 0] } : {}}
+                      transition={{ duration: 0.4 }}
+                      className={`pt-2 pb-2 px-3 rounded-lg transition-colors duration-300 ${
+                        highlightTerms
+                          ? "bg-rose-50 border border-rose-200"
+                          : "bg-transparent border border-transparent"
                       }`}
                     >
-                      {termsAccepted && <Check size={14} strokeWidth={3} />}
-                    </div>
-                    <p className="text-xs text-gray-500 leading-tight pt-0.5">
-                      I agree to the{" "}
-                      <Link
-                        href="/terms"
-                        className="text-gray-900 font-bold hover:underline"
-                        onClick={(e) => e.stopPropagation()}
+                      <div
+                        className={`flex items-start gap-3 group select-none transition-opacity ${
+                          isAnyLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
+                        onClick={toggleTerms}
                       >
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link
-                        href="/privacy"
-                        className="text-gray-900 font-bold hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Privacy Policy
-                      </Link>
-                      .
-                    </p>
-                  </div>
+                        <div
+                          className={`flex-shrink-0 w-5 h-5 rounded-md border transition-all flex items-center justify-center mt-0.5 ${
+                            termsAccepted
+                              ? "bg-[#0B2447] border-[#0B2447] text-white"
+                              : highlightTerms
+                              ? "bg-white border-rose-500 animate-pulse"
+                              : "bg-white border-slate-300 group-hover:border-[#0B2447]"
+                          }`}
+                        >
+                          {termsAccepted && <Check size={12} strokeWidth={4} />}
+                        </div>
+                        <p
+                          className={`text-xs leading-relaxed font-medium transition-colors ${
+                            highlightTerms ? "text-rose-600" : "text-slate-500"
+                          }`}
+                        >
+                          I agree to the{" "}
+                          <Link
+                            href="/terms"
+                            target="_blank"
+                            className="text-[#0B2447] font-bold hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Terms
+                          </Link>{" "}
+                          and{" "}
+                          <Link
+                            href="/privacy"
+                            target="_blank"
+                            className="text-[#0B2447] font-bold hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Privacy Policy
+                          </Link>
+                          .
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    <button
+                      type="submit"
+                      disabled={isAnyLoading}
+                      className="w-full h-12 bg-[#0B2447] text-white font-bold text-sm rounded-xl hover:bg-[#15345A] transition-all shadow-lg shadow-blue-900/10 mt-2 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                      {loading ? (
+                        <Loader2
+                          size={18}
+                          className="animate-spin text-[#14B8A6]"
+                        />
+                      ) : (
+                        "Create Account"
+                      )}
+                    </button>
+                  </form>
                 </div>
+              )}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 bg-black text-white font-bold text-sm rounded-lg hover:bg-gray-900 transition-all shadow-xl shadow-gray-200 mt-2 flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    "Create Account"
-                  )}
-                </button>
-              </form>
-            </>
+              <div className="mt-8 text-center">
+                <p className="text-sm text-slate-500 font-medium">
+                  Already have an account?{" "}
+                  <Link
+                    href="/sign-in"
+                    className="text-[#14B8A6] font-bold hover:text-[#0B2447] transition-colors"
+                  >
+                    Log in
+                  </Link>
+                </p>
+              </div>
+            </div>
           )}
-
-          <div className="mt-8 text-center pb-6 lg:pb-0">
-            <p className="text-sm text-gray-500 mb-6">
-              Already have an account?{" "}
-              <Link
-                href="/sign-in"
-                className="text-indigo-600 font-bold hover:underline"
-              >
-                Log in
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

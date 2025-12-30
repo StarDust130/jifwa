@@ -9,8 +9,8 @@ const razorpay = new Razorpay({
 
 // Map your plan names to Razorpay Plan IDs (Created in your Dashboard)
 const RAZORPAY_PLANS = {
-  starter: "plan_Rw9LRqwiuoIW1P", // Replace with your actual ID
-  agency: "plan_Rw9NHkfmV33x8L", // Replace with your actual ID
+  starter: "plan_RxulSieibHDHQ0", // Replace with your actual ID
+  agency: "plan_RxumAcFJPBXZ7e", // Replace with your actual ID
 };
 
 export async function POST(req: NextRequest) {

@@ -134,7 +134,7 @@ export function Navbar() {
               >
                 {/* Mobile Header */}
                 <div className="flex items-center justify-between px-6 border-b border-slate-100 h-20">
-                  <div className="relative h-16 w-32">
+                  <div className="relative h-12 w-20">
                     <Image
                       src="/logo.png"
                       alt="Jifwa"

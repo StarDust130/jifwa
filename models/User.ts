@@ -5,9 +5,11 @@ export interface IUser extends Document {
   email: string;
   name?: string;
   photo?: string;
-  // 👇 THIS WAS LIKELY MISSING OR UNDEFINED
-  currentRole: "client" | "vendor";
+  // 👇 FIX: Add "admin" to the type definition
+  currentRole: "client" | "vendor" | "admin";
   plan?: string;
+  // Optional: Add banned flag if you implement banning
+  isBanned?: boolean;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -16,17 +18,21 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true },
     name: { type: String },
     photo: { type: String },
-    // 👇 ADD THIS FIELD DEFINITION
+
+    // 👇 FIX: Add "admin" to the Mongoose enum
     currentRole: {
       type: String,
-      enum: ["client", "vendor"],
+      enum: ["client", "vendor", "admin"],
       default: "client",
     },
+
     plan: { type: String, default: "free" },
+    isBanned: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
+// Prevent model overwrite in Next.js hot reloading
 export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 

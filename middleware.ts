@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   '/terms',
   '/help',
   "/ai-security",
+  "/forgot-password",
   '/privacy',
   '/refund',
   '/api/webhooks(.*)', // Keep webhooks public if you use them later

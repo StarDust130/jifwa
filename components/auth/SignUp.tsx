@@ -112,7 +112,16 @@ export default function SignUpPage() {
       setPendingVerification(true);
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
-      setError(err.errors?.[0]?.longMessage || "Invalid email or password.");
+
+      // --- LOGIC ADDED HERE: Redirect if account exists ---
+    if (err.errors?.[0]?.code === "form_identifier_exists") {
+      // Use window.location to force a hard redirect, bypassing Next.js router quirks
+      window.location.href = "/sign-in?error=exists";
+      return;
+    }
+    // ----------------------
+
+    setError(err.errors?.[0]?.longMessage || "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -142,7 +151,6 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen w-full mb-10 md:mb-0 grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
       {/* ================= LEFT: BRANDING PANEL ================= */}
-      {/* ================= LEFT: BRANDING PANEL ================= */}
       <div className="relative hidden lg:flex flex-col justify-between bg-[#0B2447] text-white px-16 py-12 overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#14B8A6]/10 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/4" />
@@ -164,7 +172,7 @@ export default function SignUpPage() {
 
         {/* Main Content Area */}
         <div className="relative z-10 my-auto">
-          {/* HEADLINE: Source [237] */}
+          {/* HEADLINE */}
           <h1 className="text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
             Manage Execution, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#14B8A6] to-teal-200">
@@ -172,7 +180,7 @@ export default function SignUpPage() {
             </span>
           </h1>
 
-          {/* SUBHEAD: Source [244] */}
+          {/* SUBHEAD */}
           <p className="text-lg text-slate-300 max-w-lg mb-12 leading-relaxed font-medium">
             Join the alignment layer that ensures delivery happens exactly as
             agreed. Clear, secure, and transparent.
@@ -180,7 +188,7 @@ export default function SignUpPage() {
 
           {/* VISUAL METAPHOR: Collaboration & Security */}
           <div className="relative w-full max-w-md">
-            {/* Card 1: Vendor Invite [Source: 171] */}
+            {/* Card 1: Vendor Invite */}
             <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl mb-4 hover:bg-white/10 transition-colors">
               <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-300">
                 <Users size={20} />
@@ -198,7 +206,7 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            {/* Card 2: Security [Source: 221] */}
+            {/* Card 2: Security */}
             <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl hover:bg-white/10 transition-colors">
               <div className="w-10 h-10 rounded-lg bg-[#14B8A6]/20 flex items-center justify-center text-[#14B8A6]">
                 <ShieldCheck size={20} />
@@ -215,7 +223,7 @@ export default function SignUpPage() {
           </div>
         </div>
 
-        {/* Footer Badges: Source [288, 287] */}
+        {/* Footer Badges */}
         <div className="relative z-10 flex items-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-t border-white/5 pt-8">
           <span className="flex items-center gap-2">
             <Globe size={14} className="text-[#14B8A6]" /> For Agencies
@@ -269,17 +277,6 @@ export default function SignUpPage() {
           ) : (
             /* --- MAIN FORM --- */
             <div className="w-full max-w-md mx-auto flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* LOGO (Top Right Panel) */}
-              {/* <div className="relative h-28 w-28   self-center">
-                <Image
-                  src="/logo-2.png"
-                  alt="Jifwa"
-                  fill
-                  className="object-contain object-center"
-                  priority
-                />
-              </div> */}
-
               {/* HEADING */}
               <div className="mb-8 text-center w-full">
                 <h2 className="text-3xl md:text-4xl font-extrabold text-[#0B2447] tracking-tight mb-3">

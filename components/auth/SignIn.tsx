@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowLeft,
   FileText,
@@ -23,12 +24,39 @@ import {
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // --- LOGIC ADDED: Check for error flags or SSO redirects ---
+  useEffect(() => {
+    const errorType = searchParams.get("error");
+    const redirectUrl = searchParams.get("redirect_url");
+
+    // Case 1: Manual Email Redirect (error=exists)
+    // Case 2: Google SSO Bounce (redirect_url contains sso-callback)
+    if (
+      errorType === "exists" ||
+      (redirectUrl && redirectUrl.includes("sso-callback"))
+    ) {
+      setError("Account already exists. Please log in.");
+
+      // Clean URL after 4 seconds
+      const timer = setTimeout(() => {
+        setError("");
+        // We use window.history to clean the URL without triggering a full router refresh
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+  // ------------------------
 
   const handleGoogleSignIn = async () => {
     if (!isLoaded) return;
@@ -96,7 +124,7 @@ export default function SignInPage() {
 
         {/* Main Content Area */}
         <div className="relative z-10 my-auto">
-          {/* HEADLINE: Source [210] */}
+          {/* HEADLINE */}
           <h1 className="text-5xl xl:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
             Turn Contracts Into <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#14B8A6] to-teal-200">
@@ -104,7 +132,7 @@ export default function SignInPage() {
             </span>
           </h1>
 
-          {/* SUBHEAD: Source [212, 214] */}
+          {/* SUBHEAD */}
           <p className="text-lg text-slate-300 max-w-lg mb-12 leading-relaxed font-medium">
             Jifwa converts signed contracts into clear, trackable workflows so
             what's agreed actually gets delivered. No assumptions. No scattered
@@ -144,7 +172,7 @@ export default function SignInPage() {
                     Generated Milestones
                   </div>
                 </div>
-                {/* Milestone Items [Source: 48, 51] */}
+                {/* Milestone Items */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-xs text-slate-300">
                     <div className="w-4 h-4 rounded-full border border-[#14B8A6] flex items-center justify-center">
@@ -162,7 +190,7 @@ export default function SignInPage() {
           </div>
         </div>
 
-        {/* Footer Badges: Source [277, 278, 458] */}
+        {/* Footer Badges */}
         <div className="relative z-10 grid grid-cols-2 gap-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-t border-white/5 pt-8">
           <div className="flex items-center gap-3">
             <Lock size={14} className="text-[#14B8A6]" />

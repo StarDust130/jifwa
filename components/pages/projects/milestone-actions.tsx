@@ -61,7 +61,7 @@ export function MilestoneActions({
             <DialogTrigger asChild>
               <button
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md text-xs font-bold hover:bg-zinc-800 transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-md text-xs font-bold hover:bg-zinc-800 transition-all shadow-sm"
               >
                 <Check size={14} strokeWidth={2} /> Approve
               </button>
@@ -86,7 +86,7 @@ export function MilestoneActions({
                 <button
                   disabled={loading}
                   onClick={() => handleStatusChange("approved")}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-zinc-800 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-lg text-xs font-bold hover:bg-zinc-800 transition-all"
                 >
                   {loading ? (
                     <Loader2 className="animate-spin" size={14} />
@@ -147,7 +147,7 @@ export function MilestoneActions({
         <button
           disabled={loading}
           onClick={() => handleStatusChange("in_review")}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md text-xs font-bold hover:bg-zinc-800 transition-all shadow-sm group"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-md text-xs font-bold hover:bg-zinc-800 transition-all shadow-sm group"
         >
           {loading ? (
             <Loader2 className="animate-spin" size={14} />

@@ -78,7 +78,7 @@ export function TimelineItem({
         <div
           className={cn(
             "absolute top-[22px] left-[28px] sm:left-[36px] h-[2px] w-[32px] sm:w-[44px] transition-colors",
-            isActive || isDone ? "bg-primary" : "bg-zinc-100"
+            isActive || isDone ? "bg-zinc-900" : "bg-zinc-100"
           )}
         />
         <div
@@ -201,7 +201,7 @@ export function TimelineItem({
                           <a
                             href={m.proof_url}
                             download={`proof-${m.title}`}
-                            className="flex items-center justify-center gap-2 w-full py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-black transition-all"
+                            className="flex items-center justify-center gap-2 w-full py-2 bg-zinc-900 text-white rounded-lg text-xs font-bold hover:bg-black transition-all"
                           >
                             <Download size={14} /> Download Image
                           </a>

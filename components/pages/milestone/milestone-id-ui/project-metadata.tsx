@@ -47,7 +47,7 @@ export function ProjectMetadata({
   return (
     <div className="space-y-6 sticky top-24">
       {/* CARD 1: CONTRACT VALUE */}
-      <div className="bg-primary rounded-xl p-6 text-white shadow-2xl shadow-zinc-900/20 relative overflow-hidden group border border-zinc-800">
+      <div className="bg-zinc-900 rounded-xl p-6 text-white shadow-2xl shadow-zinc-900/20 relative overflow-hidden group border border-zinc-800">
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none group-hover:bg-white/10 transition-all duration-500" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
@@ -147,7 +147,7 @@ export function ProjectMetadata({
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0",
                   isActive
-                    ? "bg-primary text-white"
+                    ? "bg-zinc-900 text-white"
                     : "bg-white border border-zinc-200 text-zinc-400"
                 )}
               >
@@ -195,7 +195,7 @@ export function ProjectMetadata({
         <div className="p-2 border-t border-zinc-100 bg-zinc-50/30">
           <Link
             href={`/milestones`}
-            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-600 hover:text-white hover:bg-primary py-2.5 rounded-lg transition-all border border-zinc-200 hover:border-zinc-900 bg-white shadow-sm group"
+            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-zinc-600 hover:text-white hover:bg-zinc-900 py-2.5 rounded-lg transition-all border border-zinc-200 hover:border-zinc-900 bg-white shadow-sm group"
           >
             <LayoutList size={12} /> View Full Milestones
             <ArrowRight

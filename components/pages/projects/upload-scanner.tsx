@@ -93,7 +93,7 @@ export function UploadScanner() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-primary rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden border border-zinc-800"
+            className="bg-zinc-900 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden border border-zinc-800"
           >
             {/* The Scanning Beam */}
             <motion.div

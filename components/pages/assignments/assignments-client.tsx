@@ -117,7 +117,7 @@ export function AssignmentsClient({
             className={cn(
               "p-2.5 rounded-xl border transition-all flex items-center gap-2 text-sm font-bold",
               statusFilter === "active"
-                ? "bg-primary text-white border-zinc-900"
+                ? "bg-zinc-900 text-white border-zinc-900"
                 : "bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50"
             )}
           >
@@ -169,7 +169,7 @@ export function AssignmentsClient({
                             "w-10 h-10 rounded-xl flex items-center justify-center border transition-colors",
                             project.status === "completed"
                               ? "bg-emerald-50 border-emerald-100 text-emerald-600"
-                              : "bg-primary border-zinc-800 text-white"
+                              : "bg-zinc-900 border-zinc-800 text-white"
                           )}
                         >
                           {project.status === "completed" ? (
@@ -221,7 +221,7 @@ export function AssignmentsClient({
                         </div>
                         <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-primary rounded-full transition-all duration-500"
+                            className="h-full bg-zinc-900 rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                           />
                         </div>

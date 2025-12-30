@@ -84,7 +84,7 @@ function TaskCard({
         <div
           className={cn(
             "absolute top-8 bottom-[-24px] w-[2px] transition-colors",
-            isDone ? "bg-primary" : "bg-zinc-100"
+            isDone ? "bg-zinc-900" : "bg-zinc-100"
           )}
         />
         <div
@@ -111,7 +111,7 @@ function TaskCard({
             <div
               className={cn(
                 "w-2 h-2 rounded-full",
-                isActive ? "bg-primary" : "bg-zinc-300"
+                isActive ? "bg-zinc-900" : "bg-zinc-300"
               )}
             />
           )}

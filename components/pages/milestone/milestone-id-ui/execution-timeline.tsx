@@ -30,7 +30,7 @@ export function ExecutionTimeline({
         initial={{ height: 0 }}
         animate={{ height: `${progressPercent}%` }}
         transition={{ duration: 1.2, ease: "circOut" }}
-        className="absolute left-[27px] sm:left-[35px] top-4 w-[2px] bg-primary rounded-full z-0"
+        className="absolute left-[27px] sm:left-[35px] top-4 w-[2px] bg-zinc-900 rounded-full z-0"
         style={{ maxHeight: "calc(100% - 60px)" }}
       />
 

@@ -89,7 +89,7 @@ export function VendorSubmitModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold shadow-lg hover:bg-black transition-all">
+        <button className="flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white rounded-lg text-xs font-bold shadow-lg hover:bg-black transition-all">
           <UploadCloud size={14} className="text-zinc-400" />
           <span>Submit Proof</span>
         </button>
@@ -192,7 +192,7 @@ export function VendorSubmitModal({
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
+            className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold text-sm hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-all"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={18} />

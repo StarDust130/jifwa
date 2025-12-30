@@ -240,7 +240,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                 </p>
                 <button
                   onClick={() => router.push("/billing")}
-                  className="group relative px-8 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-zinc-800 transition-all shadow-lg flex items-center gap-2"
+                  className="group relative px-8 py-3 rounded-xl bg-zinc-900 text-white font-bold text-sm hover:bg-zinc-800 transition-all shadow-lg flex items-center gap-2"
                 >
                   <Zap size={16} className="fill-current text-yellow-400" />
                   <span>Upgrade to Add More</span>
@@ -257,7 +257,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                 </p>
                 <button
                   onClick={() => inputRef.current?.click()}
-                  className="group relative px-6 py-3 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center gap-2"
+                  className="group relative px-6 py-3 rounded-xl bg-zinc-900 text-white font-semibold text-sm hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center gap-2"
                 >
                   <Plus size={18} />
                   <span>Select Document</span>
@@ -353,7 +353,7 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
                     ? "bg-green-500"
                     : status === "analyzing"
                     ? "bg-indigo-500"
-                    : "bg-primary"
+                    : "bg-zinc-900"
                 )}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}

@@ -94,7 +94,7 @@ export function MilestoneActions({
       <button
         onClick={() => handleAction("approve")}
         disabled={loading}
-        className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-black shadow-md shadow-zinc-900/10 transition-all active:scale-95"
+        className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-xs font-bold rounded-lg hover:bg-black shadow-md shadow-zinc-900/10 transition-all active:scale-95"
       >
         {loading ? (
           <Loader2 size={12} className="animate-spin" />

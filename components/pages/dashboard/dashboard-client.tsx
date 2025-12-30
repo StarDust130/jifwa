@@ -277,7 +277,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
             className={cn(
               "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wide border",
               project.status === "active"
-                ? "bg-primary text-white border-zinc-900"
+                ? "bg-zinc-900 text-white border-zinc-900"
                 : "bg-zinc-50 text-zinc-400 border-zinc-100"
             )}
           >
@@ -322,7 +322,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
           {/* Progress Bar */}
           <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden mb-3">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
+              className="h-full bg-zinc-900 rounded-full transition-all duration-500"
               style={{ width: `${project.progress}%` }}
             />
           </div>

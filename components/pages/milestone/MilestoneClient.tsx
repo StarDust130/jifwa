@@ -150,7 +150,7 @@ export default function MilestoneClient({
           {!isVendor && (
             <button
               onClick={() => router.push("/projects")}
-              className="group inline-flex items-center gap-2 bg-primary text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
+              className="group inline-flex items-center gap-2 bg-zinc-900 text-white pl-6 pr-5 py-3.5 rounded-2xl font-bold text-sm shadow-xl shadow-zinc-200 hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 transition-all"
             >
               <span>Create First Contract</span>
               <ArrowRight
@@ -228,7 +228,7 @@ export default function MilestoneClient({
                   className={cn(
                     "flex-1 sm:flex-none px-4 py-3 border rounded-2xl transition-all flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-tighter",
                     statusFilter === "active"
-                      ? "bg-primary border-zinc-900 text-white shadow-lg"
+                      ? "bg-zinc-900 border-zinc-900 text-white shadow-lg"
                       : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                   )}
                 >

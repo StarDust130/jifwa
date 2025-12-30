@@ -117,14 +117,14 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
         >
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
+              <h1 className="text-3xl text-primary font-black text-primarytracking-tight">
                 {isClient ? "Overview" : "Assignments"}
               </h1>
               <span
                 className={cn(
                   "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
                   isClient
-                    ? "bg-zinc-900 text-white border-zinc-900"
+                    ? "bg-primary text-white border-primary"
                     : "bg-indigo-600 text-white border-indigo-600"
                 )}
               >
@@ -144,7 +144,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 bg-zinc-900 text-white pl-5 pr-6 py-3 rounded-xl font-bold text-sm shadow-xl shadow-zinc-900/10 hover:bg-zinc-800 transition-all"
+                className="flex items-center gap-2 bg-primary text-white pl-5 pr-6 py-3 rounded-xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-primary-dark transition-all"
               >
                 <Plus size={18} /> New Contract
               </motion.button>
@@ -190,7 +190,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
         {/* 🟢 3. PROJECTS GRID */}
         <motion.div variants={itemVar} className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-primaryflex items-center gap-2">
               <FileText size={20} className="text-zinc-400" />
               {isClient ? "Recent Contracts" : "Your Works"}
             </h3>
@@ -228,7 +228,7 @@ function StatCard({ label, value, icon: Icon, color, bg }: any) {
         </div>
       </div>
       <div>
-        <h4 className="text-3xl font-black text-zinc-900 tracking-tight">
+        <h4 className="text-3xl font-black text-primarytracking-tight">
           {value}
         </h4>
         <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">
@@ -290,7 +290,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-zinc-900 mb-2  group-hover:text-indigo-600 transition-colors h-10">
+        <h3 className="text-base font-bold text-primarymb-2  group-hover:text-indigo-600 transition-colors h-10">
           {project.contractName}
         </h3>
 
@@ -333,7 +333,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
               {new Date(project.createdAt).toLocaleDateString()}
             </span>
             {/* 🛡️ FIX IS HERE: Use helper */}
-            <span className="text-zinc-900 font-bold">
+            <span className="text-primaryfont-bold">
               {formatCurrency(project.totalValue)}
             </span>
           </div>
@@ -360,7 +360,7 @@ function VendorProjectCard({ project }: { project: SerializedProject }) {
               <p className="text-[10px] font-bold text-zinc-400 uppercase">
                 Client
               </p>
-              <p className="text-xs font-bold text-zinc-900 leading-none truncate max-w-[120px]">
+              <p className="text-xs font-bold text-primaryleading-none truncate max-w-[120px]">
                 {project.clientName || "Client"}
               </p>
             </div>
@@ -374,7 +374,7 @@ function VendorProjectCard({ project }: { project: SerializedProject }) {
           )}
         </div>
 
-        <h3 className="text-lg font-bold text-zinc-900 mb-6 line-clamp-2 group-hover:text-indigo-600 transition-colors h-14">
+        <h3 className="text-lg font-bold text-primarymb-6 line-clamp-2 group-hover:text-indigo-600 transition-colors h-14">
           {project.contractName}
         </h3>
 

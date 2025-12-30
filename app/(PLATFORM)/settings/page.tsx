@@ -152,7 +152,7 @@ export default function SettingsPage() {
   // Helper to update URL when clicking tabs manually
   const onTabChange = (value: string) => {
     setActiveTab(value);
-    router.replace(`/dashboard/settings?tab=${value}`, { scroll: false });
+    router.replace(`/settings?tab=${value}`, { scroll: false });
   };
 
   return (

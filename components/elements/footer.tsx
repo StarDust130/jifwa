@@ -168,19 +168,20 @@ const Footer = () => {
 
         {/* 3. BOTTOM BAR */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-slate-100">
-          <p className="text-slate-400 text-xs font-medium">
-            &copy; {currentYear} Jifwa. All rights reserved.
+          <p className="text-black text-xs font-medium">
+            &copy; {currentYear} <span className="font-bold ">Jifwa</span>. All
+            rights reserved.
           </p>
 
           {/* MADE IN INDIA - Classy, Not Noisy */}
-          <div className="flex items-center gap-2 text-[11px] text-[#0B2447] font-medium bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
-            <span className="text-slate-500">Made with</span>
+          <div className="flex items-center font-bold gap-2 text-[11px] text-[#0B2447]  bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+            <span className="text-black">Made with</span>
             <FiHeart
               size={12}
               className="text-red-500 fill-red-500 animate-pulse"
               style={{ animationDuration: "2s" }}
             />
-            <span className="text-slate-500">in India</span>
+            <span className="text-black ">in India</span>
           </div>
         </div>
       </div>

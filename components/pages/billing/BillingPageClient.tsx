@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface BillingProps {
   currentPlan: string;
@@ -410,9 +411,13 @@ export default function BillingPageClient({
               Mode, and Dedicated Support.
             </p>
           </div>
-          <button className="relative z-10 px-6 py-3 bg-white text-zinc-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-colors">
+          <Link
+            href="mailto:contact@jifwa.com"
+            target="_blank"
+            className="relative z-10 px-6 py-3 bg-white text-zinc-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-colors"
+          >
             Contact Sales
-          </button>
+          </Link>
 
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 rounded-full blur-3xl opacity-20 translate-x-1/2 -translate-y-1/2 pointer-events-none" />

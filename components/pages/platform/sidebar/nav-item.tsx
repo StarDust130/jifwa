@@ -124,7 +124,7 @@ export function NavItem({
           className={cn(
             "flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 relative z-10 border select-none",
             isActive
-              ? "bg-white text-zinc-900 border-zinc-200/60 shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
+              ? "bg-white text-primary border-zinc-200/60 shadow-[0_2px_6px_rgba(0,0,0,0.04)]"
               : "text-zinc-500 border-transparent hover:bg-white hover:text-zinc-900 hover:shadow-sm hover:border-zinc-200/40"
           )}
         >

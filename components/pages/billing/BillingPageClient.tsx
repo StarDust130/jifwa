@@ -35,14 +35,22 @@ interface Plan {
   icon: React.ReactNode;
 }
 
-export default function BillingPageClient() {
+// Added the missing interface
+interface BillingPageClientProps {
+  currentPlan: string;
+  userEmail: string;
+  userName: string;
+}
+
+export default function BillingPageClient({
+  currentPlan,
+  userEmail,
+  userName,
+}: BillingPageClientProps) {
   const { user } = useUser();
   const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  // Determine current plan from Clerk metadata (default to free)
-  const currentPlan = (user?.publicMetadata?.plan as PlanId) || "free";
 
   const plans: Plan[] = [
     {

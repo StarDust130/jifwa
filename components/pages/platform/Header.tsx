@@ -161,7 +161,7 @@ export const Header = ({ userRole }: { userRole?: string }) => {
       {/* RIGHT: Actions & User Profile */}
       <div className="flex items-center gap-1 sm:gap-2">
         {/* 1. HELP BUTTON */}
-        <TooltipProvider>
+        {/* <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Link href="/help">
@@ -176,7 +176,7 @@ export const Header = ({ userRole }: { userRole?: string }) => {
             </TooltipTrigger>
             <TooltipContent>Help Center</TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
 
         {/* 2. NOTIFICATIONS DROPDOWN - FIXED */}
         <Tooltip>

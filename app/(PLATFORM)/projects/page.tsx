@@ -16,21 +16,25 @@ export default async function ProjectsPage() {
   await connectDB();
 
   const dbUser = await User.findOne({ clerkId: userId });
-  const email = clerkUser.emailAddresses[0].emailAddress;
 
   // 1. Role Detection
+  // Default to "client" if user is missing or new.
+  // We DO NOT check 'vendorEmail' here anymore to prevent false positives during testing.
   let role = "client";
-  if (dbUser) {
+
+  if (dbUser && dbUser.currentRole) {
     role = dbUser.currentRole;
-  } else {
-    // New user check
-    const hasAssignments = await Project.exists({ vendorEmail: email });
-    if (hasAssignments) role = "vendor";
   }
 
-  // 🔒 2. SECURITY: Vendors cannot access this page. Redirect them.
+  // 🛡️ SECURITY FIX:
+  // If the DB explicitly says they are a 'vendor', we check if they own projects.
+  // If they own projects, we ignore the 'vendor' label and let them access the page (Dual Role).
+  // If they are a 'vendor' and own nothing, we redirect them.
   if (role === "vendor") {
-    redirect("/dashboard");
+    const isProjectOwner = await Project.exists({ userId: userId });
+    if (!isProjectOwner) {
+      redirect("/dashboard");
+    }
   }
 
   // 3. Fetch Client Projects

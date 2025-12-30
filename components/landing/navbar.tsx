@@ -56,7 +56,7 @@ export function Navbar() {
         {/* 1. BIG LOGO */}
         <Link
           href="/"
-          className="relative h-20 w-40 transition-all hover:opacity-90 active:scale-95"
+          className="relative h-14 w-20 transition-all hover:opacity-90 active:scale-95"
         >
           <Image
             src="/logo.png"

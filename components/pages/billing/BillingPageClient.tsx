@@ -4,40 +4,90 @@ import { useState } from "react";
 import Script from "next/script";
 import {
   Check,
-  Zap,
-  Layers,
-  Loader2,
-  Crown,
   ShieldCheck,
-  TrendingUp,
-  Lock,
-  Building2,
-  Plus,
-  Minus,
+  Zap,
+  Loader2,
   Sparkles,
+  Building2,
+  Lock,
+  TrendingUp,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-interface BillingProps {
-  currentPlan: string;
-  userEmail: string;
-  userName: string;
+// --- Types ---
+type PlanId = "free" | "starter" | "agency";
+
+interface Plan {
+  id: PlanId;
+  name: string;
+  price: string;
+  desc: string;
+  features: string[];
+  limit: string;
+  popular: boolean;
+  icon: React.ReactNode;
 }
 
-export default function BillingPageClient({
-  currentPlan,
-  userEmail,
-  userName,
-}: BillingProps) {
+export default function BillingPageClient() {
+  const { user } = useUser();
+  const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+  // Determine current plan from Clerk metadata (default to free)
+  const currentPlan = (user?.publicMetadata?.plan as PlanId) || "free";
+
+  const plans: Plan[] = [
+    {
+      id: "free",
+      name: "Free",
+      price: "₹0",
+      desc: "For testing only",
+      limit: "1 active project",
+      features: ["Basic AI parsing"],
+      popular: false,
+      icon: <Zap size={18} />,
+    },
+    {
+      id: "starter",
+      name: "Starter",
+      price: "₹499",
+      desc: "Best for freelancers",
+      limit: "Up to 5 active projects",
+      features: [
+        "AI milestones",
+        "Dispute summaries",
+        "Priority email support",
+      ],
+      popular: true,
+      icon: <Sparkles size={18} />,
+    },
+    {
+      id: "agency",
+      name: "Agency",
+      price: "₹1,499",
+      desc: "Best for agencies",
+      limit: "Unlimited projects",
+      features: ["Team access (3 seats)", "Advanced AI summaries"],
+      popular: false,
+      icon: <Building2 size={18} />,
+    },
+  ];
+
+  // --- 2. PAYMENT HANDLER ---
   const handleUpgrade = async (planId: "starter" | "agency") => {
+    if (!user) return toast.error("Please log in to upgrade.");
     setLoadingPlan(planId);
 
     try {
+      // 1. Create Subscription
       const res = await fetch("/api/billing/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,73 +95,39 @@ export default function BillingPageClient({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.details || "Initialization failed");
+      if (!res.ok)
+        throw new Error(data.error || "Failed to start subscription");
 
+      // 2. Open Razorpay
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: data.key,
         subscription_id: data.subscriptionId,
-        name: "Jifwa Platform",
+        name: "Jifwa",
         description: `Upgrade to ${
           planId.charAt(0).toUpperCase() + planId.slice(1)
-        }`,
-        prefill: { name: userName, email: userEmail },
-        theme: { color: "#000000" },
-        modal: {
-          ondismiss: () => setLoadingPlan(null),
+        } Plan`,
+        handler: async function (response: any) {
+          toast.success("Payment Successful! Upgrading account...");
+
+          // Verify Payment
+          await fetch("/api/billing/webhook", {
+            method: "POST",
+            body: JSON.stringify(response),
+          });
+
+          window.location.reload();
         },
-        handler: () => {
-          window.location.href = "/milestones?payment=success";
-        },
+        theme: { color: "#10B981" },
       };
 
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
-    } catch (e: any) {
-      console.error(e);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
       setLoadingPlan(null);
     }
   };
-
-  const plans = [
-    {
-      id: "free",
-      name: "Free",
-      price: "₹0",
-      desc: "Best for product testing and evaluation",
-      limit: "1 Active Project",
-      features: ["Basic AI Parsing", "Core Execution Workflow"],
-      icon: <Layers size={18} />,
-    },
-    {
-      id: "starter",
-      name: "Starter",
-      price: "₹499",
-      desc: "Best for freelancers & individual professionals",
-      limit: "Up to 5 Active Projects",
-      features: [
-        "AI Milestone Generator",
-        "Dispute Summaries",
-        "Custom Branding (Logo)",
-        "Priority Email Support",
-      ],
-      icon: <Zap size={18} className="fill-current" />,
-      popular: true,
-    },
-    {
-      id: "agency",
-      name: "Agency",
-      price: "₹1,499",
-      desc: "Built for agencies managing multiple clients",
-      limit: "Unlimited Projects",
-      features: [
-        "Team Access (3 Seats)",
-        "Advanced AI Summaries",
-        "Dedicated Account Mgr",
-        "Service Delivery Optimized",
-      ],
-      icon: <Crown size={18} />,
-    },
-  ];
 
   const benefits = [
     {
@@ -138,16 +154,20 @@ export default function BillingPageClient({
 
   const faqs = [
     {
-      q: "Is my contract data safe?",
-      a: "Yes. All data is end-to-end encrypted. We do not use third-party AI APIs; everything runs on our private infrastructure.",
+      q: "Is my data safe?",
+      a: "Yes. Everything is end-to-end encrypted. Contract data never leaves Jifwa's secure environment.",
     },
     {
-      q: "Can I cancel anytime?",
-      a: "Absolutely. You can downgrade to the Free plan whenever you want.",
+      q: "Do you use OpenAI, Claude, or third-party AI?",
+      a: "No. All AI runs privately inside Jifwa. We do not use external AI APIs.",
     },
     {
-      q: "What payment methods are supported?",
-      a: "We support all major Credit Cards, Debit Cards, UPI, and Netbanking via Razorpay.",
+      q: "Can I upgrade plans later?",
+      a: "Yes. Plans can be upgraded anytime.",
+    },
+    {
+      q: "Is pricing final?",
+      a: "Yes. Public pricing is transparent. Enterprise pricing is customized.",
     },
   ];
 
@@ -173,7 +193,7 @@ export default function BillingPageClient({
           </p>
         </div>
 
-        {/* --- 2. PRICING CARDS (Horizontal Layout) --- */}
+        {/* --- 2. PRICING CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch mb-16">
           {plans.map((plan) => {
             const isActive = currentPlan === plan.id;
@@ -229,14 +249,16 @@ export default function BillingPageClient({
                     <span className="text-4xl font-black tracking-tighter">
                       {plan.price}
                     </span>
-                    <span
-                      className={cn(
-                        "text-[9px] font-bold uppercase",
-                        isDark ? "text-zinc-500" : "text-zinc-400"
-                      )}
-                    >
-                      /mo
-                    </span>
+                    {plan.price !== "Custom" && (
+                      <span
+                        className={cn(
+                          "text-[9px] font-bold uppercase",
+                          isDark ? "text-zinc-500" : "text-zinc-400"
+                        )}
+                      >
+                        /mo
+                      </span>
+                    )}
                   </div>
                   <p
                     className={cn(
@@ -250,6 +272,7 @@ export default function BillingPageClient({
                   </p>
 
                   <div className="space-y-2.5 mb-6">
+                    {/* LIMIT ITEM (Green Tick) */}
                     <li className="flex items-center gap-2 text-[11px] font-bold list-none">
                       <div
                         className={cn(
@@ -267,6 +290,8 @@ export default function BillingPageClient({
                       </div>
                       {plan.limit}
                     </li>
+
+                    {/* FEATURES (Green Tick) */}
                     {plan.features.map((f) => (
                       <li
                         key={f}
@@ -275,14 +300,16 @@ export default function BillingPageClient({
                         <div
                           className={cn(
                             "w-4 h-4 rounded-full flex items-center justify-center",
-                            isDark ? "bg-zinc-800" : "bg-zinc-50"
+                            isDark ? "bg-zinc-800" : "bg-emerald-50"
                           )}
                         >
                           <Check
                             size={10}
+                            // Forced GREEN on all features for SaaS look
                             className={
-                              isDark ? "text-zinc-500" : "text-zinc-300"
+                              isDark ? "text-emerald-400" : "text-emerald-600"
                             }
+                            strokeWidth={3}
                           />
                         </div>
                         <span
@@ -314,6 +341,8 @@ export default function BillingPageClient({
                     <Loader2 size={14} className="animate-spin" />
                   ) : isActive ? (
                     "Current Plan"
+                  ) : plan.id === "free" ? (
+                    "Your Current Plan"
                   ) : (
                     "Upgrade"
                   )}
@@ -395,32 +424,63 @@ export default function BillingPageClient({
           </div>
         </div>
 
-        {/* --- 5. ENTERPRISE CTA --- */}
+        {/* --- 5. ENTERPRISE CTA (FIXED LAYOUT) --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-primary text-white rounded-[2rem] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg relative overflow-hidden"
+          className="bg-primary text-white rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden"
         >
-          <div className="relative z-10 text-center md:text-left">
-            <h2 className="text-xl font-black uppercase italic tracking-tight mb-2">
-              Need Enterprise Scale?
-            </h2>
-            <p className="text-zinc-400 text-xs font-medium max-w-sm">
-              Custom pricing for large organizations requiring SSO, Private AI
-              Mode, and Dedicated Support.
-            </p>
-          </div>
-          <Link
-            href="mailto:contact@jifwa.com"
-            target="_blank"
-            className="relative z-10 px-6 py-3 bg-white text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-colors"
-          >
-            Contact Sales
-          </Link>
+          {/* Content Wrapper */}
+          <div className="relative z-10 w-full md:w-2/3 text-center md:text-left space-y-5">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter mb-2 text-white">
+                Need Enterprise Scale?
+              </h2>
+              <p className="text-zinc-300 text-sm font-medium leading-relaxed max-w-xl mx-auto md:mx-0">
+                Custom pricing for large organizations & government contractors.
+                [cite_start]Includes Private AI mode, SSO, and Dedicated
+                Support. [cite: 314-317]
+              </p>
+            </div>
 
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-800 rounded-full blur-3xl opacity-20 translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+            {/* Feature Pills - Improved Layout */}
+            <div className="flex flex-wrap justify-center md:justify-start gap-3">
+              {[
+                "Private AI Mode",
+                "Single Sign-On (SSO)",
+                "Dedicated Support",
+              ].map((f) => (
+                <div
+                  key={f}
+                  className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-xs font-bold text-white transition-colors hover:bg-white/10 cursor-default"
+                >
+                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <Check
+                      size={10}
+                      className="text-emerald-400"
+                      strokeWidth={3}
+                    />
+                  </div>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Button - Centered Vertical Alignment */}
+          <div className="relative z-10 flex-shrink-0">
+            <Link
+              href="mailto:contact@jifwa.com"
+              className="inline-flex items-center justify-center px-8 py-4 bg-white text-primary rounded-xl font-black text-xs uppercase tracking-[0.15em] hover:bg-zinc-100 hover:scale-105 transition-all shadow-xl shadow-black/20"
+            >
+              Contact Sales
+            </Link>
+          </div>
+
+          {/* Background Glow Effects */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-zinc-700 rounded-full blur-[100px] opacity-20 translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-900 rounded-full blur-[80px] opacity-20 -translate-x-1/3 translate-y-1/3 pointer-events-none" />
         </motion.div>
       </div>
     </div>

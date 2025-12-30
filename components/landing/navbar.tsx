@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { X } from "lucide-react";
 import { HiMenuAlt3 } from "react-icons/hi";
-import { UserButton, useUser, ClerkLoaded } from "@clerk/nextjs";
+import {  useUser, ClerkLoaded } from "@clerk/nextjs";
+import UserAvatar from "../elements/UserAvatar";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -110,16 +111,7 @@ export function Navbar() {
                   </Button>
                 </Link>
 
-                <div className="active:scale-90 transition-transform">
-                  <UserButton
-                    afterSignOutUrl="/"
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-10 h-10 border border-gray-200 shadow-sm",
-                      },
-                    }}
-                  />
-                </div>
+                <UserAvatar />
               </div>
             )}
           </ClerkLoaded>

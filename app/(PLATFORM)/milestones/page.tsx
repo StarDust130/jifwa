@@ -15,7 +15,6 @@ interface IProject {
   title?: string;
   contractName?: string;
   createdAt: string;
-  // Add other fields as per your Project model
 }
 
 export default async function MilestonesPage() {
@@ -32,28 +31,27 @@ export default async function MilestonesPage() {
   const email = clerkUser.emailAddresses[0].emailAddress;
 
   // 3. Role Detection
+  // Default to "client". We DO NOT guess based on vendor assignments anymore.
   let role = "client";
 
-  if (dbUser) {
+  if (dbUser && dbUser.currentRole) {
     role = dbUser.currentRole;
-  } else {
-    // Check if new user is a vendor
-    const hasAssignments = await Project.exists({ vendorEmail: email });
-    if (hasAssignments) {
-      role = "vendor";
+  }
+
+  // 🔒 4. SECURITY:
+  // If role is explicitly 'vendor', check if they own projects (Dual Role).
+  // If they own projects, we ignore the 'vendor' label and let them stay.
+  if (role === "vendor") {
+    const isProjectOwner = await Project.exists({ userId: userId });
+    if (!isProjectOwner) {
+      redirect("/dashboard");
     }
   }
 
-  // 🔒 4. SECURITY: Only redirect if they are confirmed VENDORS
-  if (role === "vendor") {
-    redirect("/dashboard");
-  }
-
-  // 5. Fetch Projects (Client Only) - Explicitly Type the Array
+  // 5. Fetch Projects (Client Only)
   let projects: IProject[] = [];
 
   try {
-    // We cast the result to IProject[] to fix the implicit 'any' error
     const fetchedProjects = await Project.find({ userId: userId })
       .sort({ createdAt: -1 })
       .lean();

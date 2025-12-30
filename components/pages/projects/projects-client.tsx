@@ -35,7 +35,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
   return (
     <div className="w-full font-sans min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto mb-8">
-        <h1 className="text-2xl font-black tracking-tight text-zinc-900 flex items-center gap-3">
+        <h1 className="text-2xl font-black tracking-tight text-primary flex items-center gap-3">
           <Activity className="text-zinc-400" />
           Projects
         </h1>
@@ -82,7 +82,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
                       <FileCheck size={16} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-zinc-900">
+                      <h3 className="text-sm font-bold text-primary">
                         Active Contracts
                       </h3>
                       <p className="text-[10px] text-zinc-400 font-medium">

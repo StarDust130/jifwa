@@ -203,7 +203,7 @@ export default function Sidebar({
       {/* Header Area with Logo and Close Button */}
       <div className="h-16 flex items-center justify-between px-5 mb-2">
         <Link href="/dashboard" onClick={onNavClick}>
-          <div className="relative w-20 h-20">
+          <div className="relative w-16 h-10">
             <Image
               src="/logo.png"
               alt="Jifwa"

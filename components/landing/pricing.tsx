@@ -2,25 +2,32 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, X, Zap, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
+import {
+  Check,
+  Zap,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+  Building2,
+  Crown,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+
+// --- BRAND COLORS ---
+// Navy: #0B2447
+// Teal: #14B8A6
 
 const PricingSection = () => {
   const router = useRouter();
   const { isSignedIn } = useUser();
 
   const handlePlanSelect = (planName: string) => {
-    // 1. Check if user is logged in
     if (!isSignedIn) {
       router.push("/sign-in");
       return;
     }
-
-    const planKey = planName.toLowerCase(); // e.g., 'Starter' -> 'starter'
-
-    // 2. Redirect to Billing Page
-    // Since your folder is app/(PLATFORM)/billing, the URL is just /billing
+    const planKey = planName.toLowerCase();
     router.push(`/billing?plan=${planKey}`);
   };
 
@@ -34,9 +41,8 @@ const PricingSection = () => {
         "Basic AI parsing",
         "Core execution workflow",
       ],
-      missing: ["Custom branding", "Priority email support", "Team access"],
       cta: "Start Free",
-      style: "basic",
+      highlight: false,
     },
     {
       name: "Starter",
@@ -47,9 +53,8 @@ const PricingSection = () => {
         "Custom branding (your logo)",
         "Priority email support",
       ],
-      missing: ["Unlimited projects", "Team access", "Private AI mode"],
       cta: "Get Started",
-      style: "titanium",
+      highlight: true,
       tag: "Most Popular",
     },
     {
@@ -61,20 +66,19 @@ const PricingSection = () => {
         "Team access (up to 3 members)",
         "Optimized for service delivery teams",
       ],
-      missing: ["Private AI mode", "Single Sign-On (SSO)"],
       cta: "Get Started",
-      style: "basic",
+      highlight: false,
     },
   ];
 
   return (
     <section
       id="pricing"
-      className="relative w-full py-24 bg-white text-gray-900 overflow-hidden font-sans"
+      className="relative w-full py-24 bg-white text-[#0B2447] overflow-hidden font-sans"
     >
       {/* Background Decor */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50 -z-10" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-blue-50/40 to-yellow-50/40 blur-[100px] -z-10 rounded-full" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-60 -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-teal-50/30 blur-[120px] -z-10 rounded-full" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* HEADER */}
@@ -83,22 +87,25 @@ const PricingSection = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-50 text-yellow-700 text-[10px] font-bold uppercase tracking-widest rounded-full mb-6 border border-yellow-100"
+            className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-200 text-[#14B8A6] text-[10px] font-bold uppercase tracking-widest rounded-full mb-6 shadow-sm"
           >
             <Sparkles size={12} />
             Simple Pricing
           </motion.div>
 
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#0B2447] mb-6 leading-tight">
             Simple, Transparent Pricing. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0B2447] to-teal-600">
               Upgrade as You Grow.
             </span>
           </h2>
+          <p className="text-slate-500 font-medium text-lg">
+            Clear execution shouldn't be complicated.
+          </p>
         </div>
 
         {/* PRICING GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {plans.map((plan, i) => (
             <motion.div
               key={i}
@@ -106,101 +113,78 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -8 }}
-              className={`relative rounded-[2rem] p-8 flex flex-col justify-between ${
-                plan.style === "titanium"
-                  ? "bg-gray-900 text-white shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] border border-gray-700 ring-1 ring-white/10"
-                  : "bg-white text-gray-900 border border-gray-200 shadow-sm hover:shadow-xl"
+              whileHover={{ y: -10 }}
+              className={`relative rounded-[2rem] p-8 flex flex-col justify-between transition-all duration-300 ${
+                plan.highlight
+                  ? "bg-[#0B2447] text-white shadow-2xl shadow-blue-900/20 border border-[#1e3a5f] scale-105 z-10"
+                  : "bg-white text-[#0B2447] border border-slate-200 shadow-lg hover:shadow-xl hover:border-teal-100 z-0"
               }`}
             >
               {plan.tag && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                  {plan.tag}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#14B8A6] to-teal-500 text-white text-[10px] font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wide uppercase flex items-center gap-1.5">
+                  <Zap size={10} className="fill-white" /> {plan.tag}
                 </div>
               )}
 
               <div>
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h3 className="text-lg font-bold">{plan.name}</h3>
+                    <h3 className="text-xl font-bold">{plan.name}</h3>
                     <p
-                      className={`text-sm mt-1 ${
-                        plan.style === "titanium"
-                          ? "text-gray-400"
-                          : "text-gray-500"
+                      className={`text-sm mt-2 leading-relaxed font-medium ${
+                        plan.highlight ? "text-slate-300" : "text-slate-500"
                       }`}
                     >
                       {plan.description}
                     </p>
                   </div>
-                  {plan.style === "titanium" && (
-                    <Zap
-                      className="text-yellow-400 fill-yellow-400"
-                      size={20}
-                    />
+                  {plan.highlight ? (
+                    <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm">
+                      <Crown
+                        className="text-[#14B8A6] fill-[#14B8A6]"
+                        size={20}
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                      <ShieldCheck className="text-slate-400" size={20} />
+                    </div>
                   )}
                 </div>
 
                 <div className="flex items-baseline gap-1 mb-8">
-                  <span className="text-4xl font-extrabold tracking-tight">
+                  <span className="text-5xl font-extrabold tracking-tight">
                     ₹{plan.price}
                   </span>
                   <span
-                    className={`text-sm font-medium ${
-                      plan.style === "titanium"
-                        ? "text-gray-500"
-                        : "text-gray-400"
+                    className={`text-sm font-bold ${
+                      plan.highlight ? "text-slate-400" : "text-slate-400"
                     }`}
                   >
-                    /mo
+                    / month
                   </span>
                 </div>
+
+                <div className="w-full h-px bg-current opacity-10 mb-8"></div>
 
                 <div className="space-y-4 mb-8">
                   {plan.features.map((feat, k) => (
                     <div
                       key={k}
-                      className="flex items-start gap-3 text-sm font-medium"
+                      className="flex items-start gap-3 text-sm font-semibold"
                     >
                       <div
-                        className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                          plan.style === "titanium"
-                            ? "bg-gray-800 text-green-400"
-                            : "bg-green-100 text-green-600"
+                        className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                          plan.highlight
+                            ? "bg-[#14B8A6] text-[#0B2447]"
+                            : "bg-teal-50 text-[#14B8A6]"
                         }`}
                       >
-                        <Check size={10} strokeWidth={3} />
+                        <Check size={12} strokeWidth={4} />
                       </div>
                       <span
                         className={
-                          plan.style === "titanium"
-                            ? "text-gray-200"
-                            : "text-gray-700"
-                        }
-                      >
-                        {feat}
-                      </span>
-                    </div>
-                  ))}
-                  {plan.missing.map((feat, k) => (
-                    <div
-                      key={k}
-                      className="flex items-start gap-3 text-sm font-medium opacity-50"
-                    >
-                      <div
-                        className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                          plan.style === "titanium"
-                            ? "bg-gray-800 text-green-400"
-                            : "bg-green-100 text-gray-400"
-                        }`}
-                      >
-                        <X size={10} strokeWidth={3} />
-                      </div>
-                      <span
-                        className={
-                          plan.style === "titanium"
-                            ? "text-gray-500"
-                            : "text-gray-500"
+                          plan.highlight ? "text-slate-100" : "text-slate-700"
                         }
                       >
                         {feat}
@@ -212,29 +196,78 @@ const PricingSection = () => {
 
               <button
                 onClick={() => handlePlanSelect(plan.name)}
-                className={`w-full h-12 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 ${
-                  plan.style === "titanium"
-                    ? "bg-white text-gray-900 hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                    : "bg-gray-900 text-white hover:bg-black hover:shadow-lg"
+                className={`w-full h-14 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg active:scale-95 ${
+                  plan.highlight
+                    ? "bg-white text-[#0B2447] hover:bg-slate-100 hover:shadow-white/20"
+                    : "bg-[#0B2447] text-white hover:bg-[#15345A] hover:shadow-blue-900/20"
                 }`}
               >
                 {plan.cta}
-                <ArrowRight size={16} />
+                <ArrowRight size={18} />
               </button>
             </motion.div>
           ))}
         </div>
 
-        {/* Footer Note */}
-        <div className="mt-16 text-center">
-          <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
-            <ShieldCheck size={14} className="text-green-600" />
-            All payments are securely processed via Razorpay.
-          </p>
-        </div>
+        {/* ENTERPRISE SECTION (Full Width) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative rounded-[2.5rem] bg-[#0B2447] text-white p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-blue-900/10 overflow-hidden"
+        >
+          {/* Decor */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#14B8A6]/10 rounded-full blur-[80px] -z-0 translate-x-1/3 -translate-y-1/3"></div>
+
+          <div className="relative z-10 flex-1 text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+              <div className="p-2 bg-white/10 rounded-lg backdrop-blur-md">
+                <Building2 size={24} className="text-[#14B8A6]" />
+              </div>
+              <h3 className="text-3xl font-bold">Enterprise</h3>
+            </div>
+            <p className="text-slate-300 text-lg mb-6 max-w-xl font-medium">
+              Custom pricing for large organizations & government contractors.
+            </p>
+
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-3 text-sm font-semibold text-white/90">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle className="text-[#14B8A6]" /> Private AI Mode (Zero
+                Data Retention)
+              </div>
+              <div className="flex items-center gap-2.5">
+                <CheckCircle className="text-[#14B8A6]" /> Single Sign-On (SSO)
+              </div>
+              <div className="flex items-center gap-2.5">
+                <CheckCircle className="text-[#14B8A6]" /> Dedicated Support
+              </div>
+            </div>
+          </div>
+
+          <div className="relative z-10 shrink-0">
+            <button
+              onClick={() => router.push("mailto:contact@jifwa.com")}
+              className="h-14 px-10 bg-white text-[#0B2447] font-bold rounded-xl hover:bg-slate-50 transition-all shadow-lg hover:shadow-white/10 flex items-center gap-2"
+            >
+              Contact Sales
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </motion.div>
+
+        
       </div>
     </section>
   );
 };
+
+// Helper for Enterprise checks
+const CheckCircle = ({ className }: { className?: string }) => (
+  <div
+    className={`w-5 h-5 rounded-full flex items-center justify-center bg-white/10 ${className}`}
+  >
+    <Check size={12} strokeWidth={4} className="text-[#14B8A6]" />
+  </div>
+);
 
 export default PricingSection;

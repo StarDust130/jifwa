@@ -142,7 +142,7 @@ const Footer = () => {
           {/* CONTACT */}
           <div className="col-span-2 lg:col-span-3 lg:col-end-13">
             <h4 className="text-xs font-bold text-[#0B2447] uppercase tracking-widest mb-6">
-              Contact & HQ
+              Contact Us
             </h4>
             <div className="space-y-4">
               <div className="flex items-start gap-3 text-sm text-slate-500">

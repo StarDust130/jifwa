@@ -1,44 +1,50 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Minus,
-  MessageCircle,
-  HelpCircle,
-} from "lucide-react";
+import { Plus, Minus, HelpCircle, Mail } from "lucide-react";
+import Link from "next/link";
 
-// --- UPDATED FAQs ---
+// --- BRAND COLORS ---
+// Navy: #0B2447
+// Teal: #14B8A6
+
+// --- GENUINE FAQS (Prioritized by User Anxiety) ---
 const faqs = [
   {
-    question: "Is Jifwa a contract drafting or CLM tool?",
+    // PRIORITY 1: Positioning (Clearing confusion immediately) [Source: PDF Page 1 & 10]
+    question: "Is Jifwa a contract drafting tool?",
     answer:
-      "No. Jifwa is an execution alignment layer that sits on top of your contracts. We are not a project management tool or a legal document repository. Our focus is solely on ensuring that what is agreed upon in a signed PDF actually gets delivered.",
+      "No. Jifwa is for execution, not drafting. We are not a project management tool or a document repository. We simply ensure that what you signed in your contract actually gets delivered on time.",
   },
   {
-    question: "Do you use OpenAI, Claude, or third-party AI?",
+    // PRIORITY 2: AI Privacy (The biggest trust hurdle) [Source: PDF Page 14 & 19]
+    question: "Do you use OpenAI, Claude, or public AI?",
     answer:
-      "No. We do not use external AI APIs. All AI runs privately inside Jifwa's own secure infrastructure. We do not train models on your data, and your contracts are never shared with third-party providers.",
+      "No. We do not use external AI APIs. Jifwa runs its own private AI models inside our secure cloud. Your contracts are never shared with third parties or used to train public models.",
   },
   {
+    // PRIORITY 3: Data Security (The dealbreaker) [Source: PDF Page 11 & 20]
     question: "Is my contract data safe?",
     answer:
-      "Yes. We use a zero-trust architecture. Data is encrypted at rest using AES-256 and in transit via TLS 1.3. Even Jifwa's internal staff cannot view your contract content or uploaded documents.",
+      "Yes. We use a 'Zero-Trust' system. Your data is encrypted with bank-grade keys (AES-256). Even our own team cannot read your uploaded contracts—we can only see basic usage logs.",
   },
   {
-    question: "How do vendors submit their work?",
+    // PRIORITY 4: Vendor Friction (Practical usage) [Source: PDF Page 7]
+    question: "Do vendors need to pay?",
     answer:
-      "Clients invite vendors via email. Vendors get access to a restricted dashboard where they can upload files, notes, and proofs directly tied to specific milestones. They only see the milestones assigned to them.",
+      "No. Vendors join for free via an email invite link. They get a simple dashboard to upload proofs and view their specific milestones. They do not see your other projects.",
   },
   {
-    question: "What is the refund policy?",
+    // PRIORITY 5: Financial Risk (The 'Safety Net') [Source: PDF Page 18]
+    question: "What if I'm not happy? (Refund Policy)",
     answer:
-      "Refunds are applicable only if you are unable to use the platform due to a verified technical issue originating from our systems. Requests must be submitted within 7 days of payment.",
+      "We offer a 7-day refund policy if you face a verified technical issue that we cannot fix. Since we have a Free Plan for testing, refunds are not issued for simple 'change of mind'.",
   },
   {
-    question: "Can I upgrade my plan later?",
+    // PRIORITY 6: Growth (Future proofing) [Source: PDF Page 14]
+    question: "Can I upgrade or cancel anytime?",
     answer:
-      "Yes. Plans can be upgraded anytime from your profile settings. Features are unlocked instantly upon successful payment via Razorpay.",
+      "Yes. You can switch plans instantly from your dashboard. Upgrades unlock features immediately. There are no lock-in contracts for monthly plans.",
   },
 ];
 
@@ -46,10 +52,13 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative w-full py-24 bg-white text-gray-900 overflow-hidden font-sans">
+    <section
+      id="faq"
+      className="relative w-full py-24 bg-white text-[#0B2447] overflow-hidden font-sans border-t border-slate-100"
+    >
       {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-      <div className="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-purple-50/40 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+      <div className="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-teal-50/40 rounded-full blur-[120px] -z-10" />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* HEADER */}
@@ -58,15 +67,15 @@ const FAQSection = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-widest rounded-full mb-6 border border-blue-100"
+            className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 text-[#14B8A6] text-[10px] font-bold uppercase tracking-widest rounded-full mb-6 border border-slate-200"
           >
             <HelpCircle size={12} />
             Common Queries
           </motion.div>
 
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-6">
-            Everything you need <br />
-            <span className="text-gray-400">to know.</span>
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#0B2447] mb-6">
+            Everything You <br />
+            <span className="text-slate-400">Need to Know.</span>
           </h2>
         </div>
 
@@ -81,8 +90,8 @@ const FAQSection = () => {
               transition={{ delay: i * 0.1 }}
               className={`rounded-2xl transition-all duration-300 border ${
                 openIndex === i
-                  ? "bg-white border-gray-200 shadow-xl shadow-blue-900/5 ring-1 ring-blue-500/10"
-                  : "bg-gray-50/50 border-transparent hover:bg-gray-100"
+                  ? "bg-white border-slate-200 shadow-xl shadow-blue-900/5 ring-1 ring-teal-500/20"
+                  : "bg-slate-50/50 border-transparent hover:bg-slate-100"
               }`}
             >
               <button
@@ -90,8 +99,8 @@ const FAQSection = () => {
                 className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
               >
                 <span
-                  className={`text-lg font-bold ${
-                    openIndex === i ? "text-gray-900" : "text-gray-600"
+                  className={`text-base md:text-lg font-bold ${
+                    openIndex === i ? "text-[#0B2447]" : "text-slate-600"
                   }`}
                 >
                   {faq.question}
@@ -99,8 +108,8 @@ const FAQSection = () => {
                 <div
                   className={`p-2 rounded-full transition-colors ${
                     openIndex === i
-                      ? "bg-black text-white"
-                      : "bg-gray-200 text-gray-500"
+                      ? "bg-[#0B2447] text-white"
+                      : "bg-slate-200 text-slate-500"
                   }`}
                 >
                   {openIndex === i ? <Minus size={16} /> : <Plus size={16} />}
@@ -116,7 +125,7 @@ const FAQSection = () => {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-6 text-gray-500 leading-relaxed text-sm">
+                    <div className="px-6 pb-6 text-slate-500 leading-relaxed text-sm font-medium border-t border-slate-100/50 pt-4">
                       {faq.answer}
                     </div>
                   </motion.div>
@@ -126,29 +135,33 @@ const FAQSection = () => {
           ))}
         </div>
 
-        {/* CTA CARD (Titanium Style) */}
+        {/* CTA CARD (Navy Style) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-12 bg-gray-900 rounded-[2rem] p-8 relative overflow-hidden text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
+          className="mt-12 bg-[#0B2447] rounded-[2rem] p-8 relative overflow-hidden text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl"
         >
           {/* Glow Effect */}
-          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#14B8A6]/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
 
           <div className="relative z-10">
             <h3 className="text-xl font-bold text-white mb-2">
               Still have questions?
             </h3>
-            <p className="text-gray-400 text-sm max-w-sm">
-              Can&apos;t find the answer you&apos;re looking for? Chat with our team.
+            <p className="text-slate-300 text-sm max-w-sm">
+              Can&apos;t find the answer you&apos;re looking for? Email our
+              support team directly.
             </p>
           </div>
 
-          <button className="relative z-10 h-12 px-6 rounded-xl bg-white text-gray-900 font-bold text-sm flex items-center gap-2 hover:bg-blue-50 transition-colors shrink-0">
-            <MessageCircle size={18} />
-            Chat with Support
-          </button>
+          <Link
+            href="mailto:contact@jifwa.com"
+            className="relative z-10 h-12 px-6 rounded-xl bg-white text-[#0B2447] font-bold text-sm flex items-center gap-2 hover:bg-slate-100 transition-colors shrink-0 shadow-lg"
+          >
+            <Mail size={18} className="text-[#14B8A6]" />
+            Contact Support
+          </Link>
         </motion.div>
       </div>
     </section>

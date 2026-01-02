@@ -7,14 +7,25 @@ import { UploadCard } from "./upload-card";
 import { RecentActivity } from "./recent-activity";
 import { cn } from "@/lib/utils";
 import { Activity, FileCheck } from "lucide-react";
+import { PlanId, getPlanMeta } from "@/lib/plans";
 
 interface ProjectsClientProps {
   initialProjects: any[];
+  plan: PlanId;
+  limit: number;
+  currentUsage: number;
 }
 
-export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
+export function ProjectsClient({
+  initialProjects,
+  plan,
+  limit,
+  currentUsage,
+}: ProjectsClientProps) {
   const router = useRouter();
   const [projects, setProjects] = useState<any[]>(initialProjects);
+  const [usage, setUsage] = useState<number>(currentUsage);
+  const planMeta = getPlanMeta(plan);
 
   // 🔄 Sync with server on mount
   useEffect(() => {
@@ -23,14 +34,17 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
 
   useEffect(() => {
     setProjects(initialProjects);
-  }, [initialProjects]);
+    setUsage(currentUsage);
+  }, [initialProjects, currentUsage]);
 
   const handleUploadSuccess = (newProject: any) => {
     setProjects((prev) => [newProject, ...prev]);
+    setUsage((prev) => prev + 1);
     router.refresh();
   };
 
   const hasHistory = projects.length > 0;
+  const isAtLimit = usage >= limit;
 
   return (
     <div className="w-full font-sans min-h-screen p-4 md:p-8">
@@ -39,6 +53,23 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
           <Activity className="text-zinc-400" />
           Projects
         </h1>
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-zinc-500 mt-3">
+          <span className="px-2 py-1 rounded-lg bg-zinc-100 border border-zinc-200 text-zinc-600">
+            {planMeta.label}
+          </span>
+          <span className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-700">
+            {Math.min(usage, limit)} /{" "}
+            {limit === Number.MAX_SAFE_INTEGER ? "∞" : limit} active
+          </span>
+          {isAtLimit && (
+            <button
+              onClick={() => router.push("/billing")}
+              className="px-2.5 py-1 rounded-lg bg-black text-white uppercase tracking-[0.15em] text-[10px] font-black"
+            >
+              Upgrade for more
+            </button>
+          )}
+        </div>
       </div>
 
       <LayoutGroup>
@@ -60,7 +91,7 @@ export function ProjectsClient({ initialProjects }: ProjectsClientProps) {
           >
             <UploadCard
               onUploadSuccess={handleUploadSuccess}
-              isDisabled={hasHistory}
+              isDisabled={isAtLimit}
             />
           </motion.div>
 

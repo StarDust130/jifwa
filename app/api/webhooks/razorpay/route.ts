@@ -11,6 +11,8 @@ if (!RAZORPAY_WEBHOOK_SECRET) {
   throw new Error("CRITICAL: Missing Razorpay webhook secret");
 }
 
+const webhookSecret: string = RAZORPAY_WEBHOOK_SECRET;
+
 const planMapping: Record<string, PlanId> = {};
 if (PLAN_STARTER_ID) planMapping[PLAN_STARTER_ID] = "starter";
 if (PLAN_AGENCY_ID) planMapping[PLAN_AGENCY_ID] = "agency";
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   // 1. Verify Webhook Signature
   const expectedSignature = crypto
-    .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
+    .createHmac("sha256", webhookSecret)
     .update(body)
     .digest("hex");
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useClerk } from "@clerk/nextjs";
 import {
@@ -9,8 +8,13 @@ import {
   LogOut,
   ChevronRight,
   Eclipse,
+  Check,
+  Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { getPlanId, getPlanMeta, PlanId } from "@/lib/plans";
+import { getPlanContext } from "@/app/actions/plan";
 
 interface SidebarFooterProps {
   currentRole: string;
@@ -19,67 +23,91 @@ interface SidebarFooterProps {
 export function SidebarFooter({ currentRole }: SidebarFooterProps) {
   const { signOut } = useClerk();
   const [showLogout, setShowLogout] = useState(false);
+  const [plan, setPlan] = useState<PlanId>("free");
 
   const handleLogout = () => {
     signOut({ redirectUrl: "/" });
   };
 
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const ctx = await getPlanContext();
+        if (ctx?.plan) setPlan(getPlanId(ctx.plan));
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    fetchPlan();
+  }, []);
+
+  const planMeta = getPlanMeta(plan);
+
   return (
     <>
       <div className="p-3 mt-auto flex flex-col gap-2">
-        {/* 🟢 COMPACT "MICRO-CARD" (Fixed Size) */}
+        {/* Plan CTA card (varies by current plan) */}
         {currentRole === "client" && (
-          <Link href="/billing" className="block mb-1">
+          <Link
+            href={
+              plan === "agency"
+                ? "mailto:contact@jifwa.com?subject=Enterprise%20Plan%20Inquiry"
+                : "/billing"
+            }
+            className="block mb-1"
+          >
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative overflow-hidden rounded-xl bg-[#09090B] border border-zinc-800 shadow-lg cursor-pointer h-14" // Fixed height
+              className="group relative overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-sm cursor-pointer h-14"
             >
-              {/* 1. Liquid Light Shimmer (Faster & Sharper) */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
-                initial={{ x: "-200%" }}
-                animate={{ x: "200%" }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 2.5,
-                  ease: "linear",
-                  repeatDelay: 1,
-                }}
-              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-zinc-50 to-white" />
 
-              {/* 2. Content Layout (Horizontal Flex) */}
               <div className="relative z-10 h-full flex items-center justify-between px-3">
                 <div className="flex items-center gap-3">
-                  {/* Glowing Icon Box */}
-                  <div className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800/50 border border-zinc-700/50 group-hover:bg-zinc-800 transition-colors">
-                    <div className="absolute inset-0 bg-yellow-500/20 blur-[6px] rounded-full" />
-                    <Eclipse
-                      size={14}
-                      className="text-yellow-400  relative z-10"
-                    />
+                  <div className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200">
+                    {plan === "agency" ? (
+                      <Mail size={14} className="text-emerald-500" />
+                    ) : (
+                      <Eclipse size={14} className="text-amber-500" />
+                    )}
                   </div>
 
-                  {/* Text Stack */}
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white tracking-tight">
-                        Starter Plan
+                      <span className="text-xs font-bold text-zinc-900 tracking-tight">
+                        {planMeta.label}
                       </span>
-                      <span className="px-2 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-[6px] font-bold uppercase tracking-widest text-yellow-400 shadow-[0_0_6px_rgba(234,179,8,0.3)] backdrop-blur-md">
-                        Must Try
-                      </span>
+                      {plan === "free" && (
+                        <span className="px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[7px] font-black uppercase tracking-widest text-emerald-600">
+                          Upgrade
+                        </span>
+                      )}
+                      {plan === "starter" && (
+                        <span className="px-2 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[7px] font-black uppercase tracking-widest text-indigo-600">
+                          Go Agency
+                        </span>
+                      )}
+                      {plan === "agency" && (
+                        <span className="px-2 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-[7px] font-black uppercase tracking-widest text-zinc-700">
+                          Enterprise
+                        </span>
+                      )}
                     </div>
-                    <span className="text-[10px] text-zinc-500 font-medium group-hover:text-zinc-400 transition-colors">
-                      Upgrade Workspace
+                    <span className="text-[10px] text-zinc-500 font-medium">
+                      {plan === "agency"
+                        ? "Need Enterprise Scale?"
+                        : plan === "starter"
+                        ? "Scale to unlimited projects"
+                        : "Unlock more projects"}
                     </span>
                   </div>
                 </div>
 
-                {/* Arrow */}
                 <ChevronRight
                   size={14}
-                  className="text-zinc-600 group-hover:text-white transition-colors"
+                  className="text-zinc-400 group-hover:text-zinc-900 transition-colors"
                 />
               </div>
             </motion.div>

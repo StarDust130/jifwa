@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getPlanContext } from "@/app/actions/plan";
 
 export interface ProjectData {
   _id: string;
@@ -77,6 +78,25 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
     if (!file) return;
     if (file.type !== "application/pdf") {
       alert("Only PDF files are supported.");
+      return;
+    }
+
+    try {
+      const limitJson = await getPlanContext();
+      if (!limitJson.allowed) {
+        setStatus("error");
+        setErrorTitle("Workspace limit reached");
+        setErrorMessage(
+          limitJson?.plan === "agency"
+            ? "Please contact support to resolve your plan configuration."
+            : "You have used all available slots. Upgrade to add more projects."
+        );
+        return;
+      }
+    } catch (e: any) {
+      setStatus("error");
+      setErrorTitle("Limit check failed");
+      setErrorMessage("Could not verify your remaining slots. Try again.");
       return;
     }
 

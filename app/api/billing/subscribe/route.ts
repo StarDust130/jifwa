@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 import { auth } from "@clerk/nextjs/server";
+import { getPlanId, PlanId } from "@/lib/plans";
 
 // 1. Validate Environment Variables
 if (
@@ -18,7 +19,8 @@ const razorpay = new Razorpay({
 });
 
 // 2. Type-Safe Plan Mapping using Env Vars
-const RAZORPAY_PLANS: Record<string, string> = {
+const RAZORPAY_PLANS: Record<PlanId, string> = {
+  free: "", // free never hits Razorpay, keep placeholder for type safety
   starter: process.env.PLAN_STARTER_ID,
   agency: process.env.PLAN_AGENCY_ID,
 };
@@ -30,11 +32,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { planId } = body;
+    const planId = getPlanId(body.planId);
 
     const razorpayPlanId = RAZORPAY_PLANS[planId];
 
-    if (!razorpayPlanId) {
+    if (!planId || !razorpayPlanId) {
       console.warn(`⚠️ Invalid Plan Attempt: ${planId} by User: ${userId}`);
       return NextResponse.json({ error: "Invalid Plan ID" }, { status: 400 });
     }
@@ -50,9 +52,12 @@ export async function POST(req: NextRequest) {
       notes: { clerkId: userId },
     });
 
+    const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
     return NextResponse.json({
       subscriptionId: subscription.id,
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key,
+      keyId: key,
     });
   } catch (error: any) {
     console.error("🔥 Razorpay Error:", JSON.stringify(error, null, 2));

@@ -2,6 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import { PlanId } from "@/lib/plans";
+
+const { RAZORPAY_WEBHOOK_SECRET, PLAN_STARTER_ID, PLAN_AGENCY_ID } =
+  process.env;
+
+if (!RAZORPAY_WEBHOOK_SECRET) {
+  throw new Error("CRITICAL: Missing Razorpay webhook secret");
+}
+
+const planMapping: Record<string, PlanId> = {};
+if (PLAN_STARTER_ID) planMapping[PLAN_STARTER_ID] = "starter";
+if (PLAN_AGENCY_ID) planMapping[PLAN_AGENCY_ID] = "agency";
+
+const upsertUserPlan = (clerkId: string, plan: PlanId) => {
+  const placeholderEmail = `${clerkId}@placeholder.local`;
+  return User.findOneAndUpdate(
+    { clerkId },
+    {
+      $set: { plan },
+      $setOnInsert: {
+        email: placeholderEmail,
+        name: placeholderEmail,
+        currentRole: "client",
+      },
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+};
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -9,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   // 1. Verify Webhook Signature
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!)
+    .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
     .update(body)
     .digest("hex");
 
@@ -20,24 +48,47 @@ export async function POST(req: NextRequest) {
   const payload = JSON.parse(body);
 
   // 2. Handle Subscription Success [cite: 144, 145]
-  if (
-    payload.event === "subscription.activated" ||
-    payload.event === "subscription.charged"
-  ) {
-    const clerkId = payload.payload.subscription.entity.notes.clerkId;
-    const razorpayPlanId = payload.payload.subscription.entity.plan_id;
+  const eventType: string = payload.event;
+  const subscriptionEntity = payload.payload?.subscription?.entity;
 
-    // Map Razorpay IDs to Jifwa Plans [cite: 125, 131]
-    const planMapping: Record<string, string> = {
-      plan_Rw9LRqwiuoIW1P: "starter",
-      plan_Rw9NHkfmV33x8L: "agency",
-    };
+  const clerkId = subscriptionEntity?.notes?.clerkId;
+  const razorpayPlanId: string | undefined = subscriptionEntity?.plan_id;
 
-    const newPlan = planMapping[razorpayPlanId] || "free";
+  const resolvePlan = (planId?: string): PlanId =>
+    planMapping[planId || ""] || "free";
 
-    await connectDB();
-    await User.findOneAndUpdate({ clerkId }, { plan: newPlan }); // Unlock features instantly [cite: 146, 199]
-    console.log(`✅ User ${clerkId} upgraded to ${newPlan}`);
+  if (!clerkId) {
+    return NextResponse.json(
+      { error: "Missing clerkId in webhook" },
+      { status: 400 }
+    );
+  }
+
+  const shouldUpgrade = [
+    "subscription.activated",
+    "subscription.charged",
+    "subscription.pending",
+  ].includes(eventType);
+
+  const shouldDowngrade = [
+    "subscription.cancelled",
+    "subscription.paused",
+    "subscription.expired",
+  ].includes(eventType);
+
+  await connectDB();
+
+  if (shouldUpgrade) {
+    const newPlan = resolvePlan(razorpayPlanId);
+    await upsertUserPlan(clerkId, newPlan);
+    console.log(`✅ [Webhook] User ${clerkId} set to plan ${newPlan}`);
+  }
+
+  if (shouldDowngrade) {
+    await upsertUserPlan(clerkId, "free");
+    console.log(
+      `⚠️ [Webhook] User ${clerkId} downgraded to free (${eventType})`
+    );
   }
 
   return NextResponse.json({ success: true });

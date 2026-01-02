@@ -1,5 +1,5 @@
 import React from "react";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
@@ -22,10 +22,32 @@ export default async function PlatformLayout({
 
   // 2. Fetch User Role Securely on Server
   await connectDB();
-  const user = await User.findOne({ clerkId: userId }).select("currentRole");
+  let user = await User.findOne({ clerkId: userId });
+
+  if (!user) {
+    const clerkProfile = await currentUser();
+    const email =
+      clerkProfile?.primaryEmailAddress?.emailAddress ||
+      `${userId}@placeholder.local`;
+    const name =
+      `${clerkProfile?.firstName || ""} ${
+        clerkProfile?.lastName || ""
+      }`.trim() ||
+      clerkProfile?.username ||
+      email;
+
+    user = await User.create({
+      clerkId: userId,
+      email,
+      name,
+      currentRole: "client",
+      photo: clerkProfile?.imageUrl,
+      plan: "free",
+    });
+  }
 
   // Default to 'client' if role is missing
-  const role = user?.currentRole || "client";
+  const role = user.currentRole || "client";
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">

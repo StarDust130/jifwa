@@ -19,10 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-
-// --- Types ---
-type PlanId = "free" | "starter" | "agency";
+import { getPlanId, getPlanMeta, PlanId } from "@/lib/plans";
 
 interface Plan {
   id: PlanId;
@@ -50,6 +47,9 @@ export default function BillingPageClient({
   const { user } = useUser();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const normalizedPlan = getPlanId(currentPlan);
+  const activePlanMeta = getPlanMeta(normalizedPlan);
 
   const plans: Plan[] = [
     {
@@ -94,7 +94,6 @@ export default function BillingPageClient({
     setLoadingPlan(planId);
 
     try {
-      // 1. Create Subscription
       const res = await fetch("/api/billing/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -105,33 +104,90 @@ export default function BillingPageClient({
       if (!res.ok)
         throw new Error(data.error || "Failed to start subscription");
 
-      // 2. Open Razorpay
-      const options = {
+      if (!(window as any).Razorpay) {
+        throw new Error("Razorpay SDK failed to load.");
+      }
+
+      // Pre-show toast and a slim inline loader feeling before SDK opens
+      toast.loading("Opening secure checkout...", { id: "rzp-checkout" });
+
+      const rzp = new (window as any).Razorpay({
         key: data.key,
         subscription_id: data.subscriptionId,
         name: "Jifwa",
         description: `Upgrade to ${
           planId.charAt(0).toUpperCase() + planId.slice(1)
         } Plan`,
-        handler: async function (response: any) {
-          toast.success("Payment Successful! Upgrading account...");
-
-          // Verify Payment
-          await fetch("/api/billing/webhook", {
-            method: "POST",
-            body: JSON.stringify(response),
-          });
-
-          window.location.reload();
+        prefill: {
+          email: userEmail,
+          name: userName,
         },
-        theme: { color: "#10B981" },
-      };
+        notes: {
+          clerkId: user?.id,
+        },
+        handler: async function (response: any) {
+          toast.loading("Verifying payment...", { id: "rzp-checkout" });
+          try {
+            const verifyRes = await fetch("/api/billing/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                planId,
+                paymentId: response.razorpay_payment_id,
+                subscriptionId: response.razorpay_subscription_id,
+                signature: response.razorpay_signature,
+              }),
+            });
 
-      const rzp = new (window as any).Razorpay(options);
+            const verifyJson = await verifyRes.json();
+            if (!verifyRes.ok) {
+              const planCheck = await fetch("/api/projects/check-limit", {
+                cache: "no-store",
+              }).then((r) => r.json());
+
+              if (planCheck?.plan && planCheck.plan !== "free") {
+                toast.success("Payment verified via webhook.", {
+                  id: "rzp-checkout",
+                });
+                return window.location.reload();
+              }
+
+              throw new Error(verifyJson.error || "Verification failed");
+            }
+
+            toast.success("Plan upgraded. Reloading your workspace...", {
+              id: "rzp-checkout",
+            });
+            window.location.reload();
+          } catch (err: any) {
+            console.error("Verification error", err);
+            toast.error(err?.message || "Payment verification failed", {
+              id: "rzp-checkout",
+            });
+          } finally {
+            setLoadingPlan(null);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            toast.dismiss("rzp-checkout");
+            setLoadingPlan(null);
+          },
+        },
+        theme: { color: "#0f172a" },
+      });
+
+      rzp.on("payment.failed", (resp: any) => {
+        console.error("Payment failed", resp?.error);
+        toast.error(resp?.error?.description || "Payment failed", {
+          id: "rzp-checkout",
+        });
+        setLoadingPlan(null);
+      });
+
       rzp.open();
     } catch (error: any) {
-      toast.error(error.message);
-    } finally {
+      toast.error(error.message, { id: "rzp-checkout" });
       setLoadingPlan(null);
     }
   };
@@ -198,12 +254,25 @@ export default function BillingPageClient({
           <p className="text-zinc-500 text-sm font-medium max-w-md mx-auto">
             Simple, transparent pricing. Upgrade as you grow.
           </p>
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-zinc-200 shadow-sm text-xs font-bold text-zinc-700">
+            <span className="px-2 py-1 rounded-lg bg-zinc-900 text-white uppercase tracking-[0.2em] text-[10px]">
+              Current
+            </span>
+            <span>{activePlanMeta.label}</span>
+            <span className="text-zinc-400 font-semibold">
+              Limit:{" "}
+              {activePlanMeta.limit === Number.MAX_SAFE_INTEGER
+                ? "∞"
+                : activePlanMeta.limit}{" "}
+              active projects
+            </span>
+          </div>
         </div>
 
         {/* --- 2. PRICING CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch mb-16">
           {plans.map((plan) => {
-            const isActive = currentPlan === plan.id;
+            const isActive = normalizedPlan === plan.id;
             const isDark = plan.popular;
 
             return (
@@ -218,9 +287,16 @@ export default function BillingPageClient({
                 )}
               >
                 {plan.popular && (
-                  <div className="absolute  right-3">
+                  <div className="absolute right-3">
                     <span className="bg-gradient-to-r from-amber-200 to-yellow-400 text-black text-[9px] font-black uppercase px-3 py-1 rounded-full shadow-sm flex items-center  gap-1">
                       <Sparkles size={10} /> Recommended
+                    </span>
+                  </div>
+                )}
+                {isActive && (
+                  <div className="absolute left-3 top-3">
+                    <span className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
+                      Current Plan
                     </span>
                   </div>
                 )}

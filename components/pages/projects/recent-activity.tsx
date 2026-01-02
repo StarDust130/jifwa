@@ -42,7 +42,7 @@ const formatDate = (dateInput: string | Date) => {
 };
 
 export function RecentActivity({ projects }: { projects: any[] }) {
-  const topProjects = projects.slice(0, 5);
+  const topProjects = projects;
 
   return (
     <div className="flex flex-col h-full bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">

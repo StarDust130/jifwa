@@ -254,7 +254,7 @@ function EmptyState({ isClient }: { isClient: boolean }) {
       {isClient && (
         <Link
           href="/projects"
-          className="inline-block mt-6 text-sm font-bold text-indigo-600 hover:underline"
+          className="inline-block mt-6 text-sm font-bold text-ring hover:underline"
         >
           Create first project &rarr;
         </Link>
@@ -412,7 +412,7 @@ function VendorProjectCard({ project }: { project: SerializedProject }) {
           </div>
           <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+              className="h-full bg-primary rounded-full transition-all duration-500"
               style={{ width: `${project.progress}%` }}
             />
           </div>

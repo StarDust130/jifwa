@@ -4,6 +4,7 @@ import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
 import User from "@/models/User";
 import { ProjectsClient } from "@/components/pages/projects/projects-client";
+import { getPlanId, getPlanLimit } from "@/lib/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -49,5 +50,16 @@ export default async function ProjectsPage() {
 
   const serializedProjects = JSON.parse(JSON.stringify(projects));
 
-  return <ProjectsClient initialProjects={serializedProjects} />;
+  const plan = getPlanId(dbUser?.plan);
+  const limit = getPlanLimit(plan);
+  const currentUsage = serializedProjects.length;
+
+  return (
+    <ProjectsClient
+      initialProjects={serializedProjects}
+      plan={plan}
+      limit={limit}
+      currentUsage={currentUsage}
+    />
+  );
 }

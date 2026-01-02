@@ -25,6 +25,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getPlanId, getPlanMeta, PlanId } from "@/lib/plans";
+import { getPlanContext } from "@/app/actions/plan";
 
 export function UserNav() {
   const { user, isLoaded } = useUser();
@@ -35,6 +37,7 @@ export function UserNav() {
   const [openDialog, setOpenDialog] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [plan, setPlan] = useState<PlanId>("free");
 
   // 1. Handle Click Outside to Close Menu
   useEffect(() => {
@@ -46,6 +49,21 @@ export function UserNav() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const fetchPlan = async () => {
+      try {
+        const ctx = await getPlanContext();
+        if (ctx?.plan) setPlan(getPlanId(ctx.plan));
+      } catch (e) {
+        // ignore errors silently
+      }
+    };
+
+    fetchPlan();
+  }, []);
+
+  const planMeta = getPlanMeta(plan);
 
   if (!isLoaded) return <Skeleton className="h-9 w-9 rounded-full" />;
   if (!user) return null;
@@ -93,9 +111,9 @@ export function UserNav() {
               </p>
               <Badge
                 variant="secondary"
-                className="w-fit text-[10px] h-4 px-1.5 bg-white border-gray-200 text-gray-600 font-bold shadow-sm"
+                className={`w-fit text-[10px] h-4 px-1.5 font-bold shadow-sm ${planMeta.colorClass} border`}
               >
-                Free Plan
+                {planMeta.label}
               </Badge>
             </div>
           </div>

@@ -425,9 +425,9 @@ export default function BillingPageClient({
                   ) : isActive ? (
                     "Current Plan"
                   ) : plan.id === "free" ? (
-                    "Your Current Plan"
+                    "Switch to Free"
                   ) : (
-                    "Upgrade"
+                    `Upgrade to ${plan.name}`
                   )}
                 </button>
               </motion.div>

@@ -522,8 +522,8 @@ export default function BillingPageClient({
               </h2>
               <p className="text-zinc-300 text-sm font-medium leading-relaxed max-w-xl mx-auto md:mx-0">
                 Custom pricing for large organizations & government contractors.
-                [cite_start]Includes Private AI mode, SSO, and Dedicated
-                Support. [cite: 314-317]
+                Includes Private AI mode, SSO, and Dedicated
+                Support. 
               </p>
             </div>
 

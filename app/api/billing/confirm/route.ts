@@ -17,6 +17,8 @@ if (!NEXT_PUBLIC_RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
   throw new Error("CRITICAL: Razorpay keys missing for confirm endpoint.");
 }
 
+const razorpayKeySecret: string = RAZORPAY_KEY_SECRET;
+
 const subscriptionPlanMap: Record<string, PlanId> = {};
 if (PLAN_STARTER_ID) subscriptionPlanMap[PLAN_STARTER_ID] = "starter";
 if (PLAN_AGENCY_ID) subscriptionPlanMap[PLAN_AGENCY_ID] = "agency";
@@ -58,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", razorpayKeySecret)
       .update(`${subscriptionId}|${paymentId}`)
       .digest("hex");
 

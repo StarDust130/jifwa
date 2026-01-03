@@ -510,7 +510,7 @@ export default function SettingsPage() {
 
               <div className="relative space-y-3 opacity-60 cursor-not-allowed grayscale">
                 <div className="relative h-32 rounded-xl bg-slate-900 border border-slate-800 p-3 flex items-center justify-center shadow-inner">
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[1px] rounded-xl z-10">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-primary backdrop-blur-[1px] rounded-xl z-10">
                     <Badge
                       variant="secondary"
                       className="bg-white/90 text-black font-bold text-[10px] tracking-widest uppercase"

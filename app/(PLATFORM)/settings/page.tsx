@@ -288,34 +288,25 @@ export default function SettingsPage() {
       <Tabs
         value={activeTab}
         onValueChange={onTabChange}
-        className="flex flex-col lg:flex-row gap-8"
+        className="flex flex-col gap-8"
       >
-        {/* --- TABS LIST (FIXED FOR MOBILE SCROLL) --- */}
-        <aside className="w-full lg:w-[250px] flex-shrink-0">
-          <div className="lg:sticky lg:top-20">
-            {/* Scroll Container */}
-            <div className="w-full overflow-x-auto pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 lg:pb-0 lg:overflow-visible no-scrollbar">
-              <TabsList className="flex flex-row lg:flex-col justify-start h-auto w-max lg:w-full bg-transparent p-0 gap-2">
-                {tabItems.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="
-                      flex items-center gap-2 px-4 py-3 lg:py-2.5 rounded-lg text-sm font-medium transition-all
-                      border border-transparent whitespace-nowrap
-                      text-muted-foreground 
-                      hover:bg-muted/50 hover:text-foreground
-                      data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:border-primary/10
-                    "
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
+        {/* --- TABS LIST (single-line, scrollable) --- */}
+        <div className="w-full">
+          <div className="w-full overflow-x-auto pb-2 -mx-2 px-2 no-scrollbar">
+            <TabsList className="flex flex-row items-center gap-2 h-auto w-max bg-white p-1 rounded-2xl border border-zinc-200 shadow-sm">
+              {tabItems.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all border border-transparent whitespace-nowrap text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 data-[state=active]:bg-zinc-900 data-[state=active]:text-white data-[state=active]:shadow-md"
+                >
+                  <tab.icon className="h-4 w-4" />
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
           </div>
-        </aside>
+        </div>
 
         {/* --- CONTENT AREA --- */}
         <div className="flex-1 lg:max-w-3xl min-h-[500px]">

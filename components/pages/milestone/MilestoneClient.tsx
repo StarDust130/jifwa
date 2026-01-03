@@ -51,26 +51,90 @@ const RichPdfIcon = () => (
   </motion.div>
 );
 
-const StatusBadge = ({ status }: { status: string }) => (
-  <div
-    className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border shrink-0",
-      status === "processing"
-        ? "bg-amber-50 text-amber-700 border-amber-100"
-        : "bg-emerald-50 text-emerald-700 border-emerald-100"
-    )}
-  >
-    <span
+const mapStatusBucket = (
+  status: string | undefined | null,
+  milestones?: any[]
+) => {
+  const normalized = status?.toLowerCase?.().trim() || "active";
+
+  const hasMilestones = Array.isArray(milestones) && milestones.length > 0;
+  const allApproved =
+    hasMilestones && milestones.every((m) => m.status === "approved");
+  const anyInReview =
+    hasMilestones && milestones.some((m) => m.status === "in_review");
+  const anyDispute =
+    hasMilestones &&
+    milestones.some((m) =>
+      ["dispute", "changes_requested", "rejected", "needs_changes"].includes(
+        m.status
+      )
+    );
+
+  if (
+    ["completed", "approved", "done", "paid"].includes(normalized) ||
+    allApproved
+  ) {
+    return "completed" as const;
+  }
+  if (
+    ["processing", "in_review", "pending_review", "submitted"].includes(
+      normalized
+    ) ||
+    anyInReview
+  ) {
+    return "in_review" as const;
+  }
+  if (
+    ["changes_requested", "dispute", "rejected", "needs_changes"].includes(
+      normalized
+    ) ||
+    anyDispute
+  ) {
+    return "changes_requested" as const;
+  }
+  return "active" as const;
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const bucket = mapStatusBucket(status);
+
+  const theme =
+    bucket === "completed"
+      ? {
+          wrap: "bg-emerald-50 text-emerald-700 border-emerald-100",
+          dot: "bg-emerald-500",
+          label: "Completed",
+        }
+      : bucket === "in_review"
+      ? {
+          wrap: "bg-amber-50 text-amber-700 border-amber-100",
+          dot: "bg-amber-500 animate-pulse",
+          label: "In Review",
+        }
+      : bucket === "changes_requested"
+      ? {
+          wrap: "bg-red-50 text-red-700 border-red-100",
+          dot: "bg-red-500",
+          label: "Needs Changes",
+        }
+      : {
+          wrap: "bg-zinc-100 text-zinc-700 border-zinc-200",
+          dot: "bg-emerald-500",
+          label: "Active",
+        };
+
+  return (
+    <div
       className={cn(
-        "w-1.5 h-1.5 rounded-full",
-        status === "processing"
-          ? "bg-amber-500 animate-pulse"
-          : "bg-emerald-500"
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border shrink-0",
+        theme.wrap
       )}
-    />
-    {status === "active" ? "Active" : "Done"}
-  </div>
-);
+    >
+      <span className={cn("w-1.5 h-1.5 rounded-full", theme.dot)} />
+      {theme.label}
+    </div>
+  );
+};
 
 export default function MilestoneClient({
   initialProjects = [],
@@ -90,10 +154,13 @@ export default function MilestoneClient({
   const filtered = useMemo(
     () =>
       initialProjects.filter((p) => {
+        const projectStatusBucket = mapStatusBucket(p.status, p.milestones);
         const matchesSearch = p.contractName
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter ? p.status === statusFilter : true;
+        const matchesStatus = statusFilter
+          ? projectStatusBucket === statusFilter
+          : true;
         return matchesSearch && matchesStatus;
       }),
     [initialProjects, searchTerm, statusFilter]
@@ -235,6 +302,22 @@ export default function MilestoneClient({
                   <Filter size={14} /> Active
                 </button>
 
+                <button
+                  onClick={() =>
+                    setStatusFilter(
+                      statusFilter === "completed" ? null : "completed"
+                    )
+                  }
+                  className={cn(
+                    "flex-1 sm:flex-none px-4 py-3 border rounded-2xl transition-all flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-tighter",
+                    statusFilter === "completed"
+                      ? "bg-emerald-600 border-emerald-600 text-white shadow-lg"
+                      : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                  )}
+                >
+                  <Filter size={14} /> Completed
+                </button>
+
                 {!isVendor && (
                   <button
                     onClick={() => router.push("/milestones")}
@@ -267,17 +350,29 @@ export default function MilestoneClient({
               <tbody className="divide-y divide-zinc-50">
                 {currentItems.map((p) => {
                   const { date, time } = formatFullDate(p.createdAt);
+                  const isCompleted =
+                    mapStatusBucket(p.status, p.milestones) === "completed";
                   return (
                     <tr
                       key={p._id}
                       onClick={() => router.push(`/milestones/${p._id}`)}
-                      className="hover:bg-zinc-50/50 cursor-pointer transition-all group"
+                      className={cn(
+                        "hover:bg-zinc-50/50 cursor-pointer transition-all group",
+                        isCompleted && "bg-emerald-50/30"
+                      )}
                     >
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-5">
                           <RichPdfIcon />
                           <div className="min-w-0">
-                            <span className="block text-sm font-bold text-primary group-hover:text-red-600 transition-colors truncate">
+                            <span
+                              className={cn(
+                                "block text-sm font-bold group-hover:text-red-600 transition-colors truncate",
+                                isCompleted
+                                  ? "text-emerald-700"
+                                  : "text-primary"
+                              )}
+                            >
                               {p.contractName}
                             </span>
                             <span className="text-[9px] text-zinc-400 font-mono">
@@ -298,7 +393,9 @@ export default function MilestoneClient({
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <StatusBadge status={p.status} />
+                        <StatusBadge
+                          status={mapStatusBucket(p.status, p.milestones)}
+                        />
                       </td>
                       <td className="px-8 py-6 text-right text-sm font-black text-zinc-950">
                         {p.total_value || "$0.00"}
@@ -314,21 +411,33 @@ export default function MilestoneClient({
           <div className="md:hidden divide-y divide-zinc-100">
             {currentItems.map((p) => {
               const { date, time } = formatFullDate(p.createdAt);
+              const isCompleted =
+                mapStatusBucket(p.status, p.milestones) === "completed";
               return (
                 <div
                   key={p._id}
-                  onClick={() => router.push(`/projects/${p._id}`)}
-                  className="p-5 active:bg-zinc-50 flex items-start gap-4"
+                  onClick={() => router.push(`/milestones/${p._id}`)}
+                  className={cn(
+                    "p-5 active:bg-zinc-50 flex items-start gap-4",
+                    isCompleted && "bg-emerald-50/30"
+                  )}
                 >
                   <div className="shrink-0">
                     <RichPdfIcon />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">
-                      <h3 className="text-sm font-bold text-primary line-clamp-2 leading-tight">
+                      <h3
+                        className={cn(
+                          "text-sm font-bold line-clamp-2 leading-tight",
+                          isCompleted ? "text-emerald-700" : "text-primary"
+                        )}
+                      >
                         {p.contractName}
                       </h3>
-                      <StatusBadge status={p.status} />
+                      <StatusBadge
+                        status={mapStatusBucket(p.status, p.milestones)}
+                      />
                     </div>
                     <p className="text-[13px] font-black text-primary mt-2">
                       {p.total_value || "$0.00"}

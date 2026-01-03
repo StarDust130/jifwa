@@ -74,10 +74,24 @@ export default async function ProjectDetailPage({
   // ✅ Client Mode Active
   const isClient = true;
 
+  const milestones = project.milestones || [];
+  const inReviewCount = milestones.filter(
+    (m: any) => m.status === "in_review"
+  ).length;
+  const isCompleted =
+    project.status === "completed" ||
+    (milestones.length > 0 &&
+      milestones.every((m: any) => m.status === "approved"));
+
   return (
     <div className="min-h-screen font-sans bg-[#F9FAFB]">
       {/* Header with Client Controls Enabled */}
-      <ProjectHeader project={project} isClient={isClient} />
+      <ProjectHeader
+        project={project}
+        isClient={isClient}
+        inReviewCount={inReviewCount}
+        isCompleted={isCompleted}
+      />
 
       <main className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left Column: Timeline */}

@@ -5,6 +5,7 @@ import { Project } from "@/models/Project";
 import User from "@/models/User";
 import { ProjectsClient } from "@/components/pages/projects/projects-client";
 import { getPlanId, getPlanLimit } from "@/lib/plans";
+import { resolveOwnerContext } from "@/lib/owner";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,9 @@ export default async function ProjectsPage() {
 
   await connectDB();
 
-  const dbUser = await User.findOne({ clerkId: userId });
+  const ctx = await resolveOwnerContext(userId);
+  const dbUser = ctx?.actingUser || (await User.findOne({ clerkId: userId }));
+  const ownerId = ctx?.ownerClerkId || userId;
 
   // 1. Role Detection
   // Default to "client" if user is missing or new.
@@ -41,7 +44,7 @@ export default async function ProjectsPage() {
   // 3. Fetch Client Projects
   let projects: any[] = [];
   try {
-    projects = await Project.find({ userId: userId })
+    projects = await Project.find({ userId: ownerId })
       .sort({ createdAt: -1 })
       .lean();
   } catch (error) {
@@ -50,7 +53,7 @@ export default async function ProjectsPage() {
 
   const serializedProjects = JSON.parse(JSON.stringify(projects));
 
-  const plan = getPlanId(dbUser?.plan);
+  const plan = getPlanId((ctx?.ownerUser || dbUser)?.plan);
   const limit = getPlanLimit(plan);
   const currentUsage = serializedProjects.length;
 

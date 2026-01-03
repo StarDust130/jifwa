@@ -255,6 +255,17 @@ export function TimelineItem({
             </div>
           )}
 
+          {isDispute && m.dispute_summary && (
+            <div className="mb-6 p-4 rounded-xl border border-red-100 bg-red-50/50 text-sm text-red-800">
+              <p className="text-xs font-bold uppercase tracking-wide text-red-700 mb-2">
+                Dispute summary (AI)
+              </p>
+              <p className="whitespace-pre-wrap leading-relaxed">
+                {m.dispute_summary}
+              </p>
+            </div>
+          )}
+
           {/* ACTION BAR: Positioned to avoid overlap with Rejection Input */}
           <div
             className={cn(

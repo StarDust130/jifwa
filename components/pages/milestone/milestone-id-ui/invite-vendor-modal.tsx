@@ -57,7 +57,7 @@ export function InviteVendorModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-zinc-900 hover:bg-zinc-800 rounded-lg transition-all shadow-sm w-full justify-center">
+        <button className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white  rounded-lg transition-all shadow-sm w-full justify-center">
           <Mail size={12} /> Invite Vendor
         </button>
       </DialogTrigger>

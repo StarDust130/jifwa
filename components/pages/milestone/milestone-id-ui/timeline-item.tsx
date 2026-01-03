@@ -46,6 +46,8 @@ export function TimelineItem({
     isDispute ||
     (isPending && (i === 0 || prevStatus === "approved"));
 
+  const reviewLabel = isClient ? "Awaiting your review" : "Submitted to client";
+
   // 🗓️ Format Date: 25 Dec 2025
   const formatDate = (dateStr: string) => {
     try {
@@ -133,6 +135,16 @@ export function TimelineItem({
                 <Calendar size={12} /> Due: {formatDate(m.due_date)}
               </div>
             </div>
+            {isReview && (
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-100">
+                  Vendor submission
+                </span>
+                <span className="text-[10px] font-bold uppercase text-amber-600 tracking-wide">
+                  {reviewLabel}
+                </span>
+              </div>
+            )}
             <div
               className={cn(
                 "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase border w-fit",

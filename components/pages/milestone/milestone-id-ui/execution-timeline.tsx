@@ -18,6 +18,12 @@ export function ExecutionTimeline({
   const completedCount = milestones.filter(
     (m) => m.status === "approved"
   ).length;
+  const inReviewCount = milestones.filter(
+    (m) => m.status === "in_review"
+  ).length;
+  const disputeCount = milestones.filter(
+    (m) => m.status === "dispute" || m.status === "changes_requested"
+  ).length;
   const progressPercent = Math.min(
     (completedCount / milestones.length) * 100,
     100
@@ -25,6 +31,32 @@ export function ExecutionTimeline({
 
   return (
     <div className="relative space-y-8 py-4 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 mb-2 rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div className="flex items-center gap-2 text-xs font-bold text-zinc-600 uppercase tracking-wider">
+          <span className="px-2 py-1 rounded-md bg-zinc-900 text-white">
+            {isClient ? "Client" : "Team"} view
+          </span>
+          <span className="text-zinc-400">
+            {isClient
+              ? "Approve, request changes, or dispute submissions."
+              : "Track milestone progress at a glance."}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
+          <span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+            {completedCount}/{milestones.length} approved
+          </span>
+          <span className="px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+            {inReviewCount} awaiting review
+          </span>
+          {disputeCount > 0 && (
+            <span className="px-2 py-1 rounded-full bg-red-50 text-red-700 border border-red-100">
+              {disputeCount} needs changes
+            </span>
+          )}
+        </div>
+      </div>
+
       <div className="absolute left-[27px] sm:left-[35px] top-4 bottom-8 w-[2px] bg-zinc-100 rounded-full" />
       <motion.div
         initial={{ height: 0 }}

@@ -44,7 +44,8 @@ export const PLAN_META: Record<PlanId, PlanMeta> = {
 };
 
 export function getPlanId(value?: string | null): PlanId {
-  if (value === "starter" || value === "agency") return value;
+  const normalized = (value || "").toLowerCase();
+  if (normalized === "starter" || normalized === "agency") return normalized;
   return "free";
 }
 

@@ -89,7 +89,11 @@ export function SidebarFooter({ currentRole }: SidebarFooterProps) {
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs font-bold text-zinc-900 tracking-tight">
-                            {planMeta?.label || ""}
+                            {plan === "free"
+                              ? "Starter Plan"
+                              : plan === "starter"
+                              ? "Agency Plan"
+                              : planMeta?.label ?? ""}
                           </span>
                           {plan === "free" && (
                             <span className="px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[7px] font-black uppercase tracking-widest text-emerald-600">

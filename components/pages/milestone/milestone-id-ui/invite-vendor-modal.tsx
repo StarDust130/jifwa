@@ -22,6 +22,7 @@ export function InviteVendorModal({
   const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [sentEmail, setSentEmail] = useState("");
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
@@ -43,16 +44,11 @@ export function InviteVendorModal({
 
       if (!res.ok) throw new Error("Failed");
 
+      setSentEmail(email);
       setStatus("success");
 
       // 👇 UPDATE PARENT INSTANTLY (No Refresh)
       if (onSuccess) onSuccess(email);
-
-      setTimeout(() => {
-        setOpen(false);
-        setStatus("idle");
-        setEmail("");
-      }, 1500);
     } catch (e) {
       setStatus("error");
     }
@@ -61,39 +57,60 @@ export function InviteVendorModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white   rounded-md  transition-all shadow-sm w-full justify-center">
+        <button className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-zinc-900 hover:bg-zinc-800 rounded-lg transition-all shadow-sm w-full justify-center">
           <Mail size={12} /> Invite Vendor
         </button>
       </DialogTrigger>
 
       <DialogContent className="max-w-sm rounded-xl p-6">
         {status === "success" ? (
-          <div className="flex flex-col items-center justify-center py-4 text-center space-y-3 animate-in fade-in zoom-in duration-300">
+          <div
+            className="flex flex-col items-center justify-center py-4 text-center space-y-3 animate-in fade-in zoom-in duration-300"
+            aria-live="polite"
+          >
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-1">
               <CheckCircle2 size={24} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-primary">Invite Sent!</h3>
+              <h3 className="text-sm font-bold text-primary">Invite sent</h3>
               <p className="text-xs text-zinc-500 mt-1">
-                We've emailed {email}.
+                We've emailed {sentEmail || email} with a secure invite link.
               </p>
+            </div>
+            <div className="flex items-center gap-2 pt-2 w-full">
+              <button
+                onClick={() => {
+                  setStatus("idle");
+                  setEmail("");
+                  setSentEmail("");
+                }}
+                className="w-full px-4 py-2.5 text-xs font-semibold rounded-lg border border-zinc-200 text-zinc-700 hover:bg-zinc-50 transition"
+              >
+                Send another
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-full px-4 py-2.5 text-xs font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 transition"
+              >
+                Close
+              </button>
             </div>
           </div>
         ) : (
           <>
             <DialogHeader>
               <DialogTitle className="text-sm font-bold text-primary">
-                Invite Collaborator
+                Invite collaborator
               </DialogTitle>
               <DialogDescription className="text-xs text-zinc-500">
-                Send an invite to your vendor or freelancer.
+                Send a secure invite to your vendor or freelancer.
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 mt-2">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                  Vendor Email
+                  Vendor email
                 </label>
                 <input
                   type="email"
@@ -104,15 +121,21 @@ export function InviteVendorModal({
                 />
               </div>
 
+              {status === "error" && (
+                <p className="text-[11px] text-rose-600 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2">
+                  Something went wrong sending the invite. Please try again.
+                </p>
+              )}
+
               <button
                 onClick={handleInvite}
                 disabled={status === "sending" || !email}
-                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                className="w-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-xs font-bold transition-all flex items-center justify-center gap-2"
               >
                 {status === "sending" ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : (
-                  "Send Invite"
+                  "Send invite"
                 )}
                 {status !== "sending" && <ArrowRight size={14} />}
               </button>

@@ -238,7 +238,7 @@ export default function MilestoneClient({
                 {!isVendor && (
                   <button
                     onClick={() => router.push("/milestones")}
-                    className="hidden md:flex items-center gap-2 bg-zinc-950 text-white px-5 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-tighter shadow-xl shadow-zinc-200 hover:bg-zinc-800 transition-all"
+                    className="hidden md:flex items-center gap-2 bg-primary text-white px-5 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-tighter shadow-xl shadow-zinc-200 hover:bg-primary/95 transition-all"
                   >
                     <Plus size={16} /> New Contract
                   </button>

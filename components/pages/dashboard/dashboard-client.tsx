@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 // 🛠️ HELPER: The "NaN" Killer
 // ------------------------------------------------------------------
 const formatCurrency = (value: string | number | undefined) => {
-  if (!value) return "$0";
+  if (!value) return "₹0";
 
   // 1. Convert to string
   const strVal = String(value);
@@ -38,7 +38,7 @@ const formatCurrency = (value: string | number | undefined) => {
   const num = parseFloat(cleanStr);
 
   // 4. Fallback to 0 if still NaN
-  if (isNaN(num)) return "$0";
+  if (isNaN(num)) return "₹0";
 
   // 5. Format nicely
   return new Intl.NumberFormat("en-US", {

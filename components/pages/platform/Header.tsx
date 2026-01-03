@@ -177,18 +177,7 @@ export const Header = ({ userRole }: { userRole?: string }) => {
 
       {/* RIGHT: Actions & User Profile */}
       <div className="flex items-center gap-1 sm:gap-2">
-        <span
-          className={cn(
-            "hidden md:inline-flex items-center px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-[0.15em]",
-            plan === "starter"
-              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-              : plan === "agency"
-              ? "bg-indigo-50 text-indigo-700 border-indigo-100"
-              : "bg-zinc-100 text-zinc-600 border-zinc-200"
-          )}
-        >
-          {planMeta.label}
-        </span>
+     
         {/* 1. HELP BUTTON */}
         {/* <TooltipProvider>
           <Tooltip>

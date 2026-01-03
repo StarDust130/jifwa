@@ -76,6 +76,7 @@ export interface DashboardData {
   stats: {
     totalProjects: number;
     activeCount: number;
+    completedCount: number;
     pendingCount: number;
     totalValue: number;
   };
@@ -106,6 +107,14 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
   const { role, stats, projects, isBanned, isAdmin } = data;
   const isClient = role === "client";
   const router = useRouter();
+  const [statusFilter, setStatusFilter] = React.useState<
+    "all" | "active" | "in_review" | "completed"
+  >("all");
+
+  const filteredProjects = React.useMemo(() => {
+    if (statusFilter === "all") return projects;
+    return projects.filter((p) => p.status === statusFilter);
+  }, [projects, statusFilter]);
 
   React.useEffect(() => {
     if (isBanned) {
@@ -233,7 +242,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           />
           <StatCard
             label="Completed"
-            value={stats.totalProjects - stats.activeCount}
+            value={stats.completedCount}
             icon={CheckCircle2}
             color="text-emerald-600"
             bg="bg-emerald-50"
@@ -254,13 +263,34 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <FileText size={20} className="text-zinc-400" />
               {isClient ? "Recent Contracts" : "Your Works"}
             </h3>
+            <div className="flex items-center gap-2 text-xs font-semibold text-zinc-600">
+              {[
+                { key: "all", label: "All" },
+                { key: "active", label: "Active" },
+                { key: "in_review", label: "In Review" },
+                { key: "completed", label: "Completed" },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => setStatusFilter(opt.key as any)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full border text-[11px] transition-all",
+                    statusFilter === opt.key
+                      ? "bg-zinc-900 text-white border-zinc-900"
+                      : "bg-white border-zinc-200 hover:border-zinc-300"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {projects.length === 0 ? (
+          {filteredProjects.length === 0 ? (
             <EmptyState isClient={isClient} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {projects.map((project) =>
+              {filteredProjects.map((project) =>
                 isClient ? (
                   <ClientProjectCard key={project._id} project={project} />
                 ) : (
@@ -299,6 +329,37 @@ function StatCard({ label, value, icon: Icon, color, bg }: any) {
   );
 }
 
+function StatusBadge({ status }: { status: SerializedProject["status"] }) {
+  const theme = {
+    active: "bg-amber-50 text-amber-700 border-amber-100",
+    in_review: "bg-indigo-50 text-indigo-700 border-indigo-100",
+    changes_requested: "bg-red-50 text-red-700 border-red-100",
+    completed: "bg-emerald-50 text-emerald-700 border-emerald-100",
+  };
+
+  const labelMap: Record<string, string> = {
+    active: "Active",
+    in_review: "In review",
+    changes_requested: "Needs changes",
+    completed: "Completed",
+  };
+
+  const cls =
+    (theme as any)[status] || "bg-zinc-100 text-zinc-600 border-zinc-200";
+  const label = labelMap[status] || status;
+
+  return (
+    <span
+      className={cn(
+        "px-2.5 py-1 rounded-full text-[11px] font-semibold border",
+        cls
+      )}
+    >
+      {label}
+    </span>
+  );
+}
+
 function EmptyState({ isClient }: { isClient: boolean }) {
   return (
     <div className="py-20 text-center bg-white border-2 border-dashed border-zinc-200 rounded-3xl">
@@ -333,16 +394,7 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
       >
         {/* Header: Status & Menu */}
         <div className="flex justify-between items-start mb-4">
-          <span
-            className={cn(
-              "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wide border",
-              project.status === "active"
-                ? "bg-zinc-900 text-white border-zinc-900"
-                : "bg-zinc-50 text-zinc-400 border-zinc-100"
-            )}
-          >
-            {project.status}
-          </span>
+          <StatusBadge status={project.status} />
           <MoreHorizontal
             size={16}
             className="text-zinc-300 group-hover:text-zinc-600 transition-colors"
@@ -355,10 +407,10 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
         </h3>
 
         {/* Vendor Info (Safe Check) */}
-        <div className="mb-6">
+        <div className="mb-4">
           {project.vendorEmail ? (
-            <div className="flex items-center gap-2 text-xs font-medium text-zinc-500 bg-zinc-50 px-3 py-2 rounded-xl border border-zinc-100">
-              <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[9px] font-bold">
+            <div className="flex items-center gap-2 text-xs font-medium text-zinc-600 bg-zinc-50 px-3 py-2 rounded-xl border border-zinc-100">
+              <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-bold">
                 {project.vendorEmail[0].toUpperCase()}
               </div>
               <span className="truncate max-w-[180px]">
@@ -366,8 +418,8 @@ function ClientProjectCard({ project }: { project: SerializedProject }) {
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-2 rounded-xl border border-amber-100">
-              <AlertCircle size={14} /> Waiting for Vendor
+            <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-2 rounded-xl border border-amber-100">
+              <AlertCircle size={14} /> Waiting for vendor
             </div>
           )}
         </div>
@@ -425,13 +477,16 @@ function VendorProjectCard({ project }: { project: SerializedProject }) {
               </p>
             </div>
           </div>
-          {project.isUrgent && (
-            <div className="px-2 py-1 bg-rose-50 text-rose-600 rounded-lg border border-rose-100 animate-pulse">
-              <span className="text-[10px] font-black uppercase tracking-wide">
-                Urgent
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <StatusBadge status={project.status} />
+            {project.isUrgent && (
+              <div className="px-2 py-1 bg-rose-50 text-rose-600 rounded-lg border border-rose-100">
+                <span className="text-[10px] font-black uppercase tracking-wide">
+                  Urgent
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         <h3 className="text-lg font-bold text-primarymb-6 line-clamp-2 group-hover:text-indigo-600 transition-colors h-14">

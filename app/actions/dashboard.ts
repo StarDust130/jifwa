@@ -11,7 +11,9 @@ export type ProjectStatus =
   | "completed"
   | "archived"
   | "processing"
-  | "pending";
+  | "pending"
+  | "in_review"
+  | "changes_requested";
 
 export interface SerializedProject {
   _id: string;
@@ -38,11 +40,35 @@ export interface DashboardData {
   stats: {
     totalProjects: number;
     activeCount: number;
+    completedCount: number;
     pendingCount: number;
     totalValue: number;
   };
   projects: SerializedProject[];
 }
+
+const mapStatusBucket = (doc: any) => {
+  const raw = (doc.status || "active").toLowerCase();
+  const milestones = doc.milestones || [];
+  const allApproved =
+    milestones.length > 0 &&
+    milestones.every((m: any) => m.status === "approved");
+  const anyInReview = milestones.some((m: any) => m.status === "in_review");
+  const anyChanges = milestones.some((m: any) =>
+    ["changes_requested", "dispute"].includes(m.status)
+  );
+
+  if (allApproved || ["completed", "approved", "done"].includes(raw)) {
+    return "completed" as ProjectStatus;
+  }
+  if (anyInReview || raw === "in_review" || raw === "processing") {
+    return "in_review" as ProjectStatus;
+  }
+  if (anyChanges || raw === "changes_requested") {
+    return "changes_requested" as ProjectStatus;
+  }
+  return "active" as ProjectStatus;
+};
 
 export async function getDashboardData(): Promise<DashboardData | null> {
   try {
@@ -107,6 +133,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
 
     const serializedProjects: SerializedProject[] = projectsDocs.map(
       (doc: any) => {
+        const status = mapStatusBucket(doc);
+
         // Metrics
         const totalMilestones = doc.milestones?.length || 0;
         const completedMilestones =
@@ -145,8 +173,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         return {
           _id: doc._id.toString(),
           contractName: doc.contractName,
-          // 👇 FIXED: Explicitly cast the status string to our Type
-          status: (doc.status || "active") as ProjectStatus,
+          status,
           createdAt: doc.createdAt.toISOString(),
           vendorEmail: doc.vendorEmail,
           totalValue: val,
@@ -174,6 +201,9 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         totalProjects: serializedProjects.length,
         activeCount: serializedProjects.filter((p) => p.status === "active")
           .length,
+        completedCount: serializedProjects.filter(
+          (p) => p.status === "completed"
+        ).length,
         pendingCount,
         totalValue,
       },

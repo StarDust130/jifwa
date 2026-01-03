@@ -54,6 +54,11 @@ export default async function PlatformLayout({
     redirect("/banned");
   }
 
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+  const canAdmin =
+    role === "admin" ||
+    (adminEmail && user.email?.toLowerCase() === adminEmail);
+
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">
       {/* DESKTOP SIDEBAR - Passing the server-fetched role to the client component */}
@@ -64,7 +69,7 @@ export default async function PlatformLayout({
       {/* MAIN CONTENT WRAPPER */}
       <main className="flex-1 md:ml-64 min-h-screen flex flex-col bg-white">
         {/* TOPBAR */}
-        <Header userRole={role} />
+        <Header userRole={role} canAdmin={canAdmin} />
         {/* PAGE RENDER */}
         <div className="flex-1 w-full max-w-[1600px] mx-auto">
           {children}

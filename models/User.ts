@@ -10,6 +10,9 @@ export interface IUser extends Document {
   plan?: string;
   // Optional: Add banned flag if you implement banning
   isBanned?: boolean;
+  brandingLogo?: string;
+  teamMembers?: string[];
+  linkedOwnerId?: string; // if member, points to owner's clerkId
 }
 
 const UserSchema = new Schema<IUser>(
@@ -28,6 +31,9 @@ const UserSchema = new Schema<IUser>(
 
     plan: { type: String, default: "free" },
     isBanned: { type: Boolean, default: false },
+    brandingLogo: { type: String },
+    teamMembers: { type: [String], default: [] },
+    linkedOwnerId: { type: String },
   },
   { timestamps: true }
 );

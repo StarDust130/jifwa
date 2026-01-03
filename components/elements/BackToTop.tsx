@@ -47,7 +47,7 @@ const BackToTop = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-[999] cursor-pointer group"
+          className="fixed bottom-8 right-8 z-40 cursor-pointer group"
         >
           {/* --- THE COOL UI: PROGRESS RING + BUTTON --- */}
           <div className="relative h-14 w-14 flex items-center justify-center">

@@ -4,6 +4,7 @@ import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
 import User from "@/models/User";
 import MilestoneClient from "@/components/pages/milestone/MilestoneClient";
+import { resolveOwnerContext } from "@/lib/owner";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,9 @@ export default async function MilestonesPage() {
   await connectDB();
 
   // 2. Get Current User from DB
-  const dbUser = await User.findOne({ clerkId: userId });
+  const ctx = await resolveOwnerContext(userId);
+  const dbUser = ctx?.actingUser || (await User.findOne({ clerkId: userId }));
+  const ownerId = ctx?.ownerClerkId || userId;
   const email = clerkUser.emailAddresses[0].emailAddress;
 
   // 3. Role Detection
@@ -52,7 +55,7 @@ export default async function MilestonesPage() {
   let projects: IProject[] = [];
 
   try {
-    const fetchedProjects = await Project.find({ userId: userId })
+    const fetchedProjects = await Project.find({ userId: ownerId })
       .sort({ createdAt: -1 })
       .lean();
 

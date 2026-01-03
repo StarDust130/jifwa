@@ -81,8 +81,10 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
       return;
     }
 
+    let plan: "free" | "starter" | "agency" = "free";
     try {
       const limitJson = await getPlanContext();
+      plan = limitJson.plan as typeof plan;
       if (!limitJson.allowed) {
         setStatus("error");
         setErrorTitle("Workspace limit reached");
@@ -137,10 +139,18 @@ export function UploadCard({ onUploadSuccess, isDisabled }: UploadCardProps) {
       if (!uploadRes.ok || !uploadJson.success)
         throw new Error(uploadJson.error || "Validation failed");
 
+      const payload = { ...uploadJson.data } as any;
+
+      // Plan-aware milestone behavior
+      if (plan === "free") {
+        // Free: do not auto-create milestones; keep summary so user can add manually later
+        payload.milestones = [];
+      }
+
       const createRes = await fetch("/api/projects/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(uploadJson.data),
+        body: JSON.stringify(payload),
       });
 
       const createJson = await createRes.json();

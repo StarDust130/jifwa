@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import { resolveOwnerContext } from "@/lib/owner";
 
 import { Header } from "@/components/pages/platform/Header";
 import BackToTop from "@/components/elements/BackToTop";
@@ -46,6 +47,12 @@ export default async function PlatformLayout({
     });
   }
 
+  // Link to owner if this is a team member (Agency)
+  const ownerCtx = await resolveOwnerContext(userId);
+  if (ownerCtx?.actingUser) {
+    user = ownerCtx.actingUser;
+  }
+
   // Default to 'client' if role is missing
   const role = user.currentRole || "client";
 
@@ -59,6 +66,8 @@ export default async function PlatformLayout({
     role === "admin" ||
     (!!adminEmail && user.email?.toLowerCase() === adminEmail);
 
+  const brandingLogo = ownerCtx?.ownerUser?.brandingLogo || user.brandingLogo;
+
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">
       {/* DESKTOP SIDEBAR - Passing the server-fetched role to the client component */}
@@ -69,7 +78,11 @@ export default async function PlatformLayout({
       {/* MAIN CONTENT WRAPPER */}
       <main className="flex-1 md:ml-64 min-h-screen flex flex-col bg-white">
         {/* TOPBAR */}
-        <Header userRole={role} canAdmin={canAdmin} />
+        <Header
+          userRole={role}
+          canAdmin={canAdmin}
+          brandingLogo={brandingLogo}
+        />
         {/* PAGE RENDER */}
         <div className="flex-1 w-full max-w-[1600px] mx-auto">
           {children}

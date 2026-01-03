@@ -5,6 +5,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { Project } from "@/models/Project";
 import { getPlanId, getPlanLimit, PlanId } from "@/lib/plans";
+import { resolveOwnerContext } from "@/lib/owner";
 
 export interface PlanContext {
   plan: PlanId;
@@ -20,32 +21,16 @@ export async function getPlanContext(): Promise<PlanContext> {
   }
 
   await connectDB();
-  let user = await User.findOne({ clerkId: userId });
-
-  if (!user) {
-    const clerkProfile = await currentUser();
-    const email =
-      clerkProfile?.primaryEmailAddress?.emailAddress ||
-      `${userId}@placeholder.local`;
-    const name =
-      `${clerkProfile?.firstName || ""} ${
-        clerkProfile?.lastName || ""
-      }`.trim() ||
-      clerkProfile?.username ||
-      email;
-
-    user = await User.create({
-      clerkId: userId,
-      email,
-      name,
-      currentRole: "client",
-      photo: clerkProfile?.imageUrl,
-      plan: "free",
-    });
+  const ctx = await resolveOwnerContext(userId);
+  if (!ctx) {
+    return { plan: "free", limit: 0, currentUsage: 0, allowed: false };
   }
-  const plan = getPlanId(user?.plan);
+
+  const plan = getPlanId(ctx.ownerUser?.plan);
   const limit = getPlanLimit(plan);
-  const currentUsage = await Project.countDocuments({ userId });
+  const currentUsage = await Project.countDocuments({
+    userId: ctx.ownerClerkId,
+  });
 
   return {
     plan,

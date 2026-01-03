@@ -16,9 +16,13 @@ import { DeleteProjectDialog } from "./delete-project-dialog";
 export function ProjectHeader({
   project,
   isClient,
+  inReviewCount,
+  isCompleted,
 }: {
   project: any;
   isClient: boolean;
+  inReviewCount: number;
+  isCompleted: boolean;
 }) {
   return (
     <nav className="backdrop-blur-md border-b border-zinc-200">
@@ -36,6 +40,21 @@ export function ProjectHeader({
             <h1 className="font-bold text-primary truncate max-w-[150px] sm:max-w-md">
               {project.contractName}
             </h1>
+            <span
+              className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                isCompleted
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : inReviewCount > 0
+                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                  : "bg-zinc-100 text-zinc-600 border-zinc-200"
+              }`}
+            >
+              {isCompleted
+                ? "Completed"
+                : inReviewCount > 0
+                ? `${inReviewCount} awaiting review`
+                : "Active"}
+            </span>
           </div>
         </div>
 

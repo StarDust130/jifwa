@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { ProjectHeader } from "@/components/pages/milestone/milestone-id-ui/project-header";
 import { ExecutionTimeline } from "@/components/pages/milestone/milestone-id-ui/execution-timeline";
 import { ProjectMetadata } from "@/components/pages/milestone/milestone-id-ui/project-metadata";
+import { resolveOwnerContext } from "@/lib/owner";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,9 @@ export default async function ProjectDetailPage({
   await connectDB();
 
   // 1. 🔍 GET USER & CHECK ROLE
-  const dbUser = await User.findOne({ clerkId: userId });
+  const ownerCtx = await resolveOwnerContext(userId);
+  const dbUser =
+    ownerCtx?.actingUser || (await User.findOne({ clerkId: userId }));
 
   // 🔒 SECURITY: VENDORS ARE NOT ALLOWED HERE
   // If you are a vendor, you should be in the /assignments workspace, not here.
@@ -47,7 +50,8 @@ export default async function ProjectDetailPage({
 
   // 3. 🛡️ SECURITY: VERIFY CLIENT OWNERSHIP
   // You must be the CREATOR (Owner) of this project to see this dashboard.
-  const isOwner = project.userId === userId;
+  const ownerId = ownerCtx?.ownerClerkId || userId;
+  const isOwner = project.userId === ownerId;
 
   if (!isOwner) {
     console.log(

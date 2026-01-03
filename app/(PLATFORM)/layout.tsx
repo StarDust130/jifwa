@@ -55,9 +55,9 @@ export default async function PlatformLayout({
   }
 
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
-  const canAdmin =
+  const canAdmin: boolean =
     role === "admin" ||
-    (adminEmail && user.email?.toLowerCase() === adminEmail);
+    (!!adminEmail && user.email?.toLowerCase() === adminEmail);
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">

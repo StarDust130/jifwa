@@ -25,12 +25,22 @@ import { toast } from "sonner";
 import { AdminFrame } from "./AdminFrame";
 
 export type Plan = "free" | "starter" | "agency";
+export type AdminUser = {
+  id: string;
+  name?: string | null;
+  email: string;
+  plan: Plan;
+  currentRole: "client" | "vendor" | "admin";
+  isBanned?: boolean;
+  createdAt?: string;
+};
 export type AdminSummary = {
   totalUsers?: number;
   revenue?: number;
   banned?: number;
   plans?: Record<Plan, number>;
   weekly?: { _id: string; count: number }[];
+  latestUsers?: AdminUser[];
 };
 
 const planBar: Record<Plan, string> = {

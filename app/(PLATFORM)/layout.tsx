@@ -49,6 +49,11 @@ export default async function PlatformLayout({
   // Default to 'client' if role is missing
   const role = user.currentRole || "client";
 
+  // Block banned users from accessing any platform routes
+  if (user.isBanned) {
+    redirect("/banned");
+  }
+
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">
       {/* DESKTOP SIDEBAR - Passing the server-fetched role to the client component */}

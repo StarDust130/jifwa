@@ -5,6 +5,7 @@ import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
+import { resolveOwnerContext } from "@/lib/owner";
 
 // --- 1. FETCH PROJECTS BASED ON ACTIVE ROLE ---
 export async function getDashboardProjects() {
@@ -16,7 +17,9 @@ export async function getDashboardProjects() {
     await connectDB();
 
     // Get the user's *current active role* from DB
-    const dbUser = await User.findOne({ clerkId: userId });
+    const ctx = await resolveOwnerContext(userId);
+    const dbUser = ctx?.actingUser || (await User.findOne({ clerkId: userId }));
+    const ownerId = ctx?.ownerClerkId || userId;
     if (!dbUser) return { error: "User profile not found" };
 
     const role = dbUser.currentRole; // 'client' or 'vendor'
@@ -26,7 +29,9 @@ export async function getDashboardProjects() {
 
     if (role === "client") {
       // CLIENT VIEW: Show projects I created
-      projects = await Project.find({ userId }).sort({ createdAt: -1 });
+      projects = await Project.find({ userId: ownerId }).sort({
+        createdAt: -1,
+      });
     } else {
       // VENDOR VIEW: Show projects where I am the vendor
       // (Matches by email, since invite is sent to email)

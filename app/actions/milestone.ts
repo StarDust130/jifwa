@@ -5,6 +5,11 @@ import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
+import Groq from "groq-sdk";
+import User from "@/models/User";
+import { getPlanId } from "@/lib/plans";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function updateMilestone(
   projectId: string,
@@ -50,6 +55,24 @@ export async function updateMilestone(
       milestone.proof_notes = `[CLIENT REJECTED]: ${data.feedback} \n\n${
         milestone.proof_notes || ""
       }`;
+
+      try {
+        const owner = await User.findOne({ clerkId: project.userId }).lean();
+        const plan = getPlanId(owner?.plan);
+        if (plan !== "free") {
+          milestone.dispute_summary = await summarizeDispute(
+            {
+              title: milestone.title,
+              criteria: milestone.criteria,
+              feedback: data.feedback,
+              proof_notes: milestone.proof_notes,
+            },
+            plan
+          );
+        }
+      } catch (err) {
+        console.error("Dispute summary failed", err);
+      }
     }
 
     await project.save();
@@ -62,4 +85,41 @@ export async function updateMilestone(
     console.error("Action Error:", error);
     return { success: false, error: "Server error occurred" };
   }
+}
+
+async function summarizeDispute(
+  payload: {
+    title: string;
+    criteria: string;
+    feedback: string;
+    proof_notes?: string;
+  },
+  plan: "free" | "starter" | "agency"
+) {
+  const detail =
+    plan === "agency"
+      ? "Provide a thorough, structured summary with key risks and next actions."
+      : "Keep it concise (3 bullets).";
+
+  const completion = await groq.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content: `You are an impartial project dispute analyst. Summarize disputes for clients and vendors. ${detail}`,
+      },
+      {
+        role: "user",
+        content: `Milestone: ${payload.title}\nCriteria: ${
+          payload.criteria
+        }\nClient feedback: ${payload.feedback}\nVendor notes: ${
+          payload.proof_notes || ""
+        }`,
+      },
+    ],
+    model: "llama-3.3-70b-versatile",
+    temperature: plan === "agency" ? 0.2 : 0.1,
+    max_tokens: plan === "agency" ? 400 : 250,
+  });
+
+  return completion.choices[0]?.message?.content || "";
 }

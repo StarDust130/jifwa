@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import PDFParser from "pdf2json";
+import { auth } from "@clerk/nextjs/server";
+import connectDB from "@/lib/db";
+import User from "@/models/User";
+import { getPlanId } from "@/lib/plans";
+import { resolveOwnerContext } from "@/lib/owner";
 
 // Force Node.js runtime
 export const runtime = "nodejs";
@@ -12,6 +17,14 @@ const groq = new Groq({
 export async function POST(req: NextRequest) {
   try {
     console.log("📥 [API] Upload started...");
+
+    const { userId } = auth();
+    if (!userId)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await connectDB();
+    const ctx = await resolveOwnerContext(userId);
+    const plan = getPlanId(ctx?.ownerUser?.plan);
 
     // 1️⃣ File Validation
     const formData = await req.formData();
@@ -65,7 +78,15 @@ export async function POST(req: NextRequest) {
           CRITICAL RULES:
           - You MUST extract at least 3 milestones. If not explicitly listed, INFER them based on the scope (e.g., 'Planning', 'Development', 'Deployment').
           - Format currency professionally ($10,000.00).
-          - Output STRICT JSON.`,
+          - Output STRICT JSON.
+          - ${
+            plan === "agency"
+              ? "Provide richer milestone criteria and include risk-aware notes in each criteria block."
+              : plan === "starter"
+              ? "Keep milestones concise but actionable; avoid generic placeholders."
+              : "If plan is free, still validate but keep summaries terse."
+          }
+            `,
         },
         {
           role: "user",

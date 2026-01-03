@@ -149,7 +149,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen w-full mb-10 md:mb-0 grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
+    <div className="md:min-h-screen w-full   grid lg:grid-cols-2 font-sans bg-white overflow-hidden">
       {/* ================= LEFT: BRANDING PANEL ================= */}
       <div className="relative hidden lg:flex flex-col justify-between bg-[#0B2447] text-white px-16 py-12 overflow-hidden">
         {/* Background Gradients */}
@@ -240,7 +240,7 @@ export default function SignUpPage() {
       </div>
 
       {/* ================= RIGHT: AUTH FORM OR LOADING ================= */}
-      <div className="flex flex-col min-h-screen bg-white relative">
+      <div className="flex flex-col  md:min-h-screen bg-white relative">
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-6">
           <Link

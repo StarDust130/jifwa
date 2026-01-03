@@ -4,6 +4,7 @@ import connectDB from "@/lib/db"; // Your existing db connection
 import { Project } from "@/models/Project";
 import User from "@/models/User";
 import { getPlanId, getPlanLimit } from "@/lib/plans";
+import { resolveOwnerContext } from "@/lib/owner";
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,11 +21,15 @@ export async function POST(req: NextRequest) {
     // 3️⃣ Connect DB
     await connectDB();
 
+    const ctx = await resolveOwnerContext(userId);
+    const ownerId = ctx?.ownerClerkId || userId;
+    const ownerUser = ctx?.ownerUser || user;
+
     // 4️⃣ Enforce Plan Limits server-side (defence in depth)
-    const user = await User.findOne({ clerkId: userId });
-    const plan = getPlanId(user?.plan);
+    const owner = ownerUser || (await User.findOne({ clerkId: ownerId }));
+    const plan = getPlanId(owner?.plan);
     const limit = getPlanLimit(plan);
-    const currentUsage = await Project.countDocuments({ userId });
+    const currentUsage = await Project.countDocuments({ userId: ownerId });
 
     if (currentUsage >= limit) {
       return NextResponse.json(
@@ -51,7 +56,7 @@ export async function POST(req: NextRequest) {
         : "New Contract Project";
 
     const newProject = await Project.create({
-      userId,
+      userId: ownerId,
       contractName: derivedName,
       summary,
       parties,

@@ -294,7 +294,7 @@ export default function BillingPageClient({
                   </div>
                 )}
                 {isActive && (
-                  <div className="absolute left-3 top-3">
+                  <div className="absolute left-3 top-1">
                     <span className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
                       Current Plan
                     </span>

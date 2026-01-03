@@ -3,6 +3,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { assertAdminApi } from "@/lib/admin";
 import { clerkClient } from "@clerk/nextjs/server";
+import { Types } from "mongoose";
 
 const ALLOWED_PLANS = ["free", "starter", "agency"];
 const ALLOWED_ROLES = ["client", "vendor", "admin"];
@@ -37,7 +38,7 @@ export async function PATCH(
   const updated = await User.findByIdAndUpdate(params.id, updates, {
     new: true,
   }).lean<{
-    _id: unknown;
+    _id: Types.ObjectId | string;
     name?: string | null;
     email: string;
     currentRole: string;

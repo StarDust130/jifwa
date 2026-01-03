@@ -9,6 +9,7 @@ export interface IMilestone {
   status: "pending" | "in_review" | "approved" | "dispute";
   proof_url?: string;
   proof_notes?: string;
+  dispute_summary?: string;
   completed_at?: Date;
 }
 
@@ -39,6 +40,7 @@ const MilestoneSchema = new Schema<IMilestone>({
   },
   proof_url: { type: String },
   proof_notes: { type: String },
+  dispute_summary: { type: String },
   completed_at: { type: Date },
 });
 

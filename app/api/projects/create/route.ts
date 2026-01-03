@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     const ctx = await resolveOwnerContext(userId);
     const ownerId = ctx?.ownerClerkId || userId;
-    const ownerUser = ctx?.ownerUser || user;
+    const ownerUser = ctx?.ownerUser || ctx?.actingUser;
 
     // 4️⃣ Enforce Plan Limits server-side (defence in depth)
     const owner = ownerUser || (await User.findOne({ clerkId: ownerId }));

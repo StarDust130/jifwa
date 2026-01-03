@@ -23,7 +23,8 @@ interface SidebarFooterProps {
 export function SidebarFooter({ currentRole }: SidebarFooterProps) {
   const { signOut } = useClerk();
   const [showLogout, setShowLogout] = useState(false);
-  const [plan, setPlan] = useState<PlanId>("free");
+  const [plan, setPlan] = useState<PlanId | null>(null);
+  const [isPlanLoading, setIsPlanLoading] = useState(true);
 
   const handleLogout = () => {
     signOut({ redirectUrl: "/" });
@@ -33,85 +34,98 @@ export function SidebarFooter({ currentRole }: SidebarFooterProps) {
     const fetchPlan = async () => {
       try {
         const ctx = await getPlanContext();
-        if (ctx?.plan) setPlan(getPlanId(ctx.plan));
+        if (ctx?.plan) {
+          setPlan(getPlanId(ctx.plan));
+        } else {
+          setPlan("free");
+        }
       } catch (e) {
-        // ignore
+        setPlan("free");
+      } finally {
+        setIsPlanLoading(false);
       }
     };
 
     fetchPlan();
   }, []);
 
-  const planMeta = getPlanMeta(plan);
+  const planMeta = plan ? getPlanMeta(plan) : null;
 
   return (
     <>
       <div className="p-3 mt-auto flex flex-col gap-2">
         {/* Plan CTA card (varies by current plan) */}
         {currentRole === "client" && (
-          <Link
-            href={
-              plan === "agency"
-                ? "mailto:contact@jifwa.com?subject=Enterprise%20Plan%20Inquiry"
-                : "/billing"
-            }
-            className="block mb-1"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-sm cursor-pointer h-14"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-zinc-50 to-white" />
-
-              <div className="relative z-10 h-full flex items-center justify-between px-3">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200">
-                    {plan === "agency" ? (
-                      <Mail size={14} className="text-emerald-500" />
-                    ) : (
-                      <Eclipse size={14} className="text-amber-500" />
-                    )}
-                  </div>
-
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-zinc-900 tracking-tight">
-                        {planMeta.label}
-                      </span>
-                      {plan === "free" && (
-                        <span className="px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[7px] font-black uppercase tracking-widest text-emerald-600">
-                          Upgrade
-                        </span>
-                      )}
-                      {plan === "starter" && (
-                        <span className="px-2 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[7px] font-black uppercase tracking-widest text-indigo-600">
-                          Go Agency
-                        </span>
-                      )}
-                      {plan === "agency" && (
-                        <span className="px-2 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-[7px] font-black uppercase tracking-widest text-zinc-700">
-                          Enterprise
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] text-zinc-500 font-medium">
-                      {plan === "agency"
-                        ? "Need Enterprise Scale?"
-                        : plan === "starter"
-                        ? "Scale to unlimited projects"
-                        : "Unlock more projects"}
-                    </span>
-                  </div>
-                </div>
-
-                <ChevronRight
-                  size={14}
-                  className="text-zinc-400 group-hover:text-zinc-900 transition-colors"
-                />
+          <div className="block mb-1">
+            {isPlanLoading ? (
+              <div className="h-14 w-full rounded-xl bg-white border border-zinc-200 shadow-sm overflow-hidden">
+                <div className="h-full w-full animate-pulse bg-gradient-to-r from-zinc-100 via-white to-zinc-100" />
               </div>
-            </motion.div>
-          </Link>
+            ) : (
+              <Link
+                href={
+                  plan === "agency"
+                    ? "mailto:contact@jifwa.com?subject=Enterprise%20Plan%20Inquiry"
+                    : "/billing"
+                }
+              >
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative overflow-hidden rounded-xl bg-white border border-zinc-200 shadow-sm cursor-pointer h-14"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-zinc-50 to-white" />
+
+                  <div className="relative z-10 h-full flex items-center justify-between px-3">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 border border-zinc-200">
+                        {plan === "agency" ? (
+                          <Mail size={14} className="text-emerald-500" />
+                        ) : (
+                          <Eclipse size={14} className="text-amber-500" />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-zinc-900 tracking-tight">
+                            {planMeta?.label || ""}
+                          </span>
+                          {plan === "free" && (
+                            <span className="px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[7px] font-black uppercase tracking-widest text-emerald-600">
+                              Upgrade
+                            </span>
+                          )}
+                          {plan === "starter" && (
+                            <span className="px-2 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[7px] font-black uppercase tracking-widest text-indigo-600">
+                              Go Agency
+                            </span>
+                          )}
+                          {plan === "agency" && (
+                            <span className="px-2 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-[7px] font-black uppercase tracking-widest text-zinc-700">
+                              Enterprise
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-zinc-500 font-medium">
+                          {plan === "agency"
+                            ? "Need Enterprise Scale?"
+                            : plan === "starter"
+                            ? "Scale to unlimited projects"
+                            : "Unlock more projects"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <ChevronRight
+                      size={14}
+                      className="text-zinc-400 group-hover:text-zinc-900 transition-colors"
+                    />
+                  </div>
+                </motion.div>
+              </Link>
+            )}
+          </div>
         )}
 
         {/* 🟢 TOOLS GRID (Compact) */}

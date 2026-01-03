@@ -173,9 +173,9 @@ export const Header = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="rounded-full font-bold border-indigo-200 bg-blue-100 text-ring hover:bg-indigo-100 hover:text-ring/95 transition-all duration-200"
+                    className="rounded-full font-bold border-indigo-200 bg-sky  -100 text-primary hover:bg-indigo-100 hover:text-primary/95 transition-all duration-200"
                   >
-                    Admin 
+                    Admin
                   </Button>
                 </Link>
               </TooltipTrigger>

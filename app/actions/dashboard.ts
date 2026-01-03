@@ -33,6 +33,8 @@ export interface DashboardData {
     email: string;
     photo: string;
   };
+  isAdmin: boolean;
+  isBanned: boolean;
   stats: {
     totalProjects: number;
     activeCount: number;
@@ -59,6 +61,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       return {
         role: "client",
         user: { name: "", email: "", photo: "" },
+        isAdmin: false,
+        isBanned: false,
         stats: {
           totalProjects: 0,
           activeCount: 0,
@@ -164,6 +168,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         email: dbUser.email,
         photo: dbUser.photo || clerkUser.imageUrl,
       },
+      isAdmin: dbUser.currentRole === "admin",
+      isBanned: Boolean(dbUser.isBanned),
       stats: {
         totalProjects: serializedProjects.length,
         activeCount: serializedProjects.filter((p) => p.status === "active")

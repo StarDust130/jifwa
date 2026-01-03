@@ -36,7 +36,17 @@ export async function PATCH(
 
   const updated = await User.findByIdAndUpdate(params.id, updates, {
     new: true,
-  }).lean();
+  }).lean<{
+    _id: unknown;
+    name?: string | null;
+    email: string;
+    currentRole: string;
+    plan?: string;
+    isBanned?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    clerkId?: string;
+  }>();
 
   if (!updated) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -49,8 +59,8 @@ export async function PATCH(
     currentRole: updated.currentRole,
     plan: updated.plan || "free",
     isBanned: Boolean(updated.isBanned),
-    createdAt: updated.createdAt,
-    updatedAt: updated.updatedAt,
+    createdAt: updated.createdAt?.toISOString?.() ?? null,
+    updatedAt: updated.updatedAt?.toISOString?.() ?? null,
   });
 }
 

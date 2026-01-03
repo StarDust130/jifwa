@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Bell, Slash, Inbox, ArrowRight, CircleHelp } from "lucide-react";
@@ -21,9 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { getPlanId, getPlanMeta, PlanId } from "@/lib/plans";
-import { getPlanContext } from "@/app/actions/plan";
 
 // Custom Components
 import Sidebar from "./Sidebar";
@@ -31,7 +28,6 @@ import UserAvatar from "@/components/elements/UserAvatar";
 
 export const Header = ({ userRole }: { userRole?: string }) => {
   const pathname = usePathname();
-  const [plan, setPlan] = useState<PlanId>("free");
 
   // STATE MANAGEMENT
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,21 +44,6 @@ export const Header = ({ userRole }: { userRole?: string }) => {
       .replace(/\b\w/g, (c) => c.toUpperCase());
     return { href, label };
   });
-
-  useEffect(() => {
-    const fetchPlan = async () => {
-      try {
-        const ctx = await getPlanContext();
-        if (ctx?.plan) setPlan(getPlanId(ctx.plan));
-      } catch (e) {
-        // silently ignore
-      }
-    };
-
-    fetchPlan();
-  }, []);
-
-  const planMeta = getPlanMeta(plan);
 
   return (
     <header className="h-16 sticky top-0 z-40 px-6 flex items-center justify-between bg-white/80 backdrop-blur-xl border-b border-gray-200/60 font-sans transition-all duration-300">
@@ -177,7 +158,26 @@ export const Header = ({ userRole }: { userRole?: string }) => {
 
       {/* RIGHT: Actions & User Profile */}
       <div className="flex items-center gap-1 sm:gap-2">
-     
+        {/* Admin quick jump */}
+        {userRole === "admin" && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/admin/overview">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="hidden sm:inline-flex rounded-full border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:text-indigo-800"
+                  >
+                    Admin
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Go to admin panel</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         {/* 1. HELP BUTTON */}
         {/* <TooltipProvider>
           <Tooltip>

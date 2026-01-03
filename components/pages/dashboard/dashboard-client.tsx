@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
 import {
   Briefcase,
@@ -17,6 +18,7 @@ import {
   FileText,
   ChevronRight,
   User,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -69,6 +71,8 @@ export interface DashboardData {
     email: string;
     photo: string;
   };
+  isAdmin: boolean;
+  isBanned: boolean;
   stats: {
     totalProjects: number;
     activeCount: number;
@@ -99,8 +103,50 @@ const itemVar: Variants = {
 // 🚀 MAIN COMPONENT
 // ------------------------------------------------------------------
 export default function DashboardClient({ data }: { data: DashboardData }) {
-  const { role, stats, projects } = data;
+  const { role, stats, projects, isBanned, isAdmin } = data;
   const isClient = role === "client";
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (isBanned) {
+      router.replace("/banned");
+    }
+  }, [isBanned, router]);
+
+  if (isBanned) return null;
+
+  if (isBanned) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex items-center justify-center px-4 py-16">
+        <div className="max-w-xl w-full space-y-4 text-center border border-slate-800 bg-slate-900/80 rounded-3xl p-8 shadow-2xl shadow-rose-500/10">
+          <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-400/40 flex items-center justify-center mx-auto">
+            <Lock className="text-rose-200" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-white">
+            Account deactivated
+          </h1>
+          <p className="text-sm text-slate-300">
+            Your account is currently deactivated. Contact the team to get
+            access back.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <Link
+              href="/support"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-rose-500 text-white font-semibold shadow-lg shadow-rose-500/30 hover:bg-rose-400 transition"
+            >
+              Open support
+            </Link>
+            <a
+              href="mailto:support@jifwa.com"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl border border-slate-700 text-slate-100 hover:border-slate-500 hover:bg-slate-800 transition"
+            >
+              Email us
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen  pb-20 font-sans">
@@ -139,17 +185,31 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           </div>
 
           {/* Quick Actions (Client Only) */}
-          {isClient && (
-            <Link href="/projects">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 bg-primary text-white pl-5 pr-6 py-3 rounded-xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-primary-dark transition-all"
-              >
-                <Plus size={18} /> New Contract
-              </motion.button>
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            {isClient && (
+              <Link href="/projects">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 bg-primary text-white pl-5 pr-6 py-3 rounded-xl font-bold text-sm shadow-xl shadow-primary/10 hover:bg-primary-dark transition-all"
+                >
+                  <Plus size={18} /> New Contract
+                </motion.button>
+              </Link>
+            )}
+
+            {isAdmin && (
+              <Link href="/admin/overview">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 border border-indigo-200 text-indigo-700 bg-indigo-50 px-4 py-2.5 rounded-xl font-semibold text-sm shadow-sm hover:bg-indigo-100 transition-all"
+                >
+                  <Lock size={16} /> Admin
+                </motion.button>
+              </Link>
+            )}
+          </div>
         </motion.div>
 
         {/* 🟢 2. CLEAN STATS ROW */}

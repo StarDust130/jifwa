@@ -54,7 +54,14 @@ const formatCurrency = (value: string | number | undefined) => {
 export interface SerializedProject {
   _id: string;
   contractName: string;
-  status: "active" | "completed" | "archived" | "processing" | "pending";
+  status:
+    | "active"
+    | "completed"
+    | "archived"
+    | "processing"
+    | "pending"
+    | "in_review"
+    | "changes_requested";
   createdAt: string;
   vendorEmail?: string;
   totalValue?: string | number;

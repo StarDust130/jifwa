@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/db";
 import { Project } from "@/models/Project";
+import { resolveOwnerContext } from "@/lib/owner";
 
 // DELETE PROJECT
 export async function DELETE(
@@ -14,7 +15,13 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectDB();
-    const project = await Project.findOneAndDelete({ _id: params.id, userId });
+    const ctx = await resolveOwnerContext(userId);
+    const ownerId = ctx?.ownerClerkId || userId;
+
+    const project = await Project.findOneAndDelete({
+      _id: params.id,
+      userId: ownerId,
+    });
 
     if (!project)
       return NextResponse.json(

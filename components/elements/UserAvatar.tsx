@@ -6,16 +6,23 @@ import { UserNav } from "../pages/platform/UserNav";
 
 const UserAvatar = () => {
   const { user, isLoaded } = useUser();
-  const [plan, setPlan] = useState<PlanId>("free");
-  const planMeta = getPlanMeta(plan);
+  const [plan, setPlan] = useState<PlanId | null>(null);
+  const [isPlanLoading, setIsPlanLoading] = useState(true);
+  const planMeta = plan ? getPlanMeta(plan) : null;
 
   useEffect(() => {
     const loadPlan = async () => {
       try {
         const ctx = await getPlanContext();
-        if (ctx?.plan) setPlan(getPlanId(ctx.plan));
+        if (ctx?.plan) {
+          setPlan(getPlanId(ctx.plan));
+        } else {
+          setPlan("free");
+        }
       } catch (e) {
-        // ignore and stay at default
+        setPlan("free");
+      } finally {
+        setIsPlanLoading(false);
       }
     };
 
@@ -29,8 +36,15 @@ const UserAvatar = () => {
           <span className="text-sm font-bold text-gray-900 leading-none">
             {user.fullName || user.firstName}
           </span>
-          <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mt-1">
-            {planMeta.label}
+          <span className="h-3 mt-1 text-[10px] text-gray-500 font-semibold uppercase tracking-wide">
+            {isPlanLoading ? (
+              <span
+                className="block h-full w-16 rounded-full bg-gray-200 animate-pulse"
+                aria-label="Loading plan"
+              />
+            ) : (
+              <span>{planMeta?.label || ""}</span>
+            )}
           </span>
         </div>
       )}

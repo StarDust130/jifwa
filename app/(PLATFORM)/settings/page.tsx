@@ -17,6 +17,10 @@ import {
   AlertTriangle,
   Check,
   ChevronRight,
+  Sparkles,
+  Users as UsersIcon,
+  Plus,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,6 +53,13 @@ export default function SettingsPage() {
 
   const defaultTab = searchParams.get("tab") || "profile";
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [plan, setPlan] = useState<"free" | "starter" | "agency">("free");
+  const [isOwner, setIsOwner] = useState(true);
+  const [brandingLogo, setBrandingLogo] = useState("");
+  const [brandingLoading, setBrandingLoading] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [teamInput, setTeamInput] = useState("");
+  const [teamLoading, setTeamLoading] = useState(false);
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab");
@@ -71,6 +82,30 @@ export default function SettingsPage() {
       setLastName(user.lastName || "");
     }
   }, [isLoaded, user]);
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const res = await fetch("/api/user/plan", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setPlan(data.plan);
+        setIsOwner(Boolean(data.isOwner));
+        if (data.plan !== "free") fetchBranding();
+        if (data.plan === "agency" && data.isOwner) fetchTeam();
+        if (
+          (data.plan === "free" && ["branding", "team"].includes(activeTab)) ||
+          (!data.isOwner && activeTab === "team")
+        ) {
+          setActiveTab("profile");
+        }
+      } catch (e) {
+        console.warn("Plan fetch failed", e);
+      }
+    };
+    loadPlan();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!isLoaded || !user) {
     return (
@@ -131,16 +166,108 @@ export default function SettingsPage() {
     }, 300);
   };
 
+  const fetchBranding = async () => {
+    try {
+      const res = await fetch("/api/branding", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setBrandingLogo(data.brandingLogo || "");
+      }
+    } catch (e) {
+      console.warn("Branding fetch failed", e);
+    }
+  };
+
+  const saveBranding = async () => {
+    if (plan === "free") return;
+    setBrandingLoading(true);
+    try {
+      const res = await fetch("/api/branding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ logoUrl: brandingLogo }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Save failed");
+      toast.success("Branding saved");
+    } catch (e: any) {
+      toast.error(e.message || "Save failed");
+    } finally {
+      setBrandingLoading(false);
+    }
+  };
+
+  const fetchTeam = async () => {
+    try {
+      const res = await fetch("/api/team", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setTeamMembers(data.teamMembers || []);
+      }
+    } catch (e) {
+      console.warn("Team fetch failed", e);
+    }
+  };
+
+  const addTeamMember = async () => {
+    if (!teamInput.trim()) return;
+    setTeamLoading(true);
+    try {
+      const res = await fetch("/api/team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: teamInput }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not add member");
+      setTeamMembers(data.teamMembers || []);
+      setTeamInput("");
+      toast.success("Team member added");
+    } catch (e: any) {
+      toast.error(e.message || "Add failed");
+    } finally {
+      setTeamLoading(false);
+    }
+  };
+
+  const removeTeamMember = async (email: string) => {
+    setTeamLoading(true);
+    try {
+      const res = await fetch("/api/team", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Remove failed");
+      setTeamMembers(data.teamMembers || []);
+      toast.success("Removed");
+    } catch (e: any) {
+      toast.error(e.message || "Remove failed");
+    } finally {
+      setTeamLoading(false);
+    }
+  };
+
   const onTabChange = (value: string) => {
     setActiveTab(value);
     router.replace(`/settings?tab=${value}`, { scroll: false });
   };
 
-  const tabItems = [
+  const baseTabs = [
     { value: "profile", icon: User, label: "Profile" },
     { value: "account", icon: Shield, label: "Account" },
     { value: "appearance", icon: Palette, label: "Appearance" },
     { value: "notifications", icon: Bell, label: "Notifications" },
+  ];
+  const tabItems = [
+    ...baseTabs,
+    ...(plan !== "free"
+      ? [{ value: "branding", icon: Sparkles, label: "Branding" }]
+      : []),
+    ...(plan === "agency" && isOwner
+      ? [{ value: "team", icon: UsersIcon, label: "Team" }]
+      : []),
   ];
 
   return (
@@ -404,6 +531,163 @@ export default function SettingsPage() {
                 <span className="text-sm font-medium text-center text-muted-foreground flex items-center justify-center gap-2">
                   <Moon size={14} /> Dark
                 </span>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* BRANDING TAB (Starter/Agency) */}
+          <TabsContent
+            value="branding"
+            className="space-y-6 m-0 animate-in fade-in slide-in-from-right-4 duration-500"
+          >
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-primary">Branding</h3>
+                <p className="text-sm text-muted-foreground">
+                  Add your logo for client-facing surfaces.
+                </p>
+              </div>
+              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200">
+                {plan === "agency" ? "Agency" : "Starter"}
+              </Badge>
+            </div>
+            <Separator className="hidden lg:block" />
+
+            <div className="grid gap-6 md:grid-cols-[1.5fr_1fr] items-start">
+              <div className="space-y-4">
+                <Label className="text-xs font-bold text-primary uppercase tracking-wide">
+                  Logo URL
+                </Label>
+                <Input
+                  value={brandingLogo}
+                  onChange={(e) => setBrandingLogo(e.target.value)}
+                  placeholder="https://yourcdn.com/logo.png"
+                  disabled={brandingLoading || plan === "free" || !isOwner}
+                  className="bg-white text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  SVG/PNG recommended. Hosted images only.
+                  {!isOwner && " • Only the owner can update branding."}
+                </p>
+                <Button
+                  onClick={saveBranding}
+                  disabled={brandingLoading || plan === "free" || !isOwner}
+                  className="w-fit"
+                >
+                  {brandingLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Sparkles className="h-4 w-4 mr-2" />
+                  )}
+                  Save branding
+                </Button>
+              </div>
+
+              <div className="border border-dashed border-muted rounded-xl p-6 bg-muted/40 flex flex-col items-center justify-center gap-3 text-center">
+                <p className="text-xs uppercase font-bold text-muted-foreground tracking-wide">
+                  Preview
+                </p>
+                {brandingLogo ? (
+                  <img
+                    src={brandingLogo}
+                    alt="Brand logo preview"
+                    className="h-16 object-contain"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold">
+                    LOGO
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Appears on client views where supported.
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* TEAM TAB (Agency) */}
+          <TabsContent
+            value="team"
+            className="space-y-6 m-0 animate-in fade-in slide-in-from-right-4 duration-500"
+          >
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-primary">Team</h3>
+                <p className="text-sm text-muted-foreground">
+                  Invite up to 3 team members.
+                </p>
+              </div>
+              <Badge className="bg-indigo-50 text-indigo-700 border border-indigo-200">
+                Agency only
+              </Badge>
+            </div>
+            <Separator className="hidden lg:block" />
+
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  value={teamInput}
+                  onChange={(e) => setTeamInput(e.target.value)}
+                  placeholder="teammate@company.com"
+                  disabled={teamLoading || plan !== "agency" || !isOwner}
+                  className="bg-white text-sm"
+                />
+                <Button
+                  onClick={addTeamMember}
+                  disabled={
+                    teamLoading ||
+                    plan !== "agency" ||
+                    !isOwner ||
+                    teamMembers.length >= 3
+                  }
+                >
+                  {teamLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Plus className="h-4 w-4 mr-2" />
+                  )}
+                  Add
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Agency plan includes 3 seats. Remove a member to free a seat.
+                {!isOwner && " • Only the owner can manage seats."}
+              </p>
+
+              <div className="grid gap-3">
+                {teamMembers.length === 0 ? (
+                  <div className="p-4 border border-dashed border-muted rounded-xl bg-muted/30 text-sm text-muted-foreground">
+                    No team members yet.
+                  </div>
+                ) : (
+                  teamMembers.map((email) => (
+                    <div
+                      key={email}
+                      className="flex items-center justify-between p-3 rounded-lg border border-muted bg-white"
+                    >
+                      <div className="flex items-center gap-3">
+                        <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-sm text-primary">
+                            {email}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Editor access
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeTeamMember(email)}
+                        disabled={teamLoading}
+                        className="text-muted-foreground hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </TabsContent>

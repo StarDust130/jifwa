@@ -7,6 +7,13 @@ import { Gauge, Sparkles, Users, ShieldCheck, PanelTop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const navItems = [
   { href: "/admin/overview", label: "Overview", icon: Gauge },
@@ -29,16 +36,16 @@ export function AdminFrame({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex gap-6">
-        <aside className="hidden lg:block w-64 shrink-0">
-          <Card className="sticky top-6 bg-white/90 backdrop-blur border-slate-200 shadow-sm">
-            <div className="p-5 border-b border-slate-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6  py-8 flex gap-6">
+        <aside className="hidden lg:block w-72 shrink-0">
+          <Card className="sticky top-6 overflow-hidden bg-white/95 backdrop-blur border-slate-200 shadow-lg">
+            <div className="px-5 py-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                  <ShieldCheck size={20} />
+                <div className="h-11 w-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                  <ShieldCheck size={18} />
                 </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500 font-semibold">
+                <div className="leading-tight">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500 font-semibold">
                     Admin
                   </p>
                   <p className="text-sm font-semibold text-slate-900">
@@ -47,6 +54,7 @@ export function AdminFrame({
                 </div>
               </div>
             </div>
+
             <div className="p-3 space-y-1">
               {navItems.map((item) => {
                 const active = pathname.startsWith(item.href);
@@ -55,7 +63,7 @@ export function AdminFrame({
                   <Link key={item.href} href={item.href} className="block">
                     <div
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition border",
+                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition border focus:outline-none focus:ring-2 focus:ring-indigo-100",
                         active
                           ? "bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm"
                           : "bg-white text-slate-700 border-slate-100 hover:bg-slate-50"
@@ -67,6 +75,32 @@ export function AdminFrame({
                   </Link>
                 );
               })}
+            </div>
+
+            <div className="px-4 pb-4 pt-3 border-t border-slate-100 space-y-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                asChild
+                className="w-full border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 shadow-sm"
+              >
+                <Link
+                  href="/dashboard"
+                  aria-label="Back to dashboard"
+                  className="flex items-center justify-center gap-2"
+                >
+                  <ArrowLeft size={16} />
+                  Back to dashboard
+                </Link>
+              </Button>
+
+              <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5 text-xs text-slate-600">
+               
+                <p className="text-slate-600">
+                  😎 I know UI is bad, I can make it better but I don't have any
+                  incentive
+                </p>
+              </div>
             </div>
           </Card>
         </aside>

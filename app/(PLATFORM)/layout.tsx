@@ -54,19 +54,19 @@ export default async function PlatformLayout({
   }
 
   // Default to 'client' if role is missing
-  const role = user.currentRole || "client";
+  const role = user?.currentRole || "client";
 
   // Block banned users from accessing any platform routes
-  if (user.isBanned) {
+  if (user?.isBanned) {
     redirect("/banned");
   }
 
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
   const canAdmin: boolean =
     role === "admin" ||
-    (!!adminEmail && user.email?.toLowerCase() === adminEmail);
+    (!!adminEmail && user?.email?.toLowerCase() === adminEmail);
 
-  const brandingLogo = ownerCtx?.ownerUser?.brandingLogo || user.brandingLogo;
+  const brandingLogo = ownerCtx?.ownerUser?.brandingLogo || user?.brandingLogo;
 
   return (
     <div className="min-h-screen bg-white flex font-sans text-gray-900">

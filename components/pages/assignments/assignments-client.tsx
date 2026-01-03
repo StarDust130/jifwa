@@ -158,7 +158,7 @@ export function AssignmentsClient({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     whileHover={{ backgroundColor: "rgba(250, 250, 250, 0.5)" }}
-                    onClick={() => router.push(`/milestones/${project._id}`)}
+                    onClick={() => router.push(`/assignments/${project._id}`)}
                     className="group cursor-pointer transition-colors"
                   >
                     {/* 1. Name Column */}

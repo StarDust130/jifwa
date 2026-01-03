@@ -29,9 +29,11 @@ import UserAvatar from "@/components/elements/UserAvatar";
 export const Header = ({
   userRole,
   canAdmin,
+  brandingLogo,
 }: {
   userRole?: string;
   canAdmin?: boolean;
+  brandingLogo?: string | null;
 }) => {
   const pathname = usePathname();
 
@@ -112,7 +114,11 @@ export const Header = ({
               href="/dashboard"
               className="px-2 py-1 rounded-md text-black  transition-all font-bold flex items-center gap-2 cursor-default"
             >
-              <span className="tracking-tight">Jifwa</span>
+              {brandingLogo ? (
+                <img src={brandingLogo} alt="Brand" className="h-6 w-auto" />
+              ) : (
+                <span className="tracking-tight">Jifwa</span>
+              )}
             </Link>
           ) : (
             <TooltipProvider>
@@ -122,7 +128,15 @@ export const Header = ({
                     href="/dashboard"
                     className="px-2 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-all font-bold text-gray-700 flex items-center gap-2"
                   >
-                    <span className="tracking-tight">Jifwa</span>
+                    {brandingLogo ? (
+                      <img
+                        src={brandingLogo}
+                        alt="Brand"
+                        className="h-6 w-auto"
+                      />
+                    ) : (
+                      <span className="tracking-tight">Jifwa</span>
+                    )}
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>Back to Dashboard</TooltipContent>

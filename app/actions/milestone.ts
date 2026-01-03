@@ -75,6 +75,12 @@ export async function updateMilestone(
       }
     }
 
+    // Mark project completed when all milestones approved
+    const allApproved = project.milestones.every(
+      (m: any) => m.status === "approved"
+    );
+    project.status = allApproved ? "completed" : "active";
+
     await project.save();
 
     revalidatePath(`/projects/${projectId}`);

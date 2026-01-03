@@ -92,6 +92,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         stats: {
           totalProjects: 0,
           activeCount: 0,
+          completedCount: 0,
           pendingCount: 0,
           totalValue: 0,
         },

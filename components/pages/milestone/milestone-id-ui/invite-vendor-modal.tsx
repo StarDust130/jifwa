@@ -62,6 +62,7 @@ export function InviteVendorModal({
         </button>
       </DialogTrigger>
 
+
       <DialogContent className="max-w-sm rounded-xl p-6">
         {status === "success" ? (
           <div

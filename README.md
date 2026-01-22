@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jifwa 🧠📄  
+**AI-Native Contract Execution Platform**
 
-## Getting Started
+Jifwa turns signed contracts into clear, trackable execution workflows — so what’s agreed actually gets delivered.
 
-First, run the development server:
+> Contracts don’t fail. Execution does.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚨 The Problem
+After a contract is signed:
+- Deliverables get interpreted differently  
+- Acceptance criteria stay vague  
+- Proof lives in emails, WhatsApp, Drive  
+- Feedback becomes emotional  
+- Disputes lack structured evidence  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Execution breaks. Accountability disappears.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✅ The Solution
+Jifwa adds an **execution clarity layer** on top of contracts.
 
-To learn more about Next.js, take a look at the following resources:
+**What Jifwa is:**
+- Execution alignment platform
+- AI-guided delivery workflow
+- Privacy-first by design
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**What Jifwa is NOT:**
+- ❌ Contract drafting tool  
+- ❌ Project management tool  
+- ❌ Legal advice platform  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ⚙️ How It Works
+1. **Upload Contract (PDF)**  
+   AI extracts deliverables, dates, and key terms  
+2. **AI Milestones**  
+   Suggested milestones + acceptance criteria  
+3. **Vendor Submissions**  
+   Proof, files, and notes — in one place  
+4. **Client Review**  
+   Approve, request changes, or raise disputes  
+5. **AI Dispute Summary**  
+   Timeline + evidence + issue summary  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Everything is tracked. Nothing is lost.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧠 AI Capabilities (MVP)
+- Contract text extraction  
+- Milestone generation  
+- Feedback rewriting  
+- Dispute summarization  
+
+⚠️ No black-box AI.  
+⚠️ No third-party AI APIs.  
+AI is explainable, minimal, and purpose-built.
+
+---
+
+## 🔐 Privacy & Security
+- End-to-end encryption  
+- No third-party AI providers  
+- Contract data never leaves secure environment  
+- Admins see **metadata only**, never content  
+
+Built for confidentiality-critical workflows.
+
+---
+
+## 💳 Pricing (Live)
+- **Free** — ₹0  
+  1 project · Basic AI parsing  
+- **Starter** — ₹499 / month  
+  5 projects · AI milestones · Dispute summaries  
+- **Agency** — ₹1,499 / month  
+  Unlimited projects · Team access  
+- **Enterprise** — Custom  
+  Private AI · SSO · Dedicated support  
+
+Payments via **Razorpay**.
+
+---
+
+## 🛠 Tech Stack
+- **Frontend:** Next.js + React  
+- **Backend:** Node.js  
+- **AI:** Self-hosted open-source LLM  
+- **Database:** Secure encrypted storage  
+- **Auth:** Email + role-based access  
+- **Payments:** Razorpay Subscriptions  
+
+No unnecessary complexity. Built to scale.
+
+---
+
+## 👥 Roles
+- **Client** – Upload contracts, review work  
+- **Vendor** – Submit deliverables  
+- **Admin** – Platform & billing control  
+
+Single account → role toggle supported.
+
+---
+
+## 🎯 Who It’s For
+- Freelancers & consultants  
+- Agencies delivering client work  
+- SMEs with service contracts  
+- Vendors handling milestone-based delivery  
+
+If execution clarity matters, Jifwa fits.
+
+---
+
+## 🧪 Status
+- MVP complete  
+- Production-ready  
+- Actively evolving (Phase-2 features planned)
+
+---
+
+## 📬 Contact
+- 📧 contact@jifwa.com  
+- 🛠 support@jifwa.com  
+
+---
+
+© Jifwa — AI-native contract execution platform  
+Built for clarity, accountability, and trust.
